@@ -50,3 +50,5 @@ end
 gem 'lograge', '0.3.6'
 gem 'bcrypt', '3.1.11'
 gem 'annotate', '2.7.0'
+gem 'devise', '3.5.6'
+gem 'devise-bootstrap-views', '0.0.8'
