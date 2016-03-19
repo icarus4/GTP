@@ -47,6 +47,12 @@ group :development do
   gem 'better_errors', '2.1.1'
 end
 
+group :development, :production do
+  gem 'hirb', '0.7.3'
+  gem 'hirb-unicode', '0.0.5'
+  gem 'awesome_print', '1.6.1'
+end
+
 gem 'lograge', '0.3.6'
 gem 'bcrypt', '3.1.11'
 gem 'annotate', '2.7.0'
