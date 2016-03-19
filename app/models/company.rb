@@ -33,4 +33,6 @@ class Company < ActiveRecord::Base
   }
 
   validates :name, presence: true
+
+  has_many :companies, class_name: 'Company'
 end
