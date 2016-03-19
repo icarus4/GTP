@@ -5,6 +5,7 @@
 #  id                     :integer          not null, primary key
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
+#  company_id             :integer
 #  name                   :string           default(""), not null
 #  phone_number           :string
 #  reset_password_token   :string
