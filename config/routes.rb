@@ -8,8 +8,8 @@ Rails.application.routes.draw do
 
   # Company
   resources :companies, only: [:index]
-  resources :suppliers, only: [:index, :new]
-  resources :customers, only: [:index, :new]
+  resources :suppliers, only: [:index, :new, :create]
+  resources :customers, only: [:index, :new, :create]
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

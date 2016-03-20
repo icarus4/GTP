@@ -19,4 +19,5 @@
 #
 
 class Supplier < Company
+  validates :name, :company_id, presence: true
 end

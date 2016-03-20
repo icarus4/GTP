@@ -19,4 +19,5 @@
 #
 
 class Customer < Company
+  validates :name, :company_id, presence: true
 end

@@ -38,4 +38,12 @@ class User < ActiveRecord::Base
   def relationships
     Company.where(company_id: company_id)
   end
+
+  def suppliers
+    Supplier.where(company_id: company_id)
+  end
+
+  def customers
+    Customers.where(company_id: company_id)
+  end
 end
