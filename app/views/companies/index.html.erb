@@ -1,0 +1,29 @@
+<div class="container new-company-btn">
+  <%= link_to "新增客戶", new_customer_path, class: 'btn btn-default btn-md' %>
+  <%= link_to "新增供應商", new_supplier_path, class: 'btn btn-default btn-md' %>
+</div>
+
+<div class="container">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>公司名稱</th>
+        <th>公司類型</th>
+        <th>Email</th>
+        <th>聯絡電話</th>
+        <th>狀態</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @companies.each do |company| %>
+      <tr>
+        <td><%= company.name %></td>
+        <td><%= company.type.humanize %></td>
+        <td><%= company.email %></td>
+        <td><%= company.phone %></td>
+        <td><%= company.status %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
