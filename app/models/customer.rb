@@ -18,16 +18,5 @@
 #  updated_at  :datetime         not null
 #
 
-class Company < ActiveRecord::Base
-
-  enum status: {
-    active: 0,
-    disabled: 1
-  }
-
-  has_many :companies
-  has_many :suppliers
-  has_many :customers
-
-  validates :name, presence: true
+class Customer < Company
 end

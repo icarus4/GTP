@@ -34,4 +34,8 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   belongs_to :company
+
+  def relationships
+    Company.where(company_id: company_id)
+  end
 end

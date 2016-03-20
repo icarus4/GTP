@@ -3,8 +3,8 @@ class CreateCompanies < ActiveRecord::Migration
     create_table :companies do |t|
       t.integer :company_id
       t.integer :assignee_id
-      t.integer :relationship_type, null: false, default: 0
       t.integer :status, null: false, default: 0
+      t.string :type, null: false, default: ''
       t.string :name
       t.string :email
       t.string :vat_number
@@ -15,5 +15,8 @@ class CreateCompanies < ActiveRecord::Migration
 
       t.timestamps null: false
     end
+
+    add_index :companies, :company_id
+    add_index :companies, :type
   end
 end

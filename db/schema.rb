@@ -16,8 +16,8 @@ ActiveRecord::Schema.define(version: 20160319065148) do
   create_table "companies", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "assignee_id"
-    t.integer  "relationship_type", default: 0, null: false
-    t.integer  "status",            default: 0, null: false
+    t.integer  "status",      default: 0,  null: false
+    t.string   "type",        default: "", null: false
     t.string   "name"
     t.string   "email"
     t.string   "vat_number"
@@ -25,9 +25,12 @@ ActiveRecord::Schema.define(version: 20160319065148) do
     t.string   "fax"
     t.string   "website"
     t.text     "description"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
+
+  add_index "companies", ["company_id"], name: "index_companies_on_company_id"
+  add_index "companies", ["type"], name: "index_companies_on_type"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
