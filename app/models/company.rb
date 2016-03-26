@@ -30,6 +30,7 @@ class Company < ActiveRecord::Base
   has_many :customers
   has_many :products
   has_many :brands
+  has_many :product_types, -> { where(company_id: id) }, class_name: 'ProductType', inverse_of: :company
 
   validates :name, presence: true
 end

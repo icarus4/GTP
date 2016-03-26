@@ -18,7 +18,7 @@
 class Product < ActiveRecord::Base
   belongs_to :company
   belongs_to :supplier
-  belongs_to :product_type
+  belongs_to :product_type, class_name: 'ProductType'
   belongs_to :brand
 
   enum status: {
