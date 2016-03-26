@@ -13,5 +13,5 @@ class Brand < ActiveRecord::Base
   belongs_to :company
 
   validates :company_id, presence: true
-  valudates :name,       presence: true, uniqueness: { scope: :company_id }
+  validates :name,       presence: true, uniqueness: { scope: :company_id }
 end

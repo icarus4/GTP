@@ -27,4 +27,8 @@ class Product < ActiveRecord::Base
   }
 
   validates :name, presence: true
+  validates :company_id,      presence: true
+  validates :supplier_id,     presence: true
+  validates :product_type_id, presence: true
+  validates :brand_id,        presence: true
 end

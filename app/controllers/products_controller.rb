@@ -19,4 +19,8 @@ class ProductsController < ApplicationController
   def index
     @products = current_company.products.includes(:supplier, :brand)
   end
+
+  def new
+    @product = current_company.products.build
+  end
 end
