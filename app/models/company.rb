@@ -28,6 +28,7 @@ class Company < ActiveRecord::Base
   has_many :companies
   has_many :suppliers
   has_many :customers
+  has_many :products
 
   validates :name, presence: true
 end
