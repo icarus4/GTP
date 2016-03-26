@@ -175,6 +175,9 @@ GEM
       activemodel (>= 4.2)
       debug_inspector
       railties (>= 4.2)
+    xray-rails (0.1.18)
+      coffee-rails
+      rails (>= 3.1.0)
 
 PLATFORMS
   ruby
@@ -202,6 +205,7 @@ DEPENDENCIES
   turbolinks (= 2.5.3)
   uglifier (= 2.7.2)
   web-console (= 3.1.1)
+  xray-rails (= 0.1.18)
 
 BUNDLED WITH
    1.11.2
