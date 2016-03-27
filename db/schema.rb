@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160326144841) do
+ActiveRecord::Schema.define(version: 20160327144016) do
 
   create_table "brands", force: :cascade do |t|
     t.integer  "company_id",             null: false
@@ -95,5 +95,33 @@ ActiveRecord::Schema.define(version: 20160326144841) do
   add_index "users", ["name"], name: "index_users_on_name"
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   add_index "users", ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+
+  create_table "variants", force: :cascade do |t|
+    t.integer  "product_id",                                          null: false
+    t.string   "sku"
+    t.string   "name"
+    t.decimal  "buy_price",       precision: 8, scale: 2
+    t.decimal  "retail_price",    precision: 8, scale: 2
+    t.decimal  "wholesale_price", precision: 8, scale: 2
+    t.integer  "available_count",                         default: 0, null: false
+    t.integer  "on_hand_count",                           default: 0, null: false
+    t.decimal  "weight_value"
+    t.integer  "weight_unit_id"
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+  end
+
+  add_index "variants", ["name"], name: "index_variants_on_name"
+  add_index "variants", ["product_id"], name: "index_variants_on_product_id"
+  add_index "variants", ["sku"], name: "index_variants_on_sku"
+
+  create_table "weight_units", force: :cascade do |t|
+    t.integer  "company_id",            null: false
+    t.string   "name",       limit: 32, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "weight_units", ["company_id", "name"], name: "index_weight_units_on_company_id_and_name", unique: true
 
 end

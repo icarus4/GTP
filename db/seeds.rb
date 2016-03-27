@@ -20,3 +20,10 @@ pt3 = ProductType.find_or_create_by!(name: '酒', company: c)
 
 b1 = Brand.find_or_create_by!(company: c, name: '統一')
 b2 = Brand.find_or_create_by!(company: c, name: '統二')
+
+p1 = Product.find_or_create_by!(company: c, supplier: s1, product_type: pt1, brand: b1, name: 'iPhone 6s',      description: '好iPhone 6s，不買嗎？')
+p2 = Product.find_or_create_by!(company: c, supplier: s2, product_type: pt2, brand: b2, name: 'iPhone 6s plus', description: '好iPhone 6s plus，不買嗎？')
+
+w1 = WeightUnit.find_or_create_by!(company: c, name: '公克')
+w2 = WeightUnit.find_or_create_by!(company: c, name: '公斤')
+w3 = WeightUnit.find_or_create_by!(company: c, name: '台斤')
