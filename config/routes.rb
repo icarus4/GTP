@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :companies, only: [:index]
   resources :suppliers, only: [:index, :new, :create]
   resources :customers, only: [:index, :new, :create]
-  resources :products, only: [:index, :new]  
+  resources :products  
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

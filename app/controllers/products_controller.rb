@@ -23,4 +23,27 @@ class ProductsController < ApplicationController
   def new
     @product = current_company.products.build
   end
+
+  def create
+    @product = current_company.products.build(product_params)
+    # TODO: check supplier_id, product_type_id, brand_id
+    if @product.save
+      redirect_to product_path(@product)
+    else
+      render :new
+    end
+  end
+
+  def show
+    @product = Product.find_by(id: params[:id])
+    redirect_to products_path unless @product
+  end
+
+
+  private
+
+
+    def product_params
+      params.require(:product).permit(:name, :supplier_id, :product_type_id, :brand_id, :description)
+    end
 end
