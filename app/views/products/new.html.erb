@@ -1,0 +1,12 @@
+<%= simple_form_for @product, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
+  <%= f.input :name, label: '產品名稱' %>
+  <%= f.association :product_type, label: '產品類型', collection: ProductType.where(company_id: current_company.id) %>
+  <%= f.association :supplier, label: '供應商', collection: current_company.suppliers %>
+  <%= f.association :brand, label: '品牌' %>
+  <%= f.input :description, label: '其他資訊', input_html: { rows: '5' } %>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-2">
+      <%= f.button :submit %>
+    </div>
+  </div>
+<% end %>

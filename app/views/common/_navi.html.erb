@@ -1,0 +1,27 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="navbar-inner">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- <a class="navbar-brand" href="#">GTP</a> -->
+        <%= link_to "GTP", root_path, class: 'navbar-brand' %>
+      </div>
+    <% if user_signed_in? %>
+      <ul class="nav navbar-nav">
+        <li><%= link_to "總覽", '#' %></li>
+        <li><%= link_to "產品管理", products_path %></li>
+        <li><%= link_to "客戶管理", companies_path %></li>
+        <li><%= link_to "銷售管理", '#' %></li>
+        <li><%= link_to "庫存管理", '#' %></li>
+      </ul>
+    <% end %>
+      <ul class="nav navbar-right navbar-nav">
+      <% if user_signed_in? %>
+        <li><%= link_to "登出", destroy_user_session_path, method: :delete  %></li>
+      <% else %>
+        <li><%= link_to "登入", new_user_session_path %></li>
+        <li><%= link_to "註冊", new_user_registration_path %></li>
+      <% end %>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,20 @@
+<div class="container col-md-4">
+  <dl class="dl-horizontal">
+    <dt>產品名稱</dt><dd><%= @product.name %></dd>
+    <dt>產品類型</dt><dd><%= @product.product_type.name %></dd>
+    <dt>供應商</dt><dd><%= @product.supplier.name %></dd>
+    <dt>品牌</dt><dd><%= @product.brand.name %></dd>
+  </dl>
+</div>
+
+<div class="container col-md-4">
+  <dl class="dl-horizontal">
+    <dt>最後修改時間</dt><dd><%= time_ago_in_words(@product.updated_at) %> ago</dd>
+  </dl>
+</div>
+
+<div class="container col-md-4">
+  <dl class="dl-horizontal">
+    <dt>其他資訊</dt><dd><%= @product.description %></dd>
+  </dl>
+</div>

@@ -1,0 +1,11 @@
+<%= simple_form_for @company, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
+  <%= f.input :name, label: '公司名稱' %>
+  <%= f.input :email %>
+  <%= f.input :vat_number, label: '統一編號' %>
+  <%= f.input :description, label: '備註', input_html: { rows: '5' } %>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-2">
+      <%= f.button :submit %>
+    </div>
+  </div>
+<% end %>
