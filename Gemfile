@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+ruby '2.3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.6'
@@ -61,3 +62,4 @@ gem 'devise', '3.5.6'
 gem 'bootstrap-sass', '3.3.6'
 gem 'simple_form', '3.2.1'
 gem 'pg', '0.18.4'
+gem 'rails_12factor' # for Heroku
