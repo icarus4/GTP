@@ -46,6 +46,7 @@ group :development do
   gem 'better_errors', '2.1.1'
   gem 'binding_of_caller', '0.7.2'
   gem 'xray-rails', '0.1.18'
+  gem 'annotate', '2.7.0'
 end
 
 group :development, :production do
@@ -56,7 +57,6 @@ end
 
 gem 'lograge', '0.3.6'
 gem 'bcrypt', '3.1.11'
-gem 'annotate', '2.7.0'
 gem 'devise', '3.5.6'
 gem 'bootstrap-sass', '3.3.6'
 gem 'simple_form', '3.2.1'
