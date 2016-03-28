@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20160327144016) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "brands", force: :cascade do |t|
     t.integer  "company_id",             null: false
     t.string   "name",       limit: 255, null: false
@@ -20,7 +23,7 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.datetime "updated_at",             null: false
   end
 
-  add_index "brands", ["company_id", "name"], name: "index_brands_on_company_id_and_name", unique: true
+  add_index "brands", ["company_id", "name"], name: "index_brands_on_company_id_and_name", unique: true, using: :btree
 
   create_table "companies", force: :cascade do |t|
     t.integer  "company_id"
@@ -38,8 +41,8 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.datetime "updated_at",               null: false
   end
 
-  add_index "companies", ["company_id"], name: "index_companies_on_company_id"
-  add_index "companies", ["type"], name: "index_companies_on_type"
+  add_index "companies", ["company_id"], name: "index_companies_on_company_id", using: :btree
+  add_index "companies", ["type"], name: "index_companies_on_type", using: :btree
 
   create_table "product_types", force: :cascade do |t|
     t.integer  "company_id",             null: false
@@ -61,8 +64,8 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.datetime "updated_at",                               null: false
   end
 
-  add_index "products", ["company_id"], name: "index_products_on_company_id"
-  add_index "products", ["name"], name: "index_products_on_name"
+  add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
+  add_index "products", ["name"], name: "index_products_on_name", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
@@ -89,12 +92,12 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.datetime "updated_at",                          null: false
   end
 
-  add_index "users", ["company_id"], name: "index_users_on_company_id"
-  add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["name"], name: "index_users_on_name"
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-  add_index "users", ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+  add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
+  add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["name"], name: "index_users_on_name", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["unlock_token"], name: "index_users_on_unlock_token", unique: true, using: :btree
 
   create_table "variants", force: :cascade do |t|
     t.integer  "product_id",                                          null: false
@@ -111,9 +114,9 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.datetime "updated_at",                                          null: false
   end
 
-  add_index "variants", ["name"], name: "index_variants_on_name"
-  add_index "variants", ["product_id"], name: "index_variants_on_product_id"
-  add_index "variants", ["sku"], name: "index_variants_on_sku"
+  add_index "variants", ["name"], name: "index_variants_on_name", using: :btree
+  add_index "variants", ["product_id"], name: "index_variants_on_product_id", using: :btree
+  add_index "variants", ["sku"], name: "index_variants_on_sku", using: :btree
 
   create_table "weight_units", force: :cascade do |t|
     t.integer  "company_id",            null: false
@@ -122,6 +125,6 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.datetime "updated_at",            null: false
   end
 
-  add_index "weight_units", ["company_id", "name"], name: "index_weight_units_on_company_id_and_name", unique: true
+  add_index "weight_units", ["company_id", "name"], name: "index_weight_units_on_company_id_and_name", unique: true, using: :btree
 
 end
