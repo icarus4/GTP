@@ -1,9 +1,17 @@
 <%= simple_form_for @product, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
-  <%= f.input :name, label: '產品名稱' %>
-  <%= f.association :product_type, label: '產品類型', collection: ProductType.where(company_id: current_company.id) %>
-  <%= f.association :supplier, label: '供應商', collection: current_company.suppliers %>
-  <%= f.association :brand, label: '品牌' %>
-  <%= f.input :description, label: '其他資訊', input_html: { rows: '5' } %>
+  <%= f.input :name,                  label: '產品名稱', placeholder: '例: iPhone 6s' %>
+  <%= f.association :product_type,    label: '產品類型', collection: ProductType.where(company_id: current_company.id) %>
+  <%= f.association :supplier,        label: '供應商', collection: current_company.suppliers %>
+  <%= f.association :brand,           label: '品牌' %>
+  <%= f.input :description,           label: '其他資訊', input_html: { rows: '5' } %>
+  <hr />
+  <%= f.input :sku,                   label: 'SKU', as: :string, placeholder: '例: ABC123' %>
+  <!-- TODO: 現有庫存每單位成本或現有庫存若有缺少，需有錯誤訊息，待補 -->
+  <%= f.input :initial_cost_per_unit, label: '現有庫存每單位成本', required: true, as: :integer, input_html: { min: 0, placeholder: 0 } %>
+  <%= f.input :initial_on_hand_count, label: '現有庫存數量',      required: true, as: :integer, input_html: { min: 0, placeholder: 0 } %>
+  <%= f.input :buy_price,             label: '進貨價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
+  <%= f.input :wholesale_price,       label: '批發價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
+  <%= f.input :retail_price,          label: '零售價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-2">
       <%= f.button :submit %>

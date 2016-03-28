@@ -1,20 +1,53 @@
-<div class="container col-md-4">
-  <dl class="dl-horizontal">
-    <dt>產品名稱</dt><dd><%= @product.name %></dd>
-    <dt>產品類型</dt><dd><%= @product.product_type.name %></dd>
-    <dt>供應商</dt><dd><%= @product.supplier.name %></dd>
-    <dt>品牌</dt><dd><%= @product.brand.name %></dd>
-  </dl>
+<div class="row">
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>產品名稱</dt><dd><%= @product.name %></dd>
+      <dt>產品類型</dt><dd><%= @product.product_type.name %></dd>
+      <dt>供應商</dt><dd><%= @product.supplier.name %></dd>
+      <dt>品牌</dt><dd><%= @product.brand.name %></dd>
+    </dl>
+  </div>
+
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@product.updated_at) %> ago</dd>
+    </dl>
+  </div>
+
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>其他資訊</dt><dd><%= @product.description %></dd>
+    </dl>
+  </div>
 </div>
 
-<div class="container col-md-4">
-  <dl class="dl-horizontal">
-    <dt>最後修改時間</dt><dd><%= time_ago_in_words(@product.updated_at) %> ago</dd>
-  </dl>
-</div>
-
-<div class="container col-md-4">
-  <dl class="dl-horizontal">
-    <dt>其他資訊</dt><dd><%= @product.description %></dd>
-  </dl>
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>名稱</th>
+        <th>批發價</th>
+        <th>零售價</th>
+        <th>進貨價</th>
+        <th>平均成本</th>
+        <th>庫存數量</th>
+        <th>倉庫數量</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @product.variants.each do |variant| %>
+      <tr data-link="<%= variant_path(variant) %>">
+        <td><%= variant.sku %></td>
+        <td><%= variant.name %></td>
+        <td><%= variant.wholesale_price %></td>
+        <td><%= variant.retail_price %></td>
+        <td><%= variant.buy_price %></td>
+        <td>Not yet implemented</td>
+        <td><%= variant.available_count %></td>
+        <td><%= variant.on_hand_count %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>

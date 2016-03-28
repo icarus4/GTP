@@ -103,12 +103,13 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.integer  "product_id",                                          null: false
     t.string   "sku"
     t.string   "name"
-    t.decimal  "buy_price",       precision: 8, scale: 2
-    t.decimal  "retail_price",    precision: 8, scale: 2
-    t.decimal  "wholesale_price", precision: 8, scale: 2
+    t.integer  "buy_price"
+    t.integer  "cost_per_unit"
+    t.integer  "retail_price"
+    t.integer  "wholesale_price"
     t.integer  "available_count",                         default: 0, null: false
     t.integer  "on_hand_count",                           default: 0, null: false
-    t.decimal  "weight_value"
+    t.decimal  "weight_value",    precision: 8, scale: 2
     t.integer  "weight_unit_id"
     t.datetime "created_at",                                          null: false
     t.datetime "updated_at",                                          null: false
