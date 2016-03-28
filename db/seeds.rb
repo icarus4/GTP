@@ -7,7 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 c = Company.find_or_create_by!(name: '好公司', status: 'active', description: '我的公司')
-u = User.find_by(email: 'icarus4.chu@gmail.com') || User.create!(email: 'icarus4.chu@gmail.com', password: '12345678', password_confirmation: '12345678', company: c)
+u = User.find_by(email: 'gtp@gmail.com') || User.create!(email: 'gtp@gmail.com', password: '12345678', password_confirmation: '12345678', company: c)
 
 s1 = Supplier.find_or_create_by!(company: c, name: '我的供應商-1', status: 'active', email: 'service@supplier1.com')
 s2 = Supplier.find_or_create_by!(company: c, name: '我的供應商-2', status: 'active', email: 'service@supplier2.com')
