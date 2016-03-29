@@ -24,6 +24,10 @@ b2 = Brand.find_or_create_by!(company: c, name: '統二')
 p1 = Product.find_or_create_by!(company: c, supplier: s1, product_type: pt1, brand: b1, name: 'iPhone 6s',      description: '好iPhone 6s，不買嗎？')
 p2 = Product.find_or_create_by!(company: c, supplier: s2, product_type: pt2, brand: b2, name: 'iPhone 6s plus', description: '好iPhone 6s plus，不買嗎？')
 
+v1 = p1.variants.create!(name: 'iPhone 6s 白',      buy_price: 12000, cost_per_unit: 12000, wholesale_price: 13000, retail_price: 15000, on_hand_count: 10)
+v2 = p2.variants.create!(name: 'iPhone 6s plus 白', buy_price: 15000, cost_per_unit: 15000, wholesale_price: 16000, retail_price: 18000, on_hand_count: 10)
+
+
 w1 = WeightUnit.find_or_create_by!(company: c, name: '公克')
 w2 = WeightUnit.find_or_create_by!(company: c, name: '公斤')
 w3 = WeightUnit.find_or_create_by!(company: c, name: '台斤')

@@ -37,7 +37,7 @@
     </thead>
     <tbody>
     <% @product.variants.each do |variant| %>
-      <tr data-link="<%= variant_path(variant) %>">
+      <tr data-link="<%= edit_variant_path(variant) %>">
         <td><%= variant.sku %></td>
         <td><%= variant.name %></td>
         <td><%= variant.wholesale_price %></td>
@@ -50,4 +50,8 @@
     <% end %>
     </tbody>
   </table>
+</div>
+
+<div class="row">
+  <%= button_to "新增其他款式", new_product_variant_path(@product), method: :get, class: 'btn btn-default center-block' %>
 </div>

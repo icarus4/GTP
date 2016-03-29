@@ -111,6 +111,7 @@ ActiveRecord::Schema.define(version: 20160327144016) do
     t.integer  "on_hand_count",                           default: 0, null: false
     t.decimal  "weight_value",    precision: 8, scale: 2
     t.integer  "weight_unit_id"
+    t.text     "description"
     t.datetime "created_at",                                          null: false
     t.datetime "updated_at",                                          null: false
   end

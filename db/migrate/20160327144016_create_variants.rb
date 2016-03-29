@@ -4,14 +4,15 @@ class CreateVariants < ActiveRecord::Migration
       t.references :product,         null: false
       t.string     :sku
       t.string     :name
-      t.integer    :buy_price,
-      t.integer    :cost_per_unit,
-      t.integer    :retail_price,
-      t.integer    :wholesale_price,
+      t.integer    :buy_price
+      t.integer    :cost_per_unit
+      t.integer    :retail_price
+      t.integer    :wholesale_price
       t.integer    :available_count, null: false, default: 0
       t.integer    :on_hand_count,   null: false, default: 0
       t.decimal    :weight_value,    precision: 8, scale: 2
       t.references :weight_unit
+      t.text       :description
 
       t.timestamps null: false
     end
