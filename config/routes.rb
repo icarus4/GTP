@@ -10,8 +10,9 @@ Rails.application.routes.draw do
   resources :companies, only: [:index]
   resources :suppliers, only: [:index, :new, :create]
   resources :customers, only: [:index, :new, :create]
-  resources :products  
-
+  resources :products do
+    resources :variants, shallow: true
+  end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

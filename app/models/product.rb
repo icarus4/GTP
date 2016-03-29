@@ -16,19 +16,14 @@
 #
 
 class Product < ActiveRecord::Base
-  # For building variants
-  attr_accessor :initial_on_hand_count,
-                :initial_cost_per_unit,
-                :buy_price,
-                :wholesale_price,
-                :retail_price,
-                :sku
-
   belongs_to :company
   belongs_to :supplier
   belongs_to :product_type, class_name: 'ProductType'
   belongs_to :brand
   has_many   :variants, dependent: :destroy
+
+  accepts_nested_attributes_for :variants
+  validates_associated :variants
 
   enum status: {
     active: 0,

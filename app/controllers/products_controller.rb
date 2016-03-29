@@ -22,25 +22,15 @@ class ProductsController < ApplicationController
 
   def new
     @product = current_company.products.build
+    @product.variants.build
   end
 
   def create
     @product = current_company.products.build(product_params)
     # TODO: check supplier_id, product_type_id, brand_id
-    begin
-      ActiveRecord::Base.transaction do
-        @product.save!
-        @variant = @product.variants.create!(
-          sku:             params[:product][:sku],
-          cost_per_unit:   params[:product][:initial_cost_price].to_i,
-          on_hand_count:   params[:product][:initial_on_hand_count].to_i,
-          buy_price:       params[:product][:buy_price].to_i,
-          wholesale_price: params[:product][:wholesale_price].to_i,
-          retail_price:    params[:product][:retail_price].to_i,
-        )
-        redirect_to product_path(@product)
-      end
-    rescue
+    if @product.save
+      redirect_to product_path(@product)
+    else
       render :new
     end
   end
@@ -55,6 +45,14 @@ class ProductsController < ApplicationController
 
 
     def product_params
-      params.require(:product).permit(:name, :supplier_id, :product_type_id, :brand_id, :description)
+      params.require(:product)
+        .permit(
+          :name,
+          :supplier_id,
+          :product_type_id,
+          :brand_id,
+          :description,
+          variants_attributes: [:sku, :cost_per_unit, :on_hand_count, :buy_price, :wholesale_price, :retail_price]
+        )
     end
 end
