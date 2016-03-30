@@ -52,7 +52,7 @@ class ProductsController < ApplicationController
           :product_type_id,
           :brand_id,
           :description,
-          variants_attributes: [:sku, :cost_per_unit, :on_hand_count, :buy_price, :wholesale_price, :retail_price]
+          variants_attributes: [:sku, :name, :cost_per_unit, :on_hand_count, :buy_price, :wholesale_price, :retail_price]
         )
     end
 end

@@ -7,6 +7,7 @@
   <hr />
   <%= f.simple_fields_for :variants do |ff| %>
     <%= ff.input :sku,                   label: 'SKU', as: :string, placeholder: '例: ABC123' %>
+    <%= ff.input :name,                  as: :hidden, input_html: { value: '預設款式'} %>
     <!-- TODO: 現有庫存每單位成本或現有庫存若有缺少，需有錯誤訊息，待補 -->
     <%= ff.input :cost_per_unit,   label: '現有庫存每單位成本', as: :integer, input_html: { min: 0, placeholder: 0 } %>
     <%= ff.input :on_hand_count,   label: '現有庫存數量',      as: :integer, input_html: { min: 0, placeholder: 0 } %>
