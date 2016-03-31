@@ -31,3 +31,6 @@ v2 = p2.variants.create!(name: 'iPhone 6s plus 白', buy_price: 15000, cost_per_
 w1 = WeightUnit.find_or_create_by!(company: c, name: '公克')
 w2 = WeightUnit.find_or_create_by!(company: c, name: '公斤')
 w3 = WeightUnit.find_or_create_by!(company: c, name: '台斤')
+
+cities = %w(台北市 新北市 基隆市 桃園市 新竹市 新竹縣 苗栗縣)
+cities.each { |city| City.find_or_create_by!(name: city) }

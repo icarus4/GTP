@@ -14,6 +14,7 @@
 #  on_hand_count   :integer          default(0), not null
 #  weight_value    :decimal(8, 2)
 #  weight_unit_id  :integer
+#  description     :text
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #

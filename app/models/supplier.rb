@@ -20,6 +20,7 @@
 
 class Supplier < Company
   belongs_to :company
+  has_many :locations, as: :locationable
 
   validates :name, :company_id, presence: true
 end

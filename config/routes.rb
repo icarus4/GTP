@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   resources :products do
     resources :variants, shallow: true
   end
+
+  namespace :settings do
+    resources :locations, only: [:index, :new]
+  end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

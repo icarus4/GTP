@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160327144016) do
+ActiveRecord::Schema.define(version: 20160331152115) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,13 @@ ActiveRecord::Schema.define(version: 20160327144016) do
   end
 
   add_index "brands", ["company_id", "name"], name: "index_brands_on_company_id_and_name", unique: true, using: :btree
+
+  create_table "cities", force: :cascade do |t|
+    t.string   "name",       limit: 32, null: false
+    t.datetime "created_at"
+  end
+
+  add_index "cities", ["name"], name: "index_cities_on_name", using: :btree
 
   create_table "companies", force: :cascade do |t|
     t.integer  "company_id"
@@ -43,6 +50,20 @@ ActiveRecord::Schema.define(version: 20160327144016) do
 
   add_index "companies", ["company_id"], name: "index_companies_on_company_id", using: :btree
   add_index "companies", ["type"], name: "index_companies_on_type", using: :btree
+
+  create_table "locations", force: :cascade do |t|
+    t.integer  "locationable_id"
+    t.string   "locationable_type"
+    t.integer  "city_id"
+    t.string   "zip",               limit: 8
+    t.string   "address",           limit: 255
+    t.string   "name",              limit: 255
+    t.boolean  "holds_stock",                   default: true
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
+
+  add_index "locations", ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
 
   create_table "product_types", force: :cascade do |t|
     t.integer  "company_id",             null: false
