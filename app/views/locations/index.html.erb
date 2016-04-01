@@ -1,0 +1,28 @@
+<div class="row">
+  <%= link_to "新增據點", new_location_path, class: 'btn btn-default btn-md' %>
+</div>
+
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>據點名稱</th>
+        <th>城市</th>
+        <th>地址</th>
+        <th>含倉庫？</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @locations.each do |location| %>
+      <tr data-link="<%= location_path(location) %>">
+        <td><%= location.name %></td>
+        <td><%= location.city.name %></td>
+        <td><%= location.address %></td>
+        <td>
+          <% if location.holds_stock? %><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

@@ -17,4 +17,13 @@
 class Location < ActiveRecord::Base
   belongs_to :city
   belongs_to :locationable, polymorphic: true
+
+  validates :city_id, presence: true
+  validates :address, presence: true
+  validates :name,    presence: true
+
+
+  def holds_stock?
+    holds_stock
+  end
 end
