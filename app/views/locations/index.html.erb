@@ -3,7 +3,7 @@
 </div>
 
 <div class="row table-container">
-  <table class="table table-hover tr-link">
+  <table class="table">
     <thead>
       <tr>
         <th>據點名稱</th>
@@ -14,7 +14,7 @@
     </thead>
     <tbody>
     <% @locations.each do |location| %>
-      <tr data-link="<%= location_path(location) %>">
+      <tr>
         <td><%= location.name %></td>
         <td><%= location.city.name %></td>
         <td><%= location.address %></td>

@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   end
 
   scope :settings do
-    resources :locations, only: [:index, :new, :create, :show]
+    resources :locations, only: [:index, :new, :create]
   end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
