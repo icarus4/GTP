@@ -1,0 +1,30 @@
+<div class="row">
+  <%= link_to "新增進貨單", new_purchase_order_path, class: 'btn btn-default btn-md' %>
+</div>
+
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>進貨單單號</th>
+        <th>供應商</th>
+        <th>收貨地點</th>
+        <th>收發票地點</th>
+        <th>指定送貨日期</th>
+        <th>訂單狀態</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @purchase_orders.each do |order| %>
+      <tr data-link="<%= purchase_order_path(order) %>">
+        <td><%= order.order_number %></td>
+        <td><%= order.supplier.name %></td>
+        <td><%= order.ship_to.name %></td>
+        <td><%= order.bill_to.name %></td>
+        <td><%= order.due_on %></td>
+        <td><%= order.status.humanize %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

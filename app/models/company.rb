@@ -32,6 +32,7 @@ class Company < ActiveRecord::Base
   has_many :brands
   has_many :product_types, -> { where(company_id: id) }, class_name: 'ProductType'
   has_many :locations, as: :locationable
+  has_many :purchase_orders  
 
   validates :name, presence: true
 end

@@ -1,0 +1,36 @@
+<%= simple_form_for @purchase_order, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
+  <%= f.input :order_number, label: '進貨單號' %>
+  <%= f.association :supplier, label: '供應商' %>
+  <%= f.association :ship_to, label: '收貨地點' %>
+  <%= f.association :bill_to, label: '收發票地點' %>
+  <%= f.input :contact_email, label: '聯絡 email' %>
+
+  <div class="form-group string required purchase_order_due_on <%= 'has-error' if @purchase_order.errors.messages[:due_on].present? %>">
+    <label class="optional col-sm-2 control-label required" for="purchase_order_due_on">
+      <abbr title="required">*</abbr> 收貨日
+    </label>
+    <div class="col-sm-2">
+      <%= f.input_field :due_on,
+        as: :string,
+        class: 'form-control string date required datepicker',
+        value: (Time.zone.today + 14.days).to_s
+      %>
+      <%= content_tag(:span, '請填寫收貨日', class: 'help-block') if @purchase_order.errors.messages[:due_on].present? %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-2">
+      <%= f.button :submit %>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      autoclose: true
+    });
+  });
+</script>

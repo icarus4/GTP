@@ -14,6 +14,9 @@ Rails.application.routes.draw do
     resources :variants, shallow: true
   end
 
+  resources :purchase_orders, only: [:index, :new, :create, :show] do
+  end
+
   scope :settings do
     resources :locations, only: [:index, :new, :create]
   end
