@@ -19,9 +19,13 @@
     </div>
   </div>
 
+  <hr>
+
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-2">
-      <%= f.button :submit %>
+    <div class="col-sm-offset-2 col-sm-4">
+      <%= f.button :submit, "建立進貨單", class: 'btn-success', name: 'active' %>
+      或
+      <%= f.button :submit, "存為草稿", class: 'btn btn-default', name: 'draft' %>
     </div>
   </div>
 <% end %>

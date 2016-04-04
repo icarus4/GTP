@@ -18,7 +18,7 @@
 
 class PurchaseOrdersController < ApplicationController
   def index
-    @purchase_orders = current_company.purchase_orders
+    @purchase_orders = current_company.purchase_orders.order(created_at: :desc)
   end
 
   def show
@@ -31,6 +31,8 @@ class PurchaseOrdersController < ApplicationController
 
   def create
     @purchase_order = current_company.purchase_orders.build(purchase_order_params)
+    status = params[:active].present? ? 'active' : 'draft'
+    @purchase_order.status = status
     if @purchase_order.save
       redirect_to purchase_order_path(@purchase_order)
     else
