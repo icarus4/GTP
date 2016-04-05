@@ -14,18 +14,18 @@ s2 = Supplier.find_or_create_by!(company: c, name: '我的供應商-2', status: 
 c1 = Customer.find_or_create_by!(company: c, name: '我的顧客-1', status: 'active', email: 'service@customer1.com')
 c2 = Customer.find_or_create_by!(company: c, name: '我的顧客-2', status: 'active', email: 'service@customer2.com')
 
-pt1 = ProductType.find_or_create_by!(name: '安全帽', company: c)
-pt2 = ProductType.find_or_create_by!(name: '紅茶', company: c)
-pt3 = ProductType.find_or_create_by!(name: '酒', company: c)
+item1 = ItemType.find_or_create_by!(name: '安全帽', company: c)
+item2 = ItemType.find_or_create_by!(name: '紅茶', company: c)
+item3 = ItemType.find_or_create_by!(name: '酒', company: c)
 
 b1 = Brand.find_or_create_by!(company: c, name: '統一')
 b2 = Brand.find_or_create_by!(company: c, name: '統二')
 
-p1 = Product.find_or_create_by!(company: c, supplier: s1, product_type: pt1, brand: b1, name: 'iPhone 6s',      description: '好iPhone 6s，不買嗎？')
-p2 = Product.find_or_create_by!(company: c, supplier: s2, product_type: pt2, brand: b2, name: 'iPhone 6s plus', description: '好iPhone 6s plus，不買嗎？')
+i1 = Item.find_or_create_by!(company: c, supplier: s1, item_type: item1, brand: b1, name: 'iPhone 6s',      description: '好iPhone 6s，不買嗎？')
+i2 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item2, brand: b2, name: 'iPhone 6s plus', description: '好iPhone 6s plus，不買嗎？')
 
-v1 = p1.variants.create!(name: 'iPhone 6s 白',      buy_price: 12000, cost_per_unit: 12000, wholesale_price: 13000, retail_price: 15000, on_hand_count: 10)
-v2 = p2.variants.create!(name: 'iPhone 6s plus 白', buy_price: 15000, cost_per_unit: 15000, wholesale_price: 16000, retail_price: 18000, on_hand_count: 10)
+v1 = i1.variants.create!(name: 'iPhone 6s 白',      buy_price: 12000, cost_per_unit: 12000, wholesale_price: 13000, retail_price: 15000, on_hand_count: 10)
+v2 = i2.variants.create!(name: 'iPhone 6s plus 白', buy_price: 15000, cost_per_unit: 15000, wholesale_price: 16000, retail_price: 18000, on_hand_count: 10)
 
 
 w1 = WeightUnit.find_or_create_by!(company: c, name: '公克')

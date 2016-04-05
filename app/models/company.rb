@@ -28,11 +28,11 @@ class Company < ActiveRecord::Base
   has_many :companies
   has_many :suppliers
   has_many :customers
-  has_many :products
+  has_many :items
   has_many :brands
-  has_many :product_types, -> { where(company_id: id) }, class_name: 'ProductType'
+  has_many :item_types, -> { where(company_id: id) }, class_name: 'ItemType'
   has_many :locations, as: :locationable
-  has_many :purchase_orders  
+  has_many :purchase_orders
 
   validates :name, presence: true
 end

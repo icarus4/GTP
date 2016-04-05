@@ -1,22 +1,22 @@
 <div class="row">
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>產品名稱</dt><dd><%= @product.name %></dd>
-      <dt>產品類型</dt><dd><%= @product.product_type.name %></dd>
-      <dt>供應商</dt><dd><%= @product.supplier.name %></dd>
-      <dt>品牌</dt><dd><%= @product.brand.name %></dd>
+      <dt>貨品名稱</dt><dd><%= @item.name %></dd>
+      <dt>貨品類型</dt><dd><%= @item.item_type.name %></dd>
+      <dt>供應商</dt><dd><%= @item.supplier.name %></dd>
+      <dt>品牌</dt><dd><%= @item.brand.name %></dd>
     </dl>
   </div>
 
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@product.updated_at) %> ago</dd>
+      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@item.updated_at) %> ago</dd>
     </dl>
   </div>
 
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>其他資訊</dt><dd><%= @product.description %></dd>
+      <dt>其他資訊</dt><dd><%= @item.description %></dd>
     </dl>
   </div>
 </div>
@@ -36,7 +36,7 @@
       </tr>
     </thead>
     <tbody>
-    <% @product.variants.each do |variant| %>
+    <% @item.variants.each do |variant| %>
       <tr data-link="<%= edit_variant_path(variant) %>">
         <td><%= variant.sku %></td>
         <td><%= variant.name %></td>
@@ -53,5 +53,5 @@
 </div>
 
 <div class="row">
-  <%= button_to "新增其他款式", new_product_variant_path(@product), method: :get, class: 'btn btn-default center-block' %>
+  <%= button_to "新增其他款式", new_item_variant_path(@item), method: :get, class: 'btn btn-default center-block' %>
 </div>

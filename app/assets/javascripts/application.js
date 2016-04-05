@@ -14,5 +14,6 @@
 //= require jquery_ujs
 //= require bootstrap-sprockets
 //= require bootstrap-datepicker
-//= require products
+//= require cocoon
+//= require items
 //= require_tree .

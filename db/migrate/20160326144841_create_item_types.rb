@@ -1,6 +1,6 @@
-class CreateProductTypes < ActiveRecord::Migration
+class CreateItemTypes < ActiveRecord::Migration
   def change
-    create_table :product_types do |t|
+    create_table :item_types do |t|
       t.references :company, null: false
       t.string     :name,    null: false, limit: 255
 

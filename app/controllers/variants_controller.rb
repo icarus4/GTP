@@ -3,7 +3,7 @@
 # Table name: variants
 #
 #  id              :integer          not null, primary key
-#  product_id      :integer          not null
+#  item_id         :integer          not null
 #  sku             :string
 #  name            :string
 #  buy_price       :integer
@@ -21,15 +21,15 @@
 
 class VariantsController < ApplicationController
   def new
-    @product = Product.find(params[:product_id])
-    @variant = @product.variants.build
+    @item = Item.find(params[:item_id])
+    @variant = @item.variants.build
   end
 
   def create
-    @product = Product.find(params[:product_id])
-    @variant = @product.variants.build(variant_params)
+    @item = Item.find(params[:item_id])
+    @variant = @item.variants.build(variant_params)
     if @variant.save
-      redirect_to product_path(@product)
+      redirect_to item_path(@item)
     else
       render :new
     end
@@ -42,7 +42,7 @@ class VariantsController < ApplicationController
   def update
     @variant = Variant.find params[:id]
     if @variant.update(variant_params)
-      redirect_to product_path(@variant.product)
+      redirect_to item_path(@variant.item)
     else
       render :edit
     end

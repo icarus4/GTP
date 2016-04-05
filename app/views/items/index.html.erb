@@ -1,0 +1,32 @@
+<div class="row">
+  <%= link_to "新增貨品", new_item_path, class: 'btn btn-default btn-md' %>
+</div>
+
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>貨品名稱</th>
+        <th>供應商</th>
+        <th>貨品類型</th>
+        <th>品牌</th>
+        <th>庫存量</th>
+        <th>狀態</th>
+        <th>上次更新</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @items.each do |item| %>
+      <tr data-link="<%= item_path(item) %>">
+        <td><%= item.name %></td>
+        <td><%= item.supplier.name %></td>
+        <td><%= item.item_type.name %></td>
+        <td><%= item.brand.name %></td>
+        <td>0</td>
+        <td><%= item.status.humanize %></td>
+        <td><%= time_ago_in_words(item.updated_at) %> ago</td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

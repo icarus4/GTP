@@ -3,7 +3,7 @@
 # Table name: variants
 #
 #  id              :integer          not null, primary key
-#  product_id      :integer          not null
+#  item_id         :integer          not null
 #  sku             :string
 #  name            :string
 #  buy_price       :integer

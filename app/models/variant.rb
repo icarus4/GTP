@@ -3,7 +3,7 @@
 # Table name: variants
 #
 #  id              :integer          not null, primary key
-#  product_id      :integer          not null
+#  item_id         :integer          not null
 #  sku             :string
 #  name            :string
 #  buy_price       :integer
@@ -20,7 +20,7 @@
 #
 
 class Variant < ActiveRecord::Base
-  belongs_to :product
+  belongs_to :item
 
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :cost_per_unit, presence: true
