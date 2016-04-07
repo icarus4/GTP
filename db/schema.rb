@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160402144256) do
+ActiveRecord::Schema.define(version: 20160405093438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,6 +87,18 @@ ActiveRecord::Schema.define(version: 20160402144256) do
   end
 
   add_index "locations", ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
+
+  create_table "purchase_order_details", force: :cascade do |t|
+    t.integer  "purchase_order_id"
+    t.integer  "variant_id"
+    t.integer  "quantity"
+    t.integer  "cost_per_unit"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "purchase_order_details", ["purchase_order_id"], name: "index_purchase_order_details_on_purchase_order_id", using: :btree
+  add_index "purchase_order_details", ["variant_id"], name: "index_purchase_order_details_on_variant_id", using: :btree
 
   create_table "purchase_orders", force: :cascade do |t|
     t.integer  "company_id"

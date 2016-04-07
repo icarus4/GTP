@@ -21,6 +21,8 @@
 
 class Variant < ActiveRecord::Base
   belongs_to :item
+  has_many :purchase_order_details
+  has_many :purchase_orders, through: :purchase_order_details
 
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :cost_per_unit, presence: true

@@ -23,6 +23,8 @@ class PurchaseOrder < ActiveRecord::Base
   belongs_to :supplier
   belongs_to :bill_to, class_name: 'Location', foreign_key: :bill_to_location_id
   belongs_to :ship_to, class_name: 'Location', foreign_key: :ship_to_location_id
+  has_many :details, class_name: 'PurchaseOrderDetail'
+  has_many :variants, through: :details, source: :variant
 
   enum status: {
     draft: 0,
