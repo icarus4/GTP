@@ -26,6 +26,9 @@ class PurchaseOrder < ActiveRecord::Base
   has_many :details, class_name: 'PurchaseOrderDetail'
   has_many :variants, through: :details, source: :variant
 
+  accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :variants
+
   enum status: {
     draft: 0,
     active: 1,

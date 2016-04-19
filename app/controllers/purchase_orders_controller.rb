@@ -22,11 +22,11 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def show
-
+    @purchase_order = PurchaseOrder.find(params[:id])
   end
 
   def new
-    @purchase_order = current_company.purchase_orders.build
+    @purchase_order = PurchaseOrder.new(company: current_company)
   end
 
   def create
@@ -45,6 +45,9 @@ class PurchaseOrdersController < ApplicationController
 
 
     def purchase_order_params
-      params.require(:purchase_order).permit(:order_number, :supplier_id, :ship_to_location_id, :bill_to_location_id, :contact_email, :due_on)
+      params.require(:purchase_order).permit(
+        :order_number, :supplier_id, :ship_to_location_id, :bill_to_location_id, :contact_email, :due_on,
+        details_attributes: [:id, :_destroy, :variant_id, :quantity, :cost_per_unit, variant_attributes: [:id]]
+      )
     end
 end

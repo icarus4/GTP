@@ -15,5 +15,7 @@ class PurchaseOrderDetail < ActiveRecord::Base
   belongs_to :variant
   belongs_to :purchase_order
 
-  validates :purchase_order_id, :variant_id, :quantity, :cost_per_unit, presence: true
+  accepts_nested_attributes_for :variant, :reject_if => :all_blank
+
+  # validates :purchase_order_id, :variant_id, :quantity, :cost_per_unit, presence: true # This causes cocoon failed
 end
