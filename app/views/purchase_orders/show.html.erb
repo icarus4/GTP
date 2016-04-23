@@ -47,5 +47,8 @@
 </div>
 
 <div class="row">
-  <%#= button_to "新增其他款式", new_item_variant_path(@item), method: :get, class: 'btn btn-default center-block' %>
+  <ul>
+    <li>總數量：<%= @purchase_order.details.inject(0) { |sum, detail| sum + detail.quantity }.to_s(:delimited) %></li>
+    <li>總費用：<%= @purchase_order.total_amount.to_s(:currency, precision: 0) %></li>
+  </ul>
 </div>

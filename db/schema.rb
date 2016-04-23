@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 20160405093438) do
     t.integer  "bill_to_location_id"
     t.integer  "ship_to_location_id"
     t.integer  "status",                         default: 0, null: false
+    t.integer  "total_amount"
     t.date     "due_on"
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false

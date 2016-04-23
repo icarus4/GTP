@@ -8,6 +8,7 @@
 #  bill_to_location_id :integer
 #  ship_to_location_id :integer
 #  status              :integer          default(0), not null
+#  total_amount        :integer
 #  due_on              :date
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -34,6 +35,7 @@ class PurchaseOrdersController < ApplicationController
     status = params[:active].present? ? 'active' : 'draft'
     @purchase_order.status = status
     if @purchase_order.save
+      @purchase_order.update_total_amount
       redirect_to purchase_order_path(@purchase_order)
     else
       render :new

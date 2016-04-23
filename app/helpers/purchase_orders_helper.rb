@@ -8,6 +8,7 @@
 #  bill_to_location_id :integer
 #  ship_to_location_id :integer
 #  status              :integer          default(0), not null
+#  total_amount        :integer
 #  due_on              :date
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null

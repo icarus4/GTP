@@ -8,6 +8,7 @@
 #  bill_to_location_id :integer
 #  ship_to_location_id :integer
 #  status              :integer          default(0), not null
+#  total_amount        :integer
 #  due_on              :date
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -43,6 +44,12 @@ class PurchaseOrder < ActiveRecord::Base
             :due_on, presence: true
 
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
+
+
+  def update_total_amount
+    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
+    self.save
+  end
 
 
   private

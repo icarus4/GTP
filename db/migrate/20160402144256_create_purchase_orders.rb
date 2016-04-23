@@ -6,6 +6,7 @@ class CreatePurchaseOrders < ActiveRecord::Migration
       t.references :bill_to_location
       t.references :ship_to_location
       t.integer    :status, null: false, default: 0
+      t.integer    :total_amount
       t.date       :due_on
       t.timestamps null: false
       t.string     :order_number,  limit: 64
