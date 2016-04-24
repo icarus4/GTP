@@ -36,4 +36,5 @@ cities = %w(台北市 新北市 基隆市 桃園市 新竹市 新竹縣 苗栗�
 cities.each { |city| City.find_or_create_by!(name: city) }
 
 l1 = c.locations.create!(city: City.first, address: '中山北路一段', name: '辦公室', holds_stock: false)
-l2 = c.locations.create!(city: City.first, address: '中山北路二段', name: '倉庫', holds_stock: true)
+l2 = c.locations.create!(city: City.first, address: '中山北路二段', name: '倉庫1', holds_stock: true)
+l3 = c.locations.create!(city: City.first, address: '中山北路三段', name: '倉庫2', holds_stock: true)

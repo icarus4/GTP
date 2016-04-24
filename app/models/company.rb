@@ -29,10 +29,12 @@ class Company < ActiveRecord::Base
   has_many :suppliers
   has_many :customers
   has_many :items
+  has_many :variants, through: :items
   has_many :brands
   has_many :item_types, -> { where(company_id: id) }, class_name: 'ItemType'
   has_many :locations, as: :locationable
   has_many :purchase_orders
+  has_many :stock_transfers
 
   validates :name, presence: true
 end

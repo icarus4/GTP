@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   resources :purchase_orders, only: [:index, :new, :create, :show] do
   end
 
+  resources :stock_transfers, only: [:index, :new, :create, :show]
+
   scope :settings do
     resources :locations, only: [:index, :new, :create]
   end

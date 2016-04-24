@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160405093438) do
+ActiveRecord::Schema.define(version: 20160423113727) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,19 @@ ActiveRecord::Schema.define(version: 20160405093438) do
   add_index "items", ["company_id"], name: "index_items_on_company_id", using: :btree
   add_index "items", ["name"], name: "index_items_on_name", using: :btree
 
+  create_table "location_variants", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "location_id"
+    t.integer  "variant_id"
+    t.integer  "quantity"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "location_variants", ["company_id"], name: "index_location_variants_on_company_id", using: :btree
+  add_index "location_variants", ["location_id"], name: "index_location_variants_on_location_id", using: :btree
+  add_index "location_variants", ["variant_id"], name: "index_location_variants_on_variant_id", using: :btree
+
   create_table "locations", force: :cascade do |t|
     t.integer  "locationable_id"
     t.string   "locationable_type"
@@ -116,6 +129,31 @@ ActiveRecord::Schema.define(version: 20160405093438) do
   end
 
   add_index "purchase_orders", ["company_id", "supplier_id"], name: "index_purchase_orders_on_company_id_and_supplier_id", using: :btree
+
+  create_table "stock_transfer_details", force: :cascade do |t|
+    t.integer  "stock_transfer_id"
+    t.integer  "variant_id"
+    t.integer  "quantity"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "stock_transfer_details", ["stock_transfer_id"], name: "index_stock_transfer_details_on_stock_transfer_id", using: :btree
+
+  create_table "stock_transfers", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "source_location_id"
+    t.integer  "destination_location_id"
+    t.string   "status",                  limit: 32, null: false
+    t.string   "order_number",            limit: 64
+    t.date     "expected_transfer_date"
+    t.datetime "transferred_at"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  add_index "stock_transfers", ["company_id"], name: "index_stock_transfers_on_company_id", using: :btree
+  add_index "stock_transfers", ["status"], name: "index_stock_transfers_on_status", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
