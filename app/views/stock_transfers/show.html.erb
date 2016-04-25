@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>庫存貨品移動單單號</dt><dd><%= @stock_transfer.order_number %></dd>
+      <dt>移動起點</dt><dd><%= @stock_transfer.source_location.name %></dd>
+      <dt>移動終點</dt><dd><%= @stock_transfer.destination_location.name %></dd>
+    </dl>
+  </div>
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>預計送達日</dt><dd><%= @stock_transfer.expected_transfer_date %></dd>
+    </dl>
+  </div>
+</div>
+
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>名稱</th>
+        <th>移動數量</th>
+        <th>起點總數量</th>
+        <th>終點總數量</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @stock_transfer.details.each do |detail| %>
+      <tr>
+        <td><%= detail.variant.sku_name %></td>
+        <td><%= detail.quantity %></td>
+        <td>Not implemented yet</td>
+        <td>Not implemented yet</td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="row">
+  <ul>
+    <li>總數量：<%= @stock_transfer.details.inject(0) { |sum, detail| sum + detail.quantity }.to_s(:delimited) %></li>
+  </ul>
+</div>

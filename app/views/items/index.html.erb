@@ -11,6 +11,7 @@
         <th>貨品類型</th>
         <th>品牌</th>
         <th>庫存量</th>
+        <th>倉庫現有數量</th>
         <th>狀態</th>
         <th>上次更新</th>
       </tr>
@@ -22,7 +23,8 @@
         <td><%= item.supplier.name %></td>
         <td><%= item.item_type.name %></td>
         <td><%= item.brand.name %></td>
-        <td>0</td>
+        <td><%= item.variants.sum(:available_count) %></td> <!-- FIXME: should get value by cache column -->
+        <td><%= item.variants.sum(:on_hand_count) %></td> <!-- FIXME: should get value by cache column -->
         <td><%= item.status.humanize %></td>
         <td><%= time_ago_in_words(item.updated_at) %> ago</td>
       </tr>

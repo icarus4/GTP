@@ -1,12 +1,12 @@
 <div class="row">
-  <%= link_to "移動庫存", new_stock_transfer_path, class: 'btn btn-default btn-md' %>
+  <%= link_to "建立移動庫存貨品單", new_stock_transfer_path, class: 'btn btn-default btn-md' %>
 </div>
 
 <div class="row table-container">
   <table class="table table-hover tr-link">
     <thead>
       <tr>
-        <th>移動庫存單單號</th>
+        <th>單號</th>
         <th>移動起點</th>
         <th>移動終點</th>
         <th>狀態</th>
@@ -22,6 +22,7 @@
         <td><%= st.source_location.name %></td>
         <td><%= st.destination_location.name %></td>
         <td><%= st.status.humanize %></td>
+        <td><%= st.details.sum(:quantity) %></td>
         <td><%= st.updated_at %></td>
         <td><%= st.transferred_at %></td>
       </tr>

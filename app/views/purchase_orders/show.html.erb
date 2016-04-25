@@ -10,7 +10,7 @@
 
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>預計送達時間</dt><dd><%= @purchase_order.due_on %> ago</dd>
+      <dt>預計送達日</dt><dd><%= @purchase_order.due_on %></dd>
     </dl>
   </div>
 
@@ -26,7 +26,7 @@
     <thead>
       <tr>
         <th>名稱</th>
-        <th>數量</th>
+        <th>訂購數量</th>
         <th>到貨後總數量</th>
         <th>進貨單價</th>
         <th>總價</th>
@@ -35,11 +35,11 @@
     <tbody>
     <% @purchase_order.details.each do |detail| %>
       <tr>
-        <td><%= "#{detail.variant.sku} #{detail.variant.name}".strip %></td>
+        <td><%= detail.variant.sku_name %></td>
         <td><%= detail.quantity %></td>
-        <td>Not implemented yet</td>
+        <td><%= detail.quantity_after_receiving %></td>
         <td><%= detail.cost_per_unit %></td>
-        <td>Not implemented yet</td>
+        <td><%= detail.amount %></td>
       </tr>
     <% end %>
     </tbody>

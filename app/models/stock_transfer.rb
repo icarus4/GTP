@@ -18,8 +18,8 @@ class StockTransfer < ActiveRecord::Base
   after_initialize :setup_defaults
 
   belongs_to :company
-  belongs_to :source_location
-  belongs_to :destination_location
+  belongs_to :source_location,      class_name: 'Location'
+  belongs_to :destination_location, class_name: 'Location'
 
   has_many :details, class_name: 'StockTransferDetail'
   has_many :variants, through: :details, source: :variant
@@ -40,7 +40,7 @@ class StockTransfer < ActiveRecord::Base
     received
   )
 
-  
+
   private
 
 

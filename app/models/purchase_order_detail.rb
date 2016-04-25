@@ -18,4 +18,13 @@ class PurchaseOrderDetail < ActiveRecord::Base
   accepts_nested_attributes_for :variant, :reject_if => :all_blank
 
   # validates :purchase_order_id, :variant_id, :quantity, :cost_per_unit, presence: true # This causes cocoon failed
+
+  def amount
+    quantity * cost_per_unit
+  end
+
+  def quantity_after_receiving
+    # FIXME: refine me!
+    variant.location_variants.sum(:quantity) + quantity
+  end
 end

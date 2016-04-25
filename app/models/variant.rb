@@ -23,7 +23,34 @@ class Variant < ActiveRecord::Base
   belongs_to :item
   has_many :purchase_order_details
   has_many :purchase_orders, through: :purchase_order_details
+  has_many :location_variants
+
+  delegate :company, to: :item
 
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :cost_per_unit, presence: true
+
+  def sku_name
+    "#{sku} #{name}"
+  end
+
+  def update_location_variant_cache!
+    self.on_hand_count = location_variants.sum(:quantity)
+    self.available_count = on_hand_count + quantity_in_active_orders
+    save!
+  end
+
+  private
+
+    def quantity_in_active_orders
+      quantity_in_active_purchase_orders - quantity_in_active_sales_orders
+    end
+
+    def quantity_in_active_purchase_orders
+      PurchaseOrderDetail.joins(:purchase_order).where(variant_id: id, purchase_orders: { company_id: company.id, status: 1 }).sum(:quantity)
+    end
+
+    def quantity_in_active_sales_orders
+      0 #FIXME: NIY
+    end
 end

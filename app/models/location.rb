@@ -22,6 +22,7 @@ class Location < ActiveRecord::Base
   validates :address, presence: true
   validates :name,    presence: true
 
+  scope :holds_stock, -> { where(holds_stock: true) }
 
   def holds_stock?
     holds_stock

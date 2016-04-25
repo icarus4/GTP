@@ -32,6 +32,10 @@ class StockTransfersController < ApplicationController
     end
   end
 
+  def show
+    @stock_transfer = StockTransfer.find_by(company: current_company, id: params[:id])
+  end
+
 
   private
 

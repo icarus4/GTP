@@ -22,8 +22,11 @@ class Item < ActiveRecord::Base
   belongs_to :brand
   has_many   :variants, dependent: :destroy
 
-  accepts_nested_attributes_for :variants
   validates_associated :variants
+
+  accepts_nested_attributes_for :variants
+
+  attr_accessor :initial_location_id
 
   enum status: {
     active: 0,

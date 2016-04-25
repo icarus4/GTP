@@ -11,6 +11,7 @@
     <!-- TODO: 現有庫存每單位成本或現有庫存若有缺少，需有錯誤訊息，待補 -->
     <%= ff.input :cost_per_unit,   label: '現有庫存每單位成本', as: :integer, input_html: { min: 0, placeholder: 0 } %>
     <%= ff.input :on_hand_count,   label: '現有庫存數量',      as: :integer, input_html: { min: 0, placeholder: 0 } %>
+    <%= f.input :initial_location_id, label: '現有庫存地點', collection: current_company.locations.holds_stock, required: true %>
     <%= ff.input :buy_price,       label: '進貨價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
     <%= ff.input :wholesale_price, label: '批發價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
     <%= ff.input :retail_price,    label: '零售價', as: :integer, input_html: { min: 0, placeholder: 0 } %>

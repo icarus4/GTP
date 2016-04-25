@@ -27,8 +27,20 @@ class ItemsController < ApplicationController
 
   def create
     @item = current_company.items.build(item_params)
+
+    if @item.initial_location_id.blank?
+      @item.errors.add(:initial_location_id, '請設定現有庫存地點')
+      render :new and return
+    end
+
     # TODO: check supplier_id, item_type_id, brand_id
     if @item.save
+      LocationVariant.create!(
+        company: current_company,
+        variant: @item.variants.first,
+        location_id: @item.initial_location_id,
+        quantity: @item.variants.first.on_hand_count
+      )
       redirect_to item_path(@item)
     else
       render :new
@@ -52,6 +64,7 @@ class ItemsController < ApplicationController
           :item_type_id,
           :brand_id,
           :description,
+          :initial_location_id,
           variants_attributes: [:sku, :name, :cost_per_unit, :on_hand_count, :buy_price, :wholesale_price, :retail_price]
         )
     end
