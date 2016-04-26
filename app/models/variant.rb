@@ -34,8 +34,18 @@ class Variant < ActiveRecord::Base
     "#{sku} #{name}"
   end
 
-  def update_location_variant_cache!
+  def update_cache_columns!
     self.on_hand_count = location_variants.sum(:quantity)
+    self.available_count = on_hand_count + quantity_in_active_orders
+    save!
+  end
+
+  def update_on_hand_count!
+    self.on_hand_count = location_variants.sum(:quantity)
+    save!
+  end
+
+  def update_available_count!
     self.available_count = on_hand_count + quantity_in_active_orders
     save!
   end

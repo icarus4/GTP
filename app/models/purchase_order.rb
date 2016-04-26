@@ -19,6 +19,7 @@
 
 class PurchaseOrder < ActiveRecord::Base
   after_initialize :setup_defaults
+  after_save :update_variant_available_count
 
   belongs_to :company
   belongs_to :supplier
@@ -30,6 +31,7 @@ class PurchaseOrder < ActiveRecord::Base
   accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
   accepts_nested_attributes_for :variants
 
+  #FIXME: when change this enum to string, remember to change Variant#quantity_in_active_purchase_orders
   enum status: {
     draft: 0,
     active: 1,
@@ -45,15 +47,16 @@ class PurchaseOrder < ActiveRecord::Base
 
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
 
-
   def update_total_amount
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
-    self.save
+    save
   end
 
+  def update_variant_available_count
+    variants.each(&:update_available_count!)
+  end
 
   private
-
 
     def setup_defaults
       self.order_number ||= (self.class.where(company_id: company_id).maximum(:order_number).try(:next) || 'PO0001') if company_id

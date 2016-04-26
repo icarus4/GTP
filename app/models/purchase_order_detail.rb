@@ -24,7 +24,6 @@ class PurchaseOrderDetail < ActiveRecord::Base
   end
 
   def quantity_after_receiving
-    # FIXME: refine me!
-    variant.location_variants.sum(:quantity) + quantity
+    variant.on_hand_count + quantity
   end
 end

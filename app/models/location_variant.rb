@@ -23,6 +23,6 @@ class LocationVariant < ActiveRecord::Base
   private
 
     def update_variant_cache_data!
-      variant.update_location_variant_cache!
+      variant.update_cache_columns!
     end
 end
