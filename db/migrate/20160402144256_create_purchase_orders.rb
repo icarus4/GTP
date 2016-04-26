@@ -5,7 +5,7 @@ class CreatePurchaseOrders < ActiveRecord::Migration
       t.references :supplier
       t.references :bill_to_location
       t.references :ship_to_location
-      t.integer    :status, null: false, default: 0
+      t.string     :status
       t.integer    :total_amount
       t.date       :due_on
       t.timestamps null: false
@@ -15,5 +15,6 @@ class CreatePurchaseOrders < ActiveRecord::Migration
     end
 
     add_index :purchase_orders, [:company_id, :supplier_id]
+    add_index :purchase_orders, :status
   end
 end

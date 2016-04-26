@@ -7,7 +7,7 @@
 #  supplier_id         :integer
 #  bill_to_location_id :integer
 #  ship_to_location_id :integer
-#  status              :integer          default(0), not null
+#  status              :string
 #  total_amount        :integer
 #  due_on              :date
 #  created_at          :datetime         not null

@@ -57,7 +57,7 @@ class Variant < ActiveRecord::Base
     end
 
     def quantity_in_active_purchase_orders
-      PurchaseOrderDetail.joins(:purchase_order).where(variant_id: id, purchase_orders: { company_id: company.id, status: 1 }).sum(:quantity)
+      PurchaseOrderDetail.joins(:purchase_order).where(variant_id: id, purchase_orders: { company_id: company.id, status: 'active' }).sum(:quantity)
     end
 
     def quantity_in_active_sales_orders

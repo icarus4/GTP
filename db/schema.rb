@@ -118,17 +118,18 @@ ActiveRecord::Schema.define(version: 20160423113727) do
     t.integer  "supplier_id"
     t.integer  "bill_to_location_id"
     t.integer  "ship_to_location_id"
-    t.integer  "status",                         default: 0, null: false
+    t.string   "status"
     t.integer  "total_amount"
     t.date     "due_on"
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.string   "order_number",        limit: 64
     t.string   "contact_email",       limit: 64
     t.text     "notes"
   end
 
   add_index "purchase_orders", ["company_id", "supplier_id"], name: "index_purchase_orders_on_company_id_and_supplier_id", using: :btree
+  add_index "purchase_orders", ["status"], name: "index_purchase_orders_on_status", using: :btree
 
   create_table "stock_transfer_details", force: :cascade do |t|
     t.integer  "stock_transfer_id"
