@@ -23,16 +23,20 @@
 </div>
 
 <div class="row">
+<% if @purchase_order.draft? %>
   <%= link_to "批准進貨單", approve_purchase_order_path(@purchase_order), class: 'btn btn-success', method: :put %>
+<% elsif @purchase_order.active? %>
+  <%= link_to "確認已收貨", receive_purchase_order_path(@purchase_order), class: 'btn btn-success', method: :put %>
+<% end %>
 </div>
 
 <div class="row table-container">
-  <table class="table table-hover tr-link">
+  <table class="table">
     <thead>
       <tr>
         <th>名稱</th>
         <th>訂購數量</th>
-        <th>到貨後總數量</th>
+        <%= "<th>到貨後總數量</th>".html_safe unless @purchase_order.received? %>
         <th>進貨單價</th>
         <th>總價</th>
       </tr>
@@ -42,7 +46,7 @@
       <tr>
         <td><%= detail.variant.sku_name %></td>
         <td><%= detail.quantity %></td>
-        <td><%= detail.quantity_after_receiving %></td>
+        <%= "<td>#{detail.quantity_after_receiving}</td>".html_safe unless @purchase_order.received? %>
         <td><%= detail.cost_per_unit %></td>
         <td><%= detail.amount %></td>
       </tr>

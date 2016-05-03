@@ -63,6 +63,23 @@ class PurchaseOrder < ActiveRecord::Base
     status == 'draft'
   end
 
+  def received?
+    status == 'received'
+  end
+
+  def receive!
+    raise "Only active order can receive." unless active?
+    ActiveRecord::Base.transaction do
+      details.each do |detail|
+        lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_to_location_id, variant_id: detail.variant_id)
+        lv.quantity += detail.quantity
+        lv.save!
+      end
+      self.status = 'received'
+      save!
+    end
+  end
+
 
   private
 
