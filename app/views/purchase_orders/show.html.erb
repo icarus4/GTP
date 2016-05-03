@@ -2,6 +2,7 @@
   <div class="col-md-4">
     <dl class="dl-horizontal">
       <dt>訂單編號</dt><dd><%= @purchase_order.order_number %></dd>
+      <dt>狀態</dt><dd><%= render_status(@purchase_order.status) %></dd>
       <dt>供應商</dt><dd><%= @purchase_order.supplier.name %></dd>
       <dt>送貨地點</dt><dd><%= @purchase_order.ship_to.name %></dd>
       <dt>發票寄送地點</dt><dd><%= @purchase_order.bill_to.name %></dd>

@@ -19,7 +19,7 @@
 
 class PurchaseOrder < ActiveRecord::Base
   after_initialize :setup_defaults
-  after_save :update_variant_available_count
+  after_save :update_variant_available_count, :update_total_amount
 
   belongs_to :company
   belongs_to :supplier
@@ -42,7 +42,6 @@ class PurchaseOrder < ActiveRecord::Base
 
   def update_total_amount
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
-    save
   end
 
   def update_variant_available_count
@@ -53,10 +52,16 @@ class PurchaseOrder < ActiveRecord::Base
     status == 'active'
   end
 
-  def active!
+  def approve!
+    raise "Only draft order can be approved." unless draft?
     self.status = 'active'
     save!
   end
+
+  def draft?
+    status == 'draft'
+  end
+
 
   private
 
