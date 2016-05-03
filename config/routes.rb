@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   end
 
   resources :purchase_orders, only: [:index, :new, :create, :show] do
+    put :approve, on: :member
   end
 
   resources :stock_transfers, only: [:index, :new, :create, :show]

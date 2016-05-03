@@ -35,10 +35,20 @@ class PurchaseOrdersController < ApplicationController
     status = params[:active].present? ? 'active' : 'draft'
     @purchase_order.status = status
     if @purchase_order.save
-      @purchase_order.update_total_amount
+      # @purchase_order.update_total_amount
       redirect_to purchase_order_path(@purchase_order)
     else
       render :new
+    end
+  end
+
+  def approve
+    @purchase_order = PurchaseOrder.find_by(id: params[:id], company: current_company)
+    if @purchase_order
+      @purchase_order.approve!
+      redirect_to purchase_order_path(@purchase_order)
+    else
+      redirect_to purchase_orders_path
     end
   end
 
