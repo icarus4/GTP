@@ -9,24 +9,33 @@
 </head>
 <body>
 
-  <%= render 'common/navi' %>
+  <!-- Wrapper-->
+  <div id="wrapper">
 
-  <div class="container master-container">
+    <!-- Navigation -->
+    <%= render 'layouts/navigation' %>
+    <%#= render 'common/navi' %>
 
-    <% if notice %>
+    <!-- Page wraper -->
+    <div id="page-wrapper" class="gray-bg">
+
+      <!-- Page wrapper -->
+      <%= render 'layouts/topnavbar' %>
+
+      <% if notice %>
       <div class="alert alert-success fade in" data-alert="alert">
         <a class="close" data-dismiss='alert' href="#">×</a>
         <p><%= notice %></p>
       </div>
-    <% end %>
+      <% end %>
 
-    <div class="container content-container">
       <%= yield %>
+
     </div>
+    <!-- End page wraper -->
 
   </div>
+  <!-- End wrapper-->
 
-  <%= render 'common/footer' %>
-  <%#= console if Rails.env.development? %>
 </body>
 </html>
