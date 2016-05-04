@@ -64,3 +64,4 @@ gem 'rails_12factor' # for Heroku
 gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.0.1'
 gem 'cocoon', '1.2.9'
+gem 'font-awesome-rails', '4.5.0.0'
