@@ -16,7 +16,7 @@ gem 'uglifier', '2.7.2'
 # gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
-gem 'jquery-rails', '4.1.1'
+# gem 'jquery-rails', '4.1.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '2.4.1'
 # bundle exec rake doc:rails generates the API under doc/api.
@@ -64,3 +64,4 @@ gem 'rails_12factor' # for Heroku
 gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.0.1'
 gem 'cocoon', '1.2.9'
+gem 'font-awesome-rails', '4.5.0.0'

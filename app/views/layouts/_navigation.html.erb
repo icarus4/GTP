@@ -1,0 +1,52 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                      <span class="clear">
+                          <span class="block m-t-xs">
+                              <strong class="font-bold">GTP test user</strong>
+                          </span> <span class="text-muted text-xs block"><%= current_user.email if user_signed_in? %><b class="caret"></b></span>
+                      </span>
+                    </a>
+                  <% if user_signed_in? %>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li><%= link_to "登出", destroy_user_session_path, method: :delete %></li>
+                    </ul>
+                  <% end %>
+                </div>
+                <div class="logo-element">
+                    IN+
+                </div>
+            </li>
+
+            <li class="<%= is_active_controller('items') %>">
+                <%= link_to items_path do %>
+                <i class="fa fa-gift"></i> <span class="nav-label">貨品管理</span>
+                <% end %>
+            </li>
+
+            <li class="<%= is_active_controller('companies') %>">
+                <%= link_to companies_path do %>
+                <i class="fa fa-users"></i> <span class="nav-label">客戶管理</span>
+                <% end %>
+            </li>
+
+            <li class="<%= is_active_controller('purchase_orders') || is_active_controller('stock_transfers') %>">
+                <a href=""><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">庫存管理</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse <%= is_active_controller('purchase_orders') || is_active_controller('stock_transfers') %>">
+                    <li class="<%= is_active_controller('purchase_orders') %>"><%= link_to "進貨", purchase_orders_path %></li>
+                    <li class="<%= is_active_controller('purchase_orders') %>"><%= link_to "移動庫存貨品", stock_transfers_path %></li>
+                </ul>
+            </li>
+
+            <li class="<%= is_active_controller('locations') %>">
+                <a href=""><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">其他設定</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse <%= is_active_controller('locations') %>">
+                    <li class="<%= is_active_controller('locations') %>"><%= link_to "據點設定", locations_path %></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
