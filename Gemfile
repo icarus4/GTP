@@ -16,7 +16,7 @@ gem 'uglifier', '2.7.2'
 # gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
-# gem 'jquery-rails', '4.1.1'
+gem 'jquery-rails', '4.1.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '2.4.1'
 # bundle exec rake doc:rails generates the API under doc/api.
