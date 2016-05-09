@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160423113727) do
+ActiveRecord::Schema.define(version: 20160503135756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,6 +130,27 @@ ActiveRecord::Schema.define(version: 20160423113727) do
 
   add_index "purchase_orders", ["company_id", "supplier_id"], name: "index_purchase_orders_on_company_id_and_supplier_id", using: :btree
   add_index "purchase_orders", ["status"], name: "index_purchase_orders_on_status", using: :btree
+
+  create_table "sales_orders", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "customer_id"
+    t.integer  "bill_to_location_id"
+    t.integer  "ship_to_location_id"
+    t.integer  "ship_from_location_id"
+    t.integer  "assignee_id"
+    t.string   "status"
+    t.integer  "total_amount"
+    t.date     "issued_on"
+    t.date     "shipped_on"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "order_number",          limit: 64
+    t.string   "contact_email",         limit: 64
+    t.text     "notes"
+  end
+
+  add_index "sales_orders", ["company_id", "customer_id"], name: "index_sales_orders_on_company_id_and_customer_id", using: :btree
+  add_index "sales_orders", ["status"], name: "index_sales_orders_on_status", using: :btree
 
   create_table "stock_transfer_details", force: :cascade do |t|
     t.integer  "stock_transfer_id"
