@@ -40,6 +40,7 @@ class PurchaseOrder < ActiveRecord::Base
             :due_on, presence: true
 
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
+  validates :status, inclusion: { in: %w(draft active received) }
 
   def update_total_amount
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
