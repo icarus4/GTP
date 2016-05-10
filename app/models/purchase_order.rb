@@ -81,7 +81,6 @@ class PurchaseOrder < ActiveRecord::Base
     end
   end
 
-
   private
 
     def setup_defaults

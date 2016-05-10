@@ -21,6 +21,8 @@
 #
 
 class SalesOrder < ActiveRecord::Base
+  after_initialize :setup_defaults
+
   belongs_to :company
   belongs_to :customer
   belongs_to :bill_to, class_name: 'Location', foreign_key: :bill_to_location_id
@@ -40,5 +42,12 @@ class SalesOrder < ActiveRecord::Base
             :ship_from_location_id,
             :shipped_on, presence: true
 
-  validates :status, inclusion: { in: %w(draft active received) }
+  validates :status, inclusion: { in: %w(draft active finalized) }
+
+  private
+
+    def setup_defaults
+      self.order_number ||= (self.class.where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001') if company_id
+      self.status ||= 'active'
+    end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160503135756) do
+ActiveRecord::Schema.define(version: 20160509150340) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,6 +130,18 @@ ActiveRecord::Schema.define(version: 20160503135756) do
 
   add_index "purchase_orders", ["company_id", "supplier_id"], name: "index_purchase_orders_on_company_id_and_supplier_id", using: :btree
   add_index "purchase_orders", ["status"], name: "index_purchase_orders_on_status", using: :btree
+
+  create_table "sales_order_details", force: :cascade do |t|
+    t.integer  "sales_order_id"
+    t.integer  "variant_id"
+    t.integer  "quantity"
+    t.integer  "cost_per_unit"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "sales_order_details", ["sales_order_id"], name: "index_sales_order_details_on_sales_order_id", using: :btree
+  add_index "sales_order_details", ["variant_id"], name: "index_sales_order_details_on_variant_id", using: :btree
 
   create_table "sales_orders", force: :cascade do |t|
     t.integer  "company_id"
