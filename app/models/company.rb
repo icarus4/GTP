@@ -35,6 +35,7 @@ class Company < ActiveRecord::Base
   has_many :locations, as: :locationable
   has_many :purchase_orders
   has_many :stock_transfers
+  has_many :sales_orders
 
   validates :name, presence: true
 end

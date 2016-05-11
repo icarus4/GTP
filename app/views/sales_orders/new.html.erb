@@ -1,0 +1,45 @@
+<%= simple_form_for @sales_order, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
+  <%= f.input :order_number, label: '出貨單號' %>
+  <%= f.association :customer, label: '客戶' %>
+  <%= f.association :ship_to, label: '寄貨至', collection: Location.where(locationable_id: current_company.customers.ids) %>
+  <%= f.association :bill_to, label: '寄發票至', collection: Location.where(locationable_id: current_company.customers.ids) %>
+  <%= f.association :ship_from, label: '出貨倉庫', collection: Location.where(locationable_id: current_company.id, holds_stock: true) %>
+  <%= f.input :contact_email, label: '聯絡 email' %>
+
+  <div class="form-group string required purchase_order_due_on <%= 'has-error' if @sales_order.errors.messages[:shipped_on].present? %>">
+    <label class="optional col-sm-2 control-label required" for="purchase_order_due_on">
+      <abbr title="required">*</abbr> 出貨日
+    </label>
+    <div class="col-sm-2">
+      <%= f.input_field :shipped_on,
+        as: :string,
+        class: 'form-control string date required datepicker',
+        value: (Time.zone.today + 14.days).to_s
+      %>
+      <%= content_tag(:span, '請填寫寄貨日', class: 'help-block') if @sales_order.errors.messages[:shipped_on].present? %>
+    </div>
+  </div>
+
+  <hr />
+
+  <div id="details">
+    <%= f.simple_fields_for :details do |detail| %>
+      <%= render 'detail_fields', :f => detail %>
+    <% end %>
+    <div class="col-sm-offset-2">
+      <%= link_to_add_association '加入貨品於此訂單', f, :details, class: 'btn btn-default btn-sm' %>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-4">
+      <%= f.button :submit, "建立出貨單", class: 'btn-success', name: 'active' %>
+      或
+      <%= f.button :submit, "存為草稿", class: 'btn btn-default', name: 'draft' %>
+    </div>
+  </div>
+<% end %>
+
+<%= render 'common/init_datepicker' %>

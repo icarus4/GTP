@@ -53,14 +53,14 @@ class Variant < ActiveRecord::Base
   private
 
     def quantity_in_active_orders
-      quantity_in_active_purchase_orders - quantity_in_active_sales_orders
+      quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
     end
 
     def quantity_in_active_purchase_orders
       PurchaseOrderDetail.joins(:purchase_order).where(variant_id: id, purchase_orders: { company_id: company.id, status: 'active' }).sum(:quantity)
     end
 
-    def quantity_in_active_sales_orders
-      0 #FIXME: NIY
+    def quantity_in_unshipped_sales_orders
+      SalesOrderDetail.joins(:sales_order).where(variant_id: id, sales_orders: { company_id: company.id }).where("sales_orders.status IN ('active', 'finalized')").sum(:quantity)
     end
 end

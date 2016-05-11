@@ -22,6 +22,8 @@
 
 class SalesOrder < ActiveRecord::Base
   after_initialize :setup_defaults
+  before_save :update_total_amount
+  after_save :update_variant_available_count
 
   belongs_to :company
   belongs_to :customer
@@ -36,13 +38,37 @@ class SalesOrder < ActiveRecord::Base
 
   validates :status,
             :company_id,
-            :supplier_id,
+            :customer_id,
             :bill_to_location_id,
             :ship_to_location_id,
             :ship_from_location_id,
             :shipped_on, presence: true
 
-  validates :status, inclusion: { in: %w(draft active finalized) }
+  validates :status, inclusion: { in: %w(draft active finalized fulfilled) }
+
+  def draft?
+    status == 'draft'
+  end
+
+  def active?
+    status == 'active'
+  end
+
+  def finalized?
+    status == 'finalized'
+  end
+
+  def fulfilled?
+    status == 'fulfilled'
+  end
+
+  def update_total_amount
+    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
+  end
+
+  def update_variant_available_count
+    variants.each(&:update_available_count!)
+  end
 
   private
 

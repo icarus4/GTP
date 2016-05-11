@@ -1,7 +1,7 @@
 <%= simple_form_for @stock_transfer, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
   <%= f.input :order_number, label: '庫存貨品移動單單號' %>
-  <%= f.association :source_location, label: '移動起點', collection: Location.where(locationable_type: 'Company', locationable_id: current_company.id, holds_stock: true) %>
-  <%= f.association :destination_location, label: '移動終點', collection: Location.where(locationable_type: 'Company', locationable_id: current_company.id, holds_stock: true) %>
+  <%= f.association :source_location, label: '移動起點', collection: Location.where(locationable_id: current_company.id, holds_stock: true) %>
+  <%= f.association :destination_location, label: '移動終點', collection: Location.where(locationable_id: current_company.id, holds_stock: true) %>
 
   <div class="form-group string required purchase_order_due_on <%= 'has-error' if @stock_transfer.errors.messages[:due_on].present? %>">
     <label class="optional col-sm-2 control-label required" for="purchase_order_due_on">
@@ -37,11 +37,4 @@
   </div>
 <% end %>
 
-<script type="text/javascript">
-  $(document).ready(function(){
-    $('.datepicker').datepicker({
-      format: 'yyyy-mm-dd',
-      autoclose: true
-    });
-  });
-</script>
+<%= render 'common/init_datepicker' %>

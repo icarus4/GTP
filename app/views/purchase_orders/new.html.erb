@@ -1,8 +1,8 @@
 <%= simple_form_for @purchase_order, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
   <%= f.input :order_number, label: '進貨單號' %>
   <%= f.association :supplier, label: '供應商' %>
-  <%= f.association :ship_to, label: '收貨地點', collection: Location.where(locationable_type: 'Company', locationable_id: current_company.id, holds_stock: true) %>
-  <%= f.association :bill_to, label: '收發票地點', collection: Location.where(locationable_type: 'Company', locationable_id: current_company.id) %>
+  <%= f.association :ship_to, label: '收貨地點', collection: Location.where(locationable_id: current_company.id, holds_stock: true) %>
+  <%= f.association :bill_to, label: '收發票地點', collection: Location.where(locationable_id: current_company.id) %>
   <%= f.input :contact_email, label: '聯絡 email' %>
 
   <div class="form-group string required purchase_order_due_on <%= 'has-error' if @purchase_order.errors.messages[:due_on].present? %>">
@@ -41,11 +41,4 @@
   </div>
 <% end %>
 
-<script type="text/javascript">
-  $(document).ready(function(){
-    $('.datepicker').datepicker({
-      format: 'yyyy-mm-dd',
-      autoclose: true
-    });
-  });
-</script>
+<%= render 'common_init_datepicker' %>

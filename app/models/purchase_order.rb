@@ -19,8 +19,8 @@
 
 class PurchaseOrder < ActiveRecord::Base
   after_initialize :setup_defaults
-  after_save :update_variant_available_count
   before_save :update_total_amount
+  after_save :update_variant_available_count
 
   belongs_to :company
   belongs_to :supplier

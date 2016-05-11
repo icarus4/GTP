@@ -27,6 +27,12 @@
                 <% end %>
             </li>
 
+            <li class="<%= is_active_controller('sales_orders') %>">
+                <%= link_to sales_orders_path do %>
+                <i class="fa fa-tags"></i> <span class="nav-label">出貨單管理</span>
+                <% end %>
+            </li>
+
             <li class="<%= is_active_controller('companies') %>">
                 <%= link_to companies_path do %>
                 <i class="fa fa-users"></i> <span class="nav-label">客戶管理</span>

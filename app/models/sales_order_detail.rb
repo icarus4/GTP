@@ -13,7 +13,7 @@
 
 class SalesOrderDetail < ActiveRecord::Base
   belongs_to :variant
-  belongs_to :purchase_order
+  belongs_to :sales_order
 
   accepts_nested_attributes_for :variant, :reject_if => :all_blank
 
@@ -21,7 +21,7 @@ class SalesOrderDetail < ActiveRecord::Base
     quantity * cost_per_unit
   end
 
-  def quantity_after_receiving
+  def quantity_after_shipping
     variant.on_hand_count - quantity
   end
 end
