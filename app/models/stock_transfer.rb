@@ -35,10 +35,7 @@ class StockTransfer < ActiveRecord::Base
             :order_number, presence: true
 
 
-  AVAILABLE_STATUS = %w(
-    active
-    received
-  )
+  validates :status, inclusion: { in: %w(active received) }
 
 
   private

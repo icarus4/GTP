@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     put :receive, on: :member
   end
 
+  resources :sales_orders, only: [:index, :new, :create, :show]
+
   resources :stock_transfers, only: [:index, :new, :create, :show]
 
   scope :settings do

@@ -19,8 +19,8 @@
 
 class PurchaseOrder < ActiveRecord::Base
   after_initialize :setup_defaults
-  after_save :update_variant_available_count
   before_save :update_total_amount
+  after_save :update_variant_available_count
 
   belongs_to :company
   belongs_to :supplier
@@ -40,6 +40,7 @@ class PurchaseOrder < ActiveRecord::Base
             :due_on, presence: true
 
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
+  validates :status, inclusion: { in: %w(draft active received) }
 
   def update_total_amount
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
@@ -79,7 +80,6 @@ class PurchaseOrder < ActiveRecord::Base
       save!
     end
   end
-
 
   private
 

@@ -1,0 +1,34 @@
+<div class="row">
+  <%= link_to "建立出貨單", new_sales_order_path, class: 'btn btn-default btn-md' %>
+</div>
+
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>單號</th>
+        <th>客戶</th>
+        <th>寄貨至</th>
+        <th>寄發票至</th>
+        <th>出貨倉庫</th>
+        <th>訂購數量</th>
+        <th>出貨日期</th>
+        <th>訂單狀態</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @sales_orders.each do |order| %>
+      <tr data-link="<%= sales_order_path(order) %>">
+        <td><%= order.order_number %></td>
+        <td><%= order.customer.name %></td>
+        <td><%= order.ship_to.name %></td>
+        <td><%= order.bill_to.name %></td>
+        <td><%= order.ship_from.name %></td>
+        <td><%= order.details.sum(:quantity) %></td>
+        <td><%= order.shipped_on %></td>
+        <td><%= order.status.humanize %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

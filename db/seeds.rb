@@ -21,6 +21,10 @@ s2 = Supplier.find_or_create_by!(company: c, name: '我的供應商-2', status: 
 c1 = Customer.find_or_create_by!(company: c, name: '我的顧客-1', status: 'active', email: 'service@customer1.com')
 c2 = Customer.find_or_create_by!(company: c, name: '我的顧客-2', status: 'active', email: 'service@customer2.com')
 
+c1.locations.create!(city: City.first, address: '羅斯福路一段', name: '辦公室')
+c1.locations.create!(city: City.first, address: '羅斯福路二段', name: '店面-1')
+c1.locations.create!(city: City.first, address: '羅斯福路三段', name: '店面-2')
+
 item1 = ItemType.find_or_create_by!(name: '安全帽', company: c)
 item2 = ItemType.find_or_create_by!(name: '紅茶', company: c)
 item3 = ItemType.find_or_create_by!(name: '酒', company: c)
