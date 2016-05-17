@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(version: 20160509150340) do
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
+    t.string   "password_digest",        default: "", null: false
     t.integer  "company_id"
     t.string   "name",                   default: "", null: false
     t.string   "phone_number"
@@ -206,10 +206,6 @@ ActiveRecord::Schema.define(version: 20160509150340) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.string   "unconfirmed_email"
-    t.integer  "failed_attempts",        default: 0,  null: false
-    t.string   "unlock_token"
-    t.datetime "locked_at"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
   end
@@ -219,7 +215,6 @@ ActiveRecord::Schema.define(version: 20160509150340) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["name"], name: "index_users_on_name", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
-  add_index "users", ["unlock_token"], name: "index_users_on_unlock_token", unique: true, using: :btree
 
   create_table "variants", force: :cascade do |t|
     t.integer  "item_id",                                             null: false

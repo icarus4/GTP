@@ -56,7 +56,6 @@ end
 
 gem 'lograge', '0.3.6'
 gem 'bcrypt', '3.1.11'
-gem 'devise', '3.5.6'
 gem 'bootstrap-sass', '3.3.6'
 gem 'simple_form', '3.2.1'
 gem 'pg', '0.18.4'
