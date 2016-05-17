@@ -23,6 +23,8 @@ class Variant < ActiveRecord::Base
   belongs_to :item
   has_many :purchase_order_details
   has_many :purchase_orders, through: :purchase_order_details
+  has_many :sales_order_details
+  has_many :sales_orders, through: :sales_order_details
   has_many :location_variants
 
   delegate :company, to: :item
@@ -57,10 +59,12 @@ class Variant < ActiveRecord::Base
     end
 
     def quantity_in_active_purchase_orders
-      PurchaseOrderDetail.joins(:purchase_order).where(variant_id: id, purchase_orders: { company_id: company.id, status: 'active' }).sum(:quantity)
+      raise "Valid statuses of PurchaseOrder changed, please check the following calculation is correct or not"if PurchaseOrder::VALID_STATUSES != %w(draft active received)
+      purchase_order_details.joins(:purchase_order).where(purchase_orders: { company_id: company.id, status: 'active' }).sum(:quantity)
     end
 
     def quantity_in_unshipped_sales_orders
-      SalesOrderDetail.joins(:sales_order).where(variant_id: id, sales_orders: { company_id: company.id }).where("sales_orders.status IN ('active', 'finalized')").sum(:quantity)
+      raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
+      sales_order_details.joins(:sales_order).where(sales_orders: { company_id: company.id }).where("sales_orders.status IN ('active', 'finalized')").sum(:quantity)
     end
 end
