@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resources :sessions, only: [:new, :create]
     delete 'logout', to: 'sessions#destroy'
     get 'sign_up', to: 'registrations#new'
+    resources :registrations, only: [:create]
   end
 
   # Company

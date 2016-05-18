@@ -5,25 +5,23 @@
             <h1 class="logo-name">GTP</h1>
 
         </div>
-        <h3>Welcome to GTP</h3>
-        <p>
-            Perfectly designed and precisely prepared ERP for food industry.
-        </p>
+        <h3>登入您的帳號</h3>
+        <p>Perfectly designed and precisely prepared ERP for food industry.</p>
         <p>Login in. To see it in action.</p>
 
-        <%= form_tag users_sessions_path, method: :create, class: "m-t", role: "form" do %>
+        <%= form_tag users_sessions_path, method: :post, class: "m-t", role: "form" do %>
             <div class="form-group">
                 <%= text_field_tag :email, nil, class: "form-control", placeholder: 'Email' %>
             </div>
             <div class="form-group">
-                <%= text_field_tag :password, nil, class: "form-control", placeholder: 'Password' %>
+                <%= text_field_tag :password, nil, class: "form-control", placeholder: '密碼' %>
             </div>
-            <%= submit_tag "Login", class: "btn btn-primary block full-width m-b" %>
-
-            <a href="#"><small>Forgot password?</small></a>
-            <p class="text-muted text-center"><small>Do not have an account?</small></p>
-            <a class="btn btn-sm btn-white btn-block" href="<%#= url_for :controller => 'pages', :action => 'register' %>">Create an account</a>
+            <%= submit_tag "登入", class: "btn btn-primary block full-width m-b" %>
         <% end %>
+
+        <a href="#"><small>忘記密碼?</small></a>
+        <p class="text-muted text-center"><small>還沒有註冊過帳號？</small></p>
+        <%= link_to "免費註冊", users_sign_up_path, class: "btn btn-sm btn-white btn-block" %>
 
         <p class="m-t"> <small>Inspinia we app framework base on Bootstrap 3 &copy; 2015</small> </p>
     </div>

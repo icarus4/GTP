@@ -20,7 +20,8 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticate_user!
-    if !user_signed_in? && params[:controller] != 'users/sessions'
+    allow_non_signed_in_controllers = %w(users/sessions users/registrations)
+    if !user_signed_in? && !params[:controller].in?(allow_non_signed_in_controllers)
       redirect_to new_users_session_path
     end
   end
