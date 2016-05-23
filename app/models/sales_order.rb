@@ -44,7 +44,8 @@ class SalesOrder < ActiveRecord::Base
             :ship_from_location_id,
             :shipped_on, presence: true
 
-  validates :status, inclusion: { in: %w(draft active finalized fulfilled) }
+  VALID_STATUSES = %w(draft active finalized fulfilled)
+  validates :status, inclusion: { in: VALID_STATUSES }
 
   def draft?
     status == 'draft'

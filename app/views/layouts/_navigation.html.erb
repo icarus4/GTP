@@ -12,7 +12,7 @@
                     </a>
                   <% if user_signed_in? %>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><%= link_to "登出", destroy_user_session_path, method: :delete %></li>
+                        <li><%= link_to "登出", users_logout_path, method: :delete %></li>
                     </ul>
                   <% end %>
                 </div>
