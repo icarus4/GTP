@@ -59,7 +59,7 @@ class Variant < ActiveRecord::Base
     end
 
     def quantity_in_active_purchase_orders
-      raise "Valid statuses of PurchaseOrder changed, please check the following calculation is correct or not"if PurchaseOrder::VALID_STATUSES != %w(draft active received)
+      raise "Valid statuses of PurchaseOrder changed, please check the following calculation is correct or not" if PurchaseOrder::VALID_STATUSES != %w(draft active received)
       purchase_order_details.joins(:purchase_order).where(purchase_orders: { company_id: company.id, status: 'active' }).sum(:quantity)
     end
 
