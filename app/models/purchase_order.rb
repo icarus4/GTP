@@ -20,17 +20,17 @@
 class PurchaseOrder < ActiveRecord::Base
   after_initialize :setup_defaults
   before_save :update_total_amount
-  after_save :update_variant_available_count
+  after_save :update_item_available_count
 
   belongs_to :company
   belongs_to :supplier
   belongs_to :bill_to, class_name: 'Location', foreign_key: :bill_to_location_id
   belongs_to :ship_to, class_name: 'Location', foreign_key: :ship_to_location_id
   has_many :details, class_name: 'PurchaseOrderDetail'
-  has_many :variants, through: :details, source: :variant
+  has_many :items, through: :details, source: :item
 
   accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
-  accepts_nested_attributes_for :variants
+  accepts_nested_attributes_for :items
 
   validates :status,
             :company_id,
@@ -48,8 +48,8 @@ class PurchaseOrder < ActiveRecord::Base
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
   end
 
-  def update_variant_available_count
-    variants.each(&:update_available_count!)
+  def update_item_available_count
+    items.each(&:update_available_count!)
   end
 
   def active?
@@ -57,9 +57,10 @@ class PurchaseOrder < ActiveRecord::Base
   end
 
   def approve!
-    raise "Only draft order can be approved." unless draft?
-    self.status = 'active'
-    save!
+    # raise "Only draft order can be approved." unless draft?
+    # self.status = 'active'
+    # save!
+    raise NotImplementedError
   end
 
   def draft?
@@ -72,11 +73,20 @@ class PurchaseOrder < ActiveRecord::Base
 
   def receive!
     raise "Only active order can receive." unless active?
+
     ActiveRecord::Base.transaction do
       details.each do |detail|
-        lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_to_location_id, variant_id: detail.variant_id)
-        lv.quantity += detail.quantity
-        lv.save!
+        variant = Variant.find_or_initialize_by(item_id: detail.item_id, expiry_date: detail.expiry_date)
+        variant.with_lock do
+          variant.quantity += detail.quantity
+          variant.save!
+        end
+
+        lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_to_location_id, variant_id: variant.id)
+        lv.with_lock do
+          lv.quantity += detail.quantity
+          lv.save!
+        end
       end
       self.status = 'received'
       save!

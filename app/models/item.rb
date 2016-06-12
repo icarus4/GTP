@@ -2,32 +2,39 @@
 #
 # Table name: items
 #
-#  id           :integer          not null, primary key
-#  company_id   :integer
-#  supplier_id  :integer
-#  item_type_id :integer
-#  brand_id     :integer
-#  status       :integer          default(0), not null
-#  name         :string(255)      default(""), not null
-#  unit         :string
-#  description  :text
-#  deleted_at   :datetime
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id              :integer          not null, primary key
+#  company_id      :integer
+#  supplier_id     :integer
+#  item_type_id    :integer
+#  brand_id        :integer
+#  unit            :string
+#  status          :integer          default(0), not null
+#  available_count :integer          default(0), not null
+#  on_hand_count   :integer          default(0), not null
+#  sku             :string
+#  name            :string(255)      default(""), not null
+#  description     :text
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 
 class Item < ActiveRecord::Base
+  attr_accessor :initial_location_id
+
   belongs_to :company
   belongs_to :supplier
   belongs_to :item_type, class_name: 'ItemType'
   belongs_to :brand
-  has_many   :variants, dependent: :destroy
+
+  has_many  :variants, -> { order(:expiry_date) }, dependent: :destroy
+  has_many :purchase_order_details
+  has_many :purchase_orders, through: :purchase_order_details
+  has_many :sales_order_details
+  has_many :sales_orders, through: :sales_order_details
 
   validates_associated :variants
 
   accepts_nested_attributes_for :variants
-
-  attr_accessor :initial_location_id
 
   enum status: {
     active: 0,
@@ -39,4 +46,38 @@ class Item < ActiveRecord::Base
   validates :supplier_id,  presence: true
   validates :item_type_id, presence: true
   validates :brand_id,     presence: true
+  validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
+
+  def sku_name
+    "#{sku} #{name}"
+  end
+
+  def update_available_count!
+    update!(available_count: on_hand_count + quantity_in_active_orders)
+  end
+
+  def update_on_hand_count!
+    update!(on_hand_count: variants.sum(:quantity))
+  end
+
+  private
+
+
+    def quantity_in_active_orders
+      quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
+    end
+
+    def quantity_in_active_purchase_orders
+      raise "Valid statuses of PurchaseOrder changed, please check the following calculation is correct or not" if PurchaseOrder::VALID_STATUSES != %w(draft active received)
+      purchase_order_details.joins(:purchase_order).where(purchase_orders: { company_id: company_id, status: 'active' }, item_id: id).sum(:quantity)
+    end
+
+    def quantity_in_unshipped_sales_orders
+      # raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
+      # sales_order_details.joins(:sales_order).where(sales_orders: { company_id: company.id }).where("sales_orders.status IN ('active', 'finalized')").sum(:quantity)
+
+      # FIXME: implement later
+      0
+    end
 end
