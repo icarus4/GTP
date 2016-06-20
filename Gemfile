@@ -58,6 +58,7 @@ end
 
 group :test do
   gem 'factory_girl_rails', '4.7.0'
+  gem 'ffaker', '2.2.0'
 end
 
 gem 'lograge', '0.3.6'
