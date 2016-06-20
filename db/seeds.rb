@@ -40,7 +40,3 @@ v2 = i2.variants.create!(name: 'iPhone 6s plus 白', buy_price: 15000, cost_per_
 
 LocationVariant.find_or_create_by!(company: c, variant: v1, location: l1, quantity: 10)
 LocationVariant.find_or_create_by!(company: c, variant: v2, location: l1, quantity: 20)
-
-w1 = WeightUnit.find_or_create_by!(company: c, name: '公克')
-w2 = WeightUnit.find_or_create_by!(company: c, name: '公斤')
-w3 = WeightUnit.find_or_create_by!(company: c, name: '台斤')
