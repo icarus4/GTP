@@ -7,7 +7,7 @@
 #  supplier_id     :integer
 #  item_type_id    :integer
 #  brand_id        :integer
-#  weight_unit     :string
+#  unit            :string
 #  status          :integer          default(0), not null
 #  available_count :integer          default(0), not null
 #  on_hand_count   :integer          default(0), not null
@@ -62,13 +62,13 @@ class ItemsController < ApplicationController
     def item_params
       params.require(:item)
         .permit(
-          :name,
-          :supplier_id,
-          :item_type_id,
-          :brand_id,
-          :description,
-          :initial_location_id,
+        :name,
+        :supplier_id,
+        :item_type_id,
+        :brand_id,
+        :description,
+        :initial_location_id,
           variants_attributes: [:sku, :name, :cost_per_unit, :on_hand_count, :buy_price, :wholesale_price, :retail_price]
-        )
+      )
     end
 end

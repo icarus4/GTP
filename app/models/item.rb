@@ -7,7 +7,7 @@
 #  supplier_id     :integer
 #  item_type_id    :integer
 #  brand_id        :integer
-#  weight_unit     :string
+#  unit            :string
 #  status          :integer          default(0), not null
 #  available_count :integer          default(0), not null
 #  on_hand_count   :integer          default(0), not null

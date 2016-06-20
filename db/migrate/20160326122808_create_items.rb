@@ -5,9 +5,10 @@ class CreateItems < ActiveRecord::Migration
       t.references :supplier
       t.references :item_type
       t.references :brand
-      t.integer  :status,           default: 0,  null: false
-      t.string   :name,             default: '', null: false, limit: 255
-      t.text     :description
+      t.string     :unit
+      t.integer    :status,           default: 0,  null: false
+      t.string     :name,             default: '', null: false, limit: 255
+      t.text       :description
       t.datetime :deleted_at
 
       t.timestamps null: false

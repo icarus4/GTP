@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 20160509150340) do
     t.integer  "brand_id"
     t.integer  "status",                   default: 0,  null: false
     t.string   "name",         limit: 255, default: "", null: false
+    t.string   "unit"
     t.text     "description"
     t.datetime "deleted_at"
     t.datetime "created_at",                            null: false
