@@ -47,6 +47,7 @@ group :development do
   gem 'binding_of_caller', '0.7.2'
   gem 'xray-rails', '0.1.18'
   gem 'annotate', '2.7.0'
+  gem 'guard-rspec', '4.7.2', require: false
 end
 
 group :development, :production do
