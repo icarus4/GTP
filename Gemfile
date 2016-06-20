@@ -56,6 +56,10 @@ group :development, :production do
   gem 'awesome_print', '1.6.1'
 end
 
+group :test do
+  gem 'factory_girl_rails', '4.7.0'
+end
+
 gem 'lograge', '0.3.6'
 gem 'bcrypt', '3.1.11'
 gem 'bootstrap-sass', '3.3.6'
