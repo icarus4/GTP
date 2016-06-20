@@ -53,7 +53,6 @@ end
 group :development, :production do
   gem 'hirb', '0.7.3'
   gem 'hirb-unicode', '0.0.5'
-  gem 'awesome_print', '1.6.1'
 end
 
 group :test do
@@ -71,3 +70,4 @@ gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.0.1'
 gem 'cocoon', '1.2.9'
 gem 'font-awesome-rails', '4.5.0.0'
+gem 'awesome_print', '1.6.1'
