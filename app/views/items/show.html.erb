@@ -5,6 +5,7 @@
       <dt>貨品類型</dt><dd><%= @item.item_type.name %></dd>
       <dt>供應商</dt><dd><%= @item.supplier.name %></dd>
       <dt>品牌</dt><dd><%= @item.brand.name %></dd>
+      <dt>單位</dt><dd><%= @item.unit %></dd>
     </dl>
   </div>
 
@@ -25,33 +26,19 @@
   <table class="table table-hover tr-link">
     <thead>
       <tr>
-        <th>SKU</th>
-        <th>名稱</th>
-        <th>批發價</th>
-        <th>零售價</th>
-        <th>進貨價</th>
-        <th>平均成本</th>
-        <th>庫存數量</th>
-        <th>倉庫現有數量</th>
+        <th>製造日期</th>
+        <th>保存期限</th>
+        <th>數量<%= " (#{@item.unit})" if @item.unit %></th>
       </tr>
     </thead>
     <tbody>
     <% @item.variants.each do |variant| %>
-      <tr data-link="<%= edit_variant_path(variant) %>">
-        <td><%= variant.sku %></td>
-        <td><%= variant.name %></td>
-        <td><%= variant.wholesale_price %></td>
-        <td><%= variant.retail_price %></td>
-        <td><%= variant.buy_price %></td>
-        <td>NIY</td>
-        <td><%= variant.available_count %></td>
-        <td><%= variant.on_hand_count %></td>
+      <tr>
+        <td><%= variant.manufacturing_date %></td>
+        <td><%= variant.expiry_date %></td>
+        <td><%= variant.quantity %></td>
       </tr>
     <% end %>
     </tbody>
   </table>
-</div>
-
-<div class="row">
-  <%= button_to "新增其他款式", new_item_variant_path(@item), method: :get, class: 'btn btn-default center-block' %>
 </div>

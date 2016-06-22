@@ -2,20 +2,22 @@
 #
 # Table name: purchase_order_details
 #
-#  id                :integer          not null, primary key
-#  purchase_order_id :integer
-#  variant_id        :integer
-#  quantity          :integer
-#  cost_per_unit     :integer
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id                 :integer          not null, primary key
+#  purchase_order_id  :integer
+#  item_id            :integer
+#  quantity           :integer
+#  cost_per_unit      :integer
+#  manufacturing_date :date
+#  expiry_date        :date
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
 #
 
 class PurchaseOrderDetail < ActiveRecord::Base
-  belongs_to :variant
+  belongs_to :item
   belongs_to :purchase_order
 
-  accepts_nested_attributes_for :variant, :reject_if => :all_blank
+  # accepts_nested_attributes_for :variant, :reject_if => :all_blank
 
   # validates :purchase_order_id, :variant_id, :quantity, :cost_per_unit, presence: true # This causes cocoon failed
 
@@ -24,6 +26,6 @@ class PurchaseOrderDetail < ActiveRecord::Base
   end
 
   def quantity_after_receiving
-    variant.on_hand_count + quantity
+    item.on_hand_count + quantity
   end
 end

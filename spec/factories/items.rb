@@ -18,5 +18,15 @@
 #  updated_at      :datetime         not null
 #
 
-module ItemsHelper
+FactoryGirl.define do
+  factory :item do
+    association :company, factory: :company
+    supplier
+    item_type
+    brand
+    unit { ['包', '箱', '個'].sample }
+    available_count { 0 }
+    on_hand_count { 0 }
+    name { FFaker::Product.product }
+  end
 end

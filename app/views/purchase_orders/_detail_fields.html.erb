@@ -1,8 +1,15 @@
 <div class="nested-fields detail-fields">
   <div id="variant_from_list">
-    <%= f.association :variant, label: '貨品', collection: Variant.all, prompt: 'Choose one' %>
+    <%= f.association :item, label: '貨品', collection: current_company.items.active.all, prompt: 'Choose one' %>
     <%= f.input :quantity, label: '數量', as: :integer, input_html: { min: 1, value: 1 } %>
-    <%= f.input :cost_per_unit, label: '單價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
+    <%= f.input :cost_per_unit, label: '單價', as: :integer, input_html: { min: 0, placeholder: 100 } %>
+    <span>過期日</span>
+    <%= f.input_field :expiry_date,
+      label: '過期日',
+      as: :string,
+      class: 'form-control string date required datepicker',
+      value: (Time.zone.today + 1.month).to_s
+    %>
   </div>
   <%#= link_to_add_association 'or 新增貨品', f, :variant %>
   <div class="col-sm-offset-2">
@@ -10,5 +17,5 @@
   </div>
 
   <hr />
-  
+
 </div>

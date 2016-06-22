@@ -1,13 +1,8 @@
 <%= simple_form_for object, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
-<%= f.input :sku,             label: 'SKU', as: :string, placeholder: '例: ABC123' %>
-<%= f.input :name,            label: '名稱', as: :string, placeholder: '例: iPhone 6' %>
-<!-- TODO: 現有庫存每單位成本或現有庫存若有缺少，需有錯誤訊息，待補 -->
-<%= f.input :cost_per_unit,   label: '現有庫存每單位成本', as: :integer, input_html: { min: 0, placeholder: 0 } %>
-<%= f.input :on_hand_count,   label: '現有庫存數量',      as: :integer, input_html: { min: 0, placeholder: 0 } %>
-<%= f.input :buy_price,       label: '進貨價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
-<%= f.input :wholesale_price, label: '批發價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
-<%= f.input :retail_price,    label: '零售價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
-<%= f.input :description,     label: '其他資訊/筆記', input_html: { rows: '5' } %>
+<%= f.input :manufacturing_date, label: '製造日期' %>
+<%= f.input :expiry_date,        label: '保存期限' %>
+<%= f.input :quantity,           label: "數量 (單位：#{object.first.unit})" %>
+<%= f.association :locations,    label: '存放地點', collection: current_company.locations.holds_stock, as: :radio_buttons, required: true %>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-2">
       <%= f.button :submit %>

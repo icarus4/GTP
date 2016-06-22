@@ -56,12 +56,22 @@ class PurchaseOrdersController < ApplicationController
 
   def receive
     @purchase_order = PurchaseOrder.find_by(id: params[:id], company: current_company)
+
     if @purchase_order
-      @purchase_order.receive!
+      ActiveRecord::Base.transaction do
+        @purchase_order.details.each do |detail|
+          detail.update!(expiry_date: params[:detail][:expiry_date][detail.id.to_s])
+        end
+        @purchase_order.receive!
+      end
       redirect_to purchase_order_path(@purchase_order)
     else
       redirect_to purchase_orders_path
     end
+  end
+
+  def prepare_to_receive
+    @purchase_order = PurchaseOrder.find_by!(id: params[:id], company: current_company)
   end
 
 
@@ -71,7 +81,7 @@ class PurchaseOrdersController < ApplicationController
     def purchase_order_params
       params.require(:purchase_order).permit(
         :order_number, :supplier_id, :ship_to_location_id, :bill_to_location_id, :contact_email, :due_on,
-        details_attributes: [:id, :_destroy, :variant_id, :quantity, :cost_per_unit, variant_attributes: [:id]]
+        details_attributes: [:id, :_destroy, :item_id, :quantity, :cost_per_unit, :manufacturing_date, :expiry_date, item_attributes: [:id]]
       )
     end
 end
