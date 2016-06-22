@@ -60,7 +60,7 @@ class PurchaseOrdersController < ApplicationController
     if @purchase_order
       ActiveRecord::Base.transaction do
         @purchase_order.details.each do |detail|
-          detail.update!(expiry_date: params[:detail][:expiry_date][detail.id.to_s])
+          detail.update!(expiry_date: params.dig(:detail, :expiry_date, detail.id.to_s))
         end
         @purchase_order.receive!
       end
