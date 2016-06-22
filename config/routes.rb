@@ -23,7 +23,8 @@ Rails.application.routes.draw do
 
   resources :purchase_orders, only: [:index, :new, :create, :show] do
     put :approve, on: :member
-    put :receive, on: :member
+    get :prepare_to_receive, on: :member
+    post :receive, on: :member
   end
 
   resources :sales_orders, only: [:index, :new, :create, :show]

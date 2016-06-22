@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.3.0'
+ruby '2.3.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.6'
@@ -34,6 +34,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', '8.2.2'
+  gem 'rspec-rails', '3.4.2'
 end
 
 group :development do
@@ -46,12 +47,17 @@ group :development do
   gem 'binding_of_caller', '0.7.2'
   gem 'xray-rails', '0.1.18'
   gem 'annotate', '2.7.0'
+  gem 'guard-rspec', '4.7.2', require: false
 end
 
 group :development, :production do
   gem 'hirb', '0.7.3'
   gem 'hirb-unicode', '0.0.5'
-  gem 'awesome_print', '1.6.1'
+end
+
+group :test do
+  gem 'factory_girl_rails', '4.7.0'
+  gem 'ffaker', '2.2.0'
 end
 
 gem 'lograge', '0.3.6'
@@ -64,3 +70,4 @@ gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.0.1'
 gem 'cocoon', '1.2.9'
 gem 'font-awesome-rails', '4.5.0.0'
+gem 'awesome_print', '1.6.1'

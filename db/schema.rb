@@ -63,12 +63,15 @@ ActiveRecord::Schema.define(version: 20160509150340) do
     t.integer  "supplier_id"
     t.integer  "item_type_id"
     t.integer  "brand_id"
-    t.integer  "status",                   default: 0,  null: false
-    t.string   "name",         limit: 255, default: "", null: false
+    t.string   "unit"
+    t.integer  "status",                      default: 0,  null: false
+    t.integer  "available_count",             default: 0,  null: false
+    t.integer  "on_hand_count",               default: 0,  null: false
+    t.string   "sku"
+    t.string   "name",            limit: 255, default: "", null: false
     t.text     "description"
-    t.datetime "deleted_at"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
   end
 
   add_index "items", ["company_id"], name: "index_items_on_company_id", using: :btree
@@ -103,15 +106,17 @@ ActiveRecord::Schema.define(version: 20160509150340) do
 
   create_table "purchase_order_details", force: :cascade do |t|
     t.integer  "purchase_order_id"
-    t.integer  "variant_id"
+    t.integer  "item_id"
     t.integer  "quantity"
     t.integer  "cost_per_unit"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.date     "manufacturing_date"
+    t.date     "expiry_date"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
   end
 
+  add_index "purchase_order_details", ["item_id"], name: "index_purchase_order_details_on_item_id", using: :btree
   add_index "purchase_order_details", ["purchase_order_id"], name: "index_purchase_order_details_on_purchase_order_id", using: :btree
-  add_index "purchase_order_details", ["variant_id"], name: "index_purchase_order_details_on_variant_id", using: :btree
 
   create_table "purchase_orders", force: :cascade do |t|
     t.integer  "company_id"
@@ -217,33 +222,14 @@ ActiveRecord::Schema.define(version: 20160509150340) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "variants", force: :cascade do |t|
-    t.integer  "item_id",                                             null: false
-    t.string   "sku"
-    t.string   "name"
-    t.integer  "buy_price"
-    t.integer  "cost_per_unit"
-    t.integer  "retail_price"
-    t.integer  "wholesale_price"
-    t.integer  "available_count",                         default: 0, null: false
-    t.integer  "on_hand_count",                           default: 0, null: false
-    t.decimal  "weight_value",    precision: 8, scale: 2
-    t.integer  "weight_unit_id"
-    t.text     "description"
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.integer  "item_id",                        null: false
+    t.integer  "quantity",           default: 0, null: false
+    t.date     "manufacturing_date"
+    t.date     "expiry_date"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
   end
 
   add_index "variants", ["item_id"], name: "index_variants_on_item_id", using: :btree
-  add_index "variants", ["name"], name: "index_variants_on_name", using: :btree
-  add_index "variants", ["sku"], name: "index_variants_on_sku", using: :btree
-
-  create_table "weight_units", force: :cascade do |t|
-    t.integer  "company_id",            null: false
-    t.string   "name",       limit: 32, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "weight_units", ["company_id", "name"], name: "index_weight_units_on_company_id_and_name", unique: true, using: :btree
 
 end

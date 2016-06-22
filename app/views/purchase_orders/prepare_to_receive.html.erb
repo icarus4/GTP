@@ -1,0 +1,13 @@
+<form action="/purchase_orders/<%= @purchase_order.id %>/receive", method='post'>
+  <% @purchase_order.details.each do |detail| %>
+    <br>
+    <span><%= detail.item.name %></span><br>
+    保存期限
+    <input type="date" name="detail[expiry_date][<%= detail.id %>]", value="<%= detail.expiry_date.to_s || 7.days.from_now.to_date.to_s %>">
+    <br>
+  <% end %>
+
+  <br>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <input type="submit", value='確認收貨'>
+</form>

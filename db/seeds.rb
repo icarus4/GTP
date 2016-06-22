@@ -34,13 +34,3 @@ b2 = Brand.find_or_create_by!(company: c, name: '統二')
 
 i1 = Item.find_or_create_by!(company: c, supplier: s1, item_type: item1, brand: b1, name: 'iPhone 6s',      description: '好iPhone 6s，不買嗎？')
 i2 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item2, brand: b2, name: 'iPhone 6s plus', description: '好iPhone 6s plus，不買嗎？')
-
-v1 = i1.variants.create!(name: 'iPhone 6s 白',      buy_price: 12000, cost_per_unit: 12000, wholesale_price: 13000, retail_price: 15000)
-v2 = i2.variants.create!(name: 'iPhone 6s plus 白', buy_price: 15000, cost_per_unit: 15000, wholesale_price: 16000, retail_price: 18000)
-
-LocationVariant.find_or_create_by!(company: c, variant: v1, location: l1, quantity: 10)
-LocationVariant.find_or_create_by!(company: c, variant: v2, location: l1, quantity: 20)
-
-w1 = WeightUnit.find_or_create_by!(company: c, name: '公克')
-w2 = WeightUnit.find_or_create_by!(company: c, name: '公斤')
-w3 = WeightUnit.find_or_create_by!(company: c, name: '台斤')

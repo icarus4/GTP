@@ -2,21 +2,13 @@
 #
 # Table name: variants
 #
-#  id              :integer          not null, primary key
-#  item_id         :integer          not null
-#  sku             :string
-#  name            :string
-#  buy_price       :integer
-#  cost_per_unit   :integer
-#  retail_price    :integer
-#  wholesale_price :integer
-#  available_count :integer          default(0), not null
-#  on_hand_count   :integer          default(0), not null
-#  weight_value    :decimal(8, 2)
-#  weight_unit_id  :integer
-#  description     :text
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
+#  id                 :integer          not null, primary key
+#  item_id            :integer          not null
+#  quantity           :integer          default(0), not null
+#  manufacturing_date :date
+#  expiry_date        :date
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
 #
 
 class VariantsController < ApplicationController
@@ -56,6 +48,6 @@ class VariantsController < ApplicationController
 
 
     def variant_params
-      params.require(:variant).permit(:sku, :name, :weight_value, :weight_unit_id, :wholesale_price, :cost_per_unit, :retail_price, :buy_price, :description)
+      params.require(:variant).permit(:manufacturing_date, :expiry_date, :quantity)
     end
 end

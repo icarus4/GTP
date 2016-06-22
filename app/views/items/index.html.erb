@@ -23,8 +23,8 @@
         <td><%= item.supplier.name %></td>
         <td><%= item.item_type.name %></td>
         <td><%= item.brand.name %></td>
-        <td><%= item.variants.sum(:available_count) %></td> <!-- FIXME: should get value by cache column -->
-        <td><%= item.variants.sum(:on_hand_count) %></td> <!-- FIXME: should get value by cache column -->
+        <td><%= item.available_count %></td>
+        <td><%= item.on_hand_count %></td>
         <td><%= item.status.humanize %></td>
         <td><%= time_ago_in_words(item.updated_at) %> ago</td>
       </tr>
