@@ -23,7 +23,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def show
-    @purchase_order = PurchaseOrder.find_by(id: params[:id], company: current_company)
+    @purchase_order = PurchaseOrder.includes(details: :item).find_by(id: params[:id], company: current_company)
     if @purchase_order.nil?
       redirect_to purchase_orders_path
     end

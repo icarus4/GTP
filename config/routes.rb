@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :suppliers, only: [:index, :new, :create]
   resources :customers, only: [:index, :new, :create]
   resources :items do
+    post :upload_image, on: :member
     resources :variants, shallow: true
   end
 

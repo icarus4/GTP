@@ -6,6 +6,7 @@
   <table class="table table-hover tr-link">
     <thead>
       <tr>
+        <th>圖片</th>
         <th>貨品名稱</th>
         <th>供應商</th>
         <th>貨品類型</th>
@@ -19,6 +20,7 @@
     <tbody>
     <% @items.each do |item| %>
       <tr data-link="<%= item_path(item) %>">
+        <td><%= image_tag(item.image.thumb, size: '32x32') if item.image.present? %></td>
         <td><%= item.name %></td>
         <td><%= item.supplier.name %></td>
         <td><%= item.item_type.name %></td>

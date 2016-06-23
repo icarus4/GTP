@@ -42,9 +42,18 @@ class ItemsController < ApplicationController
     redirect_to items_path unless @item
   end
 
+  def upload_image
+    item = Item.find_by!(id: params[:id], company: current_company)
+    item.image = params[:item][:image]
+    if item.save
+      redirect_to item_path(item)
+    else
+      flash['alert'] = '上傳失敗'
+      redirect_to item_path(item)
+    end
+  end
 
   private
-
 
     def item_params
       params.require(:item).permit(
