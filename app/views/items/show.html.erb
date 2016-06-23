@@ -1,4 +1,12 @@
 <div class="row">
+  <div class="col-md-1">
+    <%= image_tag @item.image.small.url, size: '80x80' if @item.image.present? %>
+    <%= form_for @item, url: upload_image_item_path(@item), method: :post do |f| %>
+      <%= f.file_field :image %>
+      <%= f.submit '上傳', disabled_with: '上傳中...' %>
+    <% end %>
+    <% if alert %><span><%= alert %><%= ": #{@item.errors.full_messages}" if @item.errors.full_messages.present? %></span><% end %>
+  </div>
   <div class="col-md-4">
     <dl class="dl-horizontal">
       <dt>貨品名稱</dt><dd><%= @item.name %></dd>
@@ -15,7 +23,7 @@
     </dl>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
     <dl class="dl-horizontal">
       <dt>其他資訊</dt><dd><%= @item.description %></dd>
     </dl>

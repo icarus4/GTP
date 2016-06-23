@@ -16,10 +16,12 @@
 #  description     :text
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  image           :string
 #
 
 class Item < ActiveRecord::Base
   attr_accessor :initial_location_id
+  mount_uploader :image, ImageUploader
 
   belongs_to :company
   belongs_to :supplier

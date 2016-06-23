@@ -34,6 +34,7 @@
   <table class="table">
     <thead>
       <tr>
+        <th>圖片</th>
         <th>名稱</th>
         <th>訂購數量</th>
         <%= "<th>到貨後總數量</th>".html_safe unless @purchase_order.received? %>
@@ -44,6 +45,7 @@
     <tbody>
     <% @purchase_order.details.each do |detail| %>
       <tr>
+        <td><%= image_tag(detail.item.image.thumb, size: '32x32') if detail.item.image.present? %></td>
         <td><%= detail.item.sku_name %></td>
         <td><%= detail.quantity %></td>
         <%= "<td>#{detail.quantity_after_receiving}</td>".html_safe unless @purchase_order.received? %>
