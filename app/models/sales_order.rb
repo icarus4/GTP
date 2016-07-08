@@ -71,10 +71,14 @@ class SalesOrder < ActiveRecord::Base
     variants.each(&:update_available_count!)
   end
 
+  def self.next_number(company_id)
+    where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001'
+  end
+
   private
 
     def setup_defaults
-      self.order_number ||= (self.class.where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001') if company_id
+      self.order_number ||= self.class.next_number(company_id)
       self.status ||= 'active'
     end
 end

@@ -35,6 +35,20 @@ Rails.application.routes.draw do
   scope :settings do
     resources :locations, only: [:index, :new, :create]
   end
+
+  namespace :api do
+    namespace :v1 do
+      resources :sales_orders, only: [] do
+        get :next_number, on: :collection
+      end
+      resources :customers, only: [:index] do
+        get :locations, on: :member
+      end
+      resources :locations, only: [:index]
+      resources :items, only: [:index]
+    end
+  end
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

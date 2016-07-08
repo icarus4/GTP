@@ -75,3 +75,4 @@ gem 'carrierwave', github: 'carrierwaveuploader/carrierwave', branch: 'b31f7ce00
 gem 'mini_magick', '4.5.1'
 gem 'fog-aws', '0.9.3'
 gem 'dotenv-rails', '2.1.1'
+gem 'react-rails', '1.7.2'
