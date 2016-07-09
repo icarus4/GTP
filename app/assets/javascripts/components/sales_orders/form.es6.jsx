@@ -4,6 +4,7 @@ var OrderNumberField = React.createClass({
   },
   handleOrderNumberChange: function(e) {
     this.setState({order_number: e.target.value});
+    this.props.onOrderNumberChange(e.target.value);
   },
   loadOrderNumberFromServer: function() {
     $.ajax({
@@ -173,7 +174,13 @@ var DynamicItemFieldList = React.createClass({
       return (
         <div key={"item-field-" + itemField.id}>
           <ItemField key={itemField.id} items={items} label="選擇貨品" />
-          <button key={"remove-button-" + itemField.id} type="button" class="btn btn-default" onClick={handleClickRemoveButton.bind(null, itemField.id)}>x</button>
+          <button
+            key={"remove-button-" + itemField.id}
+            type="button"
+            className="btn btn-default btn-xs"
+            onClick={handleClickRemoveButton.bind(null, itemField.id)}>
+            x
+          </button>
         </div>
       );
     });
@@ -190,7 +197,7 @@ var DynamicItemFieldList = React.createClass({
 var SalesOrderForm = React.createClass({
   getInitialState: function() {
     return {
-      order_number: '',
+      orderNumber: '',
       locations: [],
       shipFromLocations: [],
       customer: {},
@@ -200,8 +207,8 @@ var SalesOrderForm = React.createClass({
   },
   handleSubmit: function(e) {
     e.preventDefault();
-    var order_number = this.state.order_number;
-    if (!order_number) {
+    var orderNumber = this.state.orderNumber;
+    if (!orderNumber) {
       return;
     }
   },
@@ -223,8 +230,8 @@ var SalesOrderForm = React.createClass({
       }.bind(this)
     });
   },
-  handleLocationChange: function(location) {
-
+  handleOrderNumberChange: function(orderNumber) {
+    this.setState({orderNumber: orderNumber})
   },
   loadShipFromLocationsFromServer: function() {
     $.ajax({
@@ -248,27 +255,45 @@ var SalesOrderForm = React.createClass({
       <form className="salesOrderForm" onSubmit={this.handleSubmit}>
         <div>
           <label>出貨單單號</label>
-          <OrderNumberField nextValidOrderNumberUrl="/api/v1/sales_orders/next_number" />
+          <OrderNumberField
+            nextValidOrderNumberUrl="/api/v1/sales_orders/next_number"
+            onOrderNumberChange={this.handleOrderNumberChange}
+          />
         </div>
         <br />
         <div>
           <label>收貨客戶</label>
-          <CustomersSelectField customersUrl='/api/v1/customers' onCustomerChange={this.handleCustomerChange} />
+          <CustomersSelectField
+            customersUrl='/api/v1/customers'
+            onCustomerChange={this.handleCustomerChange}
+          />
         </div>
         <br />
         <div>
           <label>寄貨地點</label>
-          <LocationsSelectField disabled={this.state.disableLocationSelectField} locations={this.state.locations} onLocationChange={this.handleLocationChange} />
+          <LocationsSelectField
+            disabled={this.state.disableLocationSelectField}
+            locations={this.state.locations}
+            onLocationChange={this.handleLocationChange}
+          />
         </div>
         <br />
         <div>
           <label>寄發票地點</label>
-          <LocationsSelectField disabled={this.state.disableLocationSelectField} locations={this.state.locations} onLocationChange={this.handleLocationChange} />
+          <LocationsSelectField
+            disabled={this.state.disableLocationSelectField}
+            locations={this.state.locations}
+            onLocationChange={this.handleLocationChange}
+          />
         </div>
         <br />
         <div>
           <label>出貨地點</label>
-          <LocationsSelectField disabled={false} locations={this.state.shipFromLocations} onLocationChange={this.handleLocationChange} />
+          <LocationsSelectField
+            disabled={false}
+            locations={this.state.shipFromLocations}
+            onLocationChange={this.handleLocationChange}
+          />
         </div>
         <br />
         <div>
