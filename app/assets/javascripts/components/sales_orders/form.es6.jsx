@@ -65,8 +65,8 @@ var CustomersSelectField = React.createClass({
       );
     });
     return (
-      <select onChange={this.handleCustomerChange}>
-        <option disabled selected value> -- 選取客戶 -- </option>
+      <select value="0" onChange={this.handleCustomerChange}>
+        <option value="0" disabled> -- 選取客戶 -- </option>
         {optionNodes}
       </select>
     );
