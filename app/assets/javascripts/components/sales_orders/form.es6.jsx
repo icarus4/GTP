@@ -2,9 +2,12 @@ var OrderNumberField = React.createClass({
   getInitialState: function() {
     return {order_number: ''}
   },
+  changeOrderNumber: function(orderNumber) {
+    this.setState({order_number: orderNumber});
+    this.props.onOrderNumberChange(orderNumber);
+  },
   handleOrderNumberChange: function(e) {
-    this.setState({order_number: e.target.value});
-    this.props.onOrderNumberChange(e.target.value);
+    this.changeOrderNumber(e.target.value);
   },
   loadOrderNumberFromServer: function() {
     $.ajax({
@@ -13,7 +16,7 @@ var OrderNumberField = React.createClass({
       type: 'GET',
       cache: false,
       success: function(data) {
-        this.setState({order_number: data.next_number});
+        this.changeOrderNumber(data.next_number);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(status, error.toString());
@@ -37,7 +40,7 @@ var OrderNumberField = React.createClass({
 
 var CustomersSelectField = React.createClass({
   getInitialState: function() {
-    return {customers: []}
+    return {customers: [], selectedCustumerId: 0};
   },
   loadCustomersFromServer: function() {
     $.ajax({
@@ -57,6 +60,7 @@ var CustomersSelectField = React.createClass({
     this.loadCustomersFromServer();
   },
   handleCustomerChange: function(e) {
+    this.setState({selectedCustumerId: e.target.value});
     this.props.onCustomerChange({id: e.target.value});
   },
   render: function() {
@@ -66,8 +70,8 @@ var CustomersSelectField = React.createClass({
       );
     });
     return (
-      <select value="0" onChange={this.handleCustomerChange}>
-        <option value="0" disabled> -- 選取客戶 -- </option>
+      <select value={this.state.selectedCustumerId} onChange={this.handleCustomerChange}>
+        <option key="0" value="0" disabled> -- 選取客戶 -- </option>
         {optionNodes}
       </select>
     );
@@ -75,8 +79,12 @@ var CustomersSelectField = React.createClass({
 });
 
 var LocationsSelectField = React.createClass({
-  onLocationChange: function() {
-    // this.prop.onLocationChange
+  getInitialState: function() {
+    return {selectedLocationId: 0}
+  },
+  handleLocationChange: function(e) {
+    this.setState({selectedLocationId: e.target.value});
+    this.props.onLocationChange({id: e.target.value});
   },
   render: function() {
     var optionNodes = this.props.locations.map(function(location) {
@@ -85,7 +93,8 @@ var LocationsSelectField = React.createClass({
       );
     });
     return (
-      <select disabled={this.props.disabled}>
+      <select value={this.state.selectedLocationId} disabled={this.props.disabled} onChange={this.handleLocationChange}>
+        <option value="0" disabled> -- 選取地點 -- </option>
         {optionNodes}
       </select>
     );
@@ -94,10 +103,11 @@ var LocationsSelectField = React.createClass({
 
 var DateField = React.createClass({
   getInitialState: function() {
-    return {date: "2016-08-01"};
+    return {date: this.props.defaultValue};
   },
   handleDateChange: function(e) {
     this.setState({date: e.target.value});
+    this.props.onDateChange(e.target.value);
   },
   render: function() {
     return(
@@ -107,6 +117,30 @@ var DateField = React.createClass({
 });
 
 var ItemField = React.createClass({
+  getInitialState: function() {
+    return {quantity: null, price: null, itemId: 0, subtotal: 0};
+  },
+  updateSubtotal: function() {
+    if (this.state.quantity && this.state.price) {
+      var subtotal = parseInt(this.state.quantity) * parseInt(this.state.price);
+      this.setState({subtotal: subtotal});
+    }
+    else {
+      this.setState({subtotal: 0});
+    }
+  },
+  handleQuantityChange: function(e) {
+    this.setState({quantity: e.target.value}, this.updateSubtotal);
+    this.props.onItemFieldChange({id: this.props.id, quantity: e.target.value, price: this.state.price, itemId: this.state.itemId});
+  },
+  handlePriceChange: function(e) {
+    this.setState({price: e.target.value}, this.updateSubtotal);
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, price: e.target.value, itemId: this.state.itemId});
+  },
+  handleItemChange: function(e) {
+    this.setState({itemId: e.target.value}, this.updateSubtotal);
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, price: this.state.price, itemId: e.target.value});
+  },
   render: function() {
     var optionNodes = this.props.items.map(function(item) {
       return (
@@ -116,11 +150,13 @@ var ItemField = React.createClass({
     return(
       <div>
         {this.props.label ? (<label>{this.props.label}</label>) : null}
-        <select>
+        <select value={this.state.itemId} onChange={this.handleItemChange}>
+          <option key="0" value="0" disabled> -- 選取貨品 -- </option>
           {optionNodes}
         </select>
-        <label>Qty</label><input type="number" min="1" style={{width: '60px'}} />
-        <label>price</label><input type="number" min="0" style={{width: '100px'}} />
+        <label>Quantity</label><input onChange={this.handleQuantityChange} type="number" min="1" style={{width: '60px'}} />
+        <label>price</label><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
+        <label> 小計:</label><span>{this.state.subtotal}元</span>
       </div>
     )
   }
@@ -130,8 +166,8 @@ var DynamicItemFieldList = React.createClass({
   getInitialState: function() {
     return {
       maxItemFieldId: 0,
-      itemFields: [{id: 0}],
-      items: [],
+      itemFields: [{id: 0, quantity: null, price: null, itemId: null}],
+      availableItems: [],
     };
   },
   loadItemsFromServer: function() {
@@ -141,7 +177,7 @@ var DynamicItemFieldList = React.createClass({
       type: 'GET',
       cache: false,
       success: function(data) {
-        this.setState({items: data.items});
+        this.setState({availableItems: data.items});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(status, err.toString());
@@ -166,14 +202,33 @@ var DynamicItemFieldList = React.createClass({
       }
     }
     this.setState({itemFields: itemFields});
+    this.props.onDynamicItemFieldListChange(itemFields);
+  },
+  handleItemFieldChange: function(item) {
+    var itemFields = this.state.itemFields;
+    // Modify object in itemFields array if input item is in the itemFields array
+    // Otherwise add this input item to itemFields array
+    for (var i = 0; i < itemFields.length; i++) {
+      if (itemFields[i].id == item.id) {
+        itemFields[i].quantity = item.quantity;
+        itemFields[i].price = item.price;
+        itemFields[i].itemId = item.itemId;
+        this.setState({itemFields: itemFields});
+        this.props.onDynamicItemFieldListChange(itemFields);
+        return;
+      }
+    }
+    itemFields.push(item);
+    this.setState({itemFields: itemFields});
+    this.props.onDynamicItemFieldListChange(itemFields);
   },
   render: function() {
-    var items = this.state.items;
+    var availableItems = this.state.availableItems;
     var handleClickRemoveButton = this.handleClickRemoveButton;
     var itemFieldNodes = this.state.itemFields.map(function(itemField) {
       return (
         <div key={"item-field-" + itemField.id}>
-          <ItemField key={itemField.id} items={items} label="選擇貨品" />
+          <ItemField onItemFieldChange={this.handleItemFieldChange} key={itemField.id} id={itemField.id} items={availableItems} label="選擇貨品" />
           <button
             key={"remove-button-" + itemField.id}
             type="button"
@@ -183,7 +238,7 @@ var DynamicItemFieldList = React.createClass({
           </button>
         </div>
       );
-    });
+    }, this);
     return (
       <div id="itemList">
         {itemFieldNodes}
@@ -202,15 +257,58 @@ var SalesOrderForm = React.createClass({
       shipFromLocations: [],
       customer: {},
       disableLocationSelectField: true,
-      clicked: false
+      clicked: false,
+      shipToLocation: {},
+      billToLocation: {},
+      shipFromLocation: {},
+      items: [],
+      shippedOn: '2016-08-31'
     }
+  },
+  componentDidMount: function() {
+    this.loadShipFromLocationsFromServer();
+  },
+  defaultShippedOn: function() {
+    return this.state.shippedOn;
   },
   handleSubmit: function(e) {
     e.preventDefault();
-    var orderNumber = this.state.orderNumber;
-    if (!orderNumber) {
-      return;
+    var inputData = {
+      orderNumber:      this.state.orderNumber.trim(),
+      customer:         this.state.customer,
+      shipToLocation:   this.state.shipToLocation,
+      billToLocation:   this.state.billToLocation,
+      shipFromLocation: this.state.shipFromLocation,
+      shippedOn:        this.state.shippedOn,
+      items:            this.state.items,
+    };
+
+    // Check input values
+    if (_.isEmpty(inputData.orderNumber))      {return;}
+    if (_.isEmpty(inputData.customer))         {return;}
+    if (_.isEmpty(inputData.shipToLocation))   {return;}
+    if (_.isEmpty(inputData.billToLocation))   {return;}
+    if (_.isEmpty(inputData.shipFromLocation)) {return;}
+    if (_.isEmpty(inputData.shippedOn))        {return;}
+    if (_.isEmpty(inputData.items))            {return;}
+    for (var i = 0; i < inputData.items.length; i++) {
+      if (_.isEmpty(inputData.items[i].price))    {return;}
+      if (_.isEmpty(inputData.items[i].quantity)) {return;}
     }
+
+    // POST to server
+    $.ajax({
+      url: '/api/v1/sales_orders',
+      dataType: 'json',
+      type: 'POST',
+      data: inputData,
+      success: function(data) {
+        console.log(data)
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
   },
   handleCustomerChange: function(customer) {
     this.setState({
@@ -247,8 +345,20 @@ var SalesOrderForm = React.createClass({
       }.bind(this)
     });
   },
-  componentDidMount: function() {
-    this.loadShipFromLocationsFromServer();
+  handleShipToLocationChange: function(location) {
+    this.setState({shipToLocation: {id: location.id}});
+  },
+  handleReceiptLocationChange: function(location) {
+    this.setState({billToLocation: {id: location.id}});
+  },
+  handleShipFromLocationChange: function(location) {
+    this.setState({shipFromLocation: {id: location.id}});
+  },
+  handleDateChange: function(dateString) {
+    this.setState({shippedOn: dateString});
+  },
+  handleDynamicItemFieldListChange: function(items) {
+    this.setState({items: items});
   },
   render: function() {
     return(
@@ -270,20 +380,20 @@ var SalesOrderForm = React.createClass({
         </div>
         <br />
         <div>
-          <label>寄貨地點</label>
+          <label>寄貨至：</label>
           <LocationsSelectField
             disabled={this.state.disableLocationSelectField}
             locations={this.state.locations}
-            onLocationChange={this.handleLocationChange}
+            onLocationChange={this.handleShipToLocationChange}
           />
         </div>
         <br />
         <div>
-          <label>寄發票地點</label>
+          <label>寄發票至：</label>
           <LocationsSelectField
             disabled={this.state.disableLocationSelectField}
             locations={this.state.locations}
-            onLocationChange={this.handleLocationChange}
+            onLocationChange={this.handleReceiptLocationChange}
           />
         </div>
         <br />
@@ -292,16 +402,20 @@ var SalesOrderForm = React.createClass({
           <LocationsSelectField
             disabled={false}
             locations={this.state.shipFromLocations}
-            onLocationChange={this.handleLocationChange}
+            onLocationChange={this.handleShipFromLocationChange}
           />
         </div>
         <br />
         <div>
           <label>出貨日期</label>
-          <DateField />
+          <DateField defaultValue={this.defaultShippedOn()} onDateChange={this.handleDateChange} />
         </div>
         <br />
-        <DynamicItemFieldList />
+        <DynamicItemFieldList onDynamicItemFieldListChange={this.handleDynamicItemFieldListChange} />
+        <br />
+        <div>
+          <input type="submit" value="儲存出貨單" />
+        </div>
       </form>
     );
   }
