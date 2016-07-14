@@ -48,6 +48,7 @@ group :development do
   gem 'xray-rails', '0.1.18'
   gem 'annotate', '2.7.0'
   gem 'guard-rspec', '4.7.2', require: false
+  gem 'rails_admin', '0.8.1'
 end
 
 group :development, :production do
