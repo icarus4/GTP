@@ -66,7 +66,7 @@ gem 'bcrypt', '3.1.11'
 gem 'bootstrap-sass', '3.3.6'
 gem 'simple_form', '3.2.1'
 gem 'pg', '0.18.4'
-gem 'rails_12factor' # for Heroku
+gem 'rails_12factor', group: :production # for Heroku
 gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.0.1'
 gem 'cocoon', '1.2.9'

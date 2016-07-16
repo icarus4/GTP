@@ -42,6 +42,8 @@ class SalesOrder < ActiveRecord::Base
   VALID_STATUSES = %w(draft active finalized fulfilled)
   validates :status, inclusion: { in: VALID_STATUSES }
 
+  validates :order_number, uniqueness: true
+
   def draft?
     status == 'draft'
   end
