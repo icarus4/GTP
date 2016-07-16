@@ -38,7 +38,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :sales_orders, only: [] do
+      resources :sales_orders, only: [:create] do
         get :next_number, on: :collection
       end
       resources :customers, only: [:index] do

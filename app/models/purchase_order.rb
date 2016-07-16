@@ -20,7 +20,7 @@
 class PurchaseOrder < ActiveRecord::Base
   after_initialize :setup_defaults
   before_save :update_total_amount
-  after_save :update_item_available_count
+  after_save :update_item_available_count!
 
   belongs_to :company
   belongs_to :supplier
@@ -48,7 +48,7 @@ class PurchaseOrder < ActiveRecord::Base
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
   end
 
-  def update_item_available_count
+  def update_item_available_count!
     items.each(&:update_available_count!)
   end
 

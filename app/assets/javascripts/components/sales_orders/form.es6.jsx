@@ -303,7 +303,7 @@ var SalesOrderForm = React.createClass({
       type: 'POST',
       data: inputData,
       success: function(data) {
-        console.log(data)
+        window.location.href = '/sales_orders/' + data.sales_order.id;
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());

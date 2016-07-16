@@ -22,8 +22,6 @@
 
 class SalesOrder < ActiveRecord::Base
   after_initialize :setup_defaults
-  before_save :update_total_amount
-  after_save :update_variant_available_count
 
   belongs_to :company
   belongs_to :customer
@@ -32,9 +30,6 @@ class SalesOrder < ActiveRecord::Base
   belongs_to :ship_from, class_name: 'Location', foreign_key: :ship_from_location_id
   has_many :details, class_name: 'SalesOrderDetail'
   has_many :variants, through: :details, source: :variant
-
-  accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
-  accepts_nested_attributes_for :variants
 
   validates :status,
             :company_id,
@@ -67,8 +62,14 @@ class SalesOrder < ActiveRecord::Base
     self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
   end
 
-  def update_variant_available_count
-    variants.each(&:update_available_count!)
+  def update_total_amount!
+    update_total_amount
+    save!
+  end
+
+  def update_item_available_count!
+    items = variants.map { |v| v.item }.uniq
+    items.each(&:update_available_count!)
   end
 
   def self.next_number(company_id)

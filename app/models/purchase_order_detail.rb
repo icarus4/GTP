@@ -17,7 +17,6 @@ class PurchaseOrderDetail < ActiveRecord::Base
   belongs_to :item
   belongs_to :purchase_order
 
-  # accepts_nested_attributes_for :variant, :reject_if => :all_blank
   # validates :purchase_order_id, :variant_id, :quantity, :unit_price, presence: true # This causes cocoon failed
 
   def amount

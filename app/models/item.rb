@@ -66,7 +66,6 @@ class Item < ActiveRecord::Base
 
   private
 
-
     def quantity_in_active_orders
       quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
     end
@@ -77,10 +76,7 @@ class Item < ActiveRecord::Base
     end
 
     def quantity_in_unshipped_sales_orders
-      # raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
-      # sales_order_details.joins(:sales_order).where(sales_orders: { company_id: company.id }).where("sales_orders.status IN ('active', 'finalized')").sum(:quantity)
-
-      # FIXME: implement later
-      0
+      raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
+      SalesOrderDetail.joins({variant: :item}, :sales_order).where(variants: { item_id: id }, sales_orders: { company_id: company_id, status: ['active', 'finalized']}).sum(:quantity)
     end
 end
