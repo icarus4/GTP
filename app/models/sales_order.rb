@@ -64,7 +64,7 @@ class SalesOrder < ActiveRecord::Base
   end
 
   def update_total_amount
-    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
+    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
   end
 
   def update_variant_available_count

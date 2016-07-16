@@ -118,11 +118,11 @@ var DateField = React.createClass({
 
 var ItemField = React.createClass({
   getInitialState: function() {
-    return {quantity: null, price: null, itemId: 0, subtotal: 0};
+    return {quantity: null, unitPrice: null, itemId: 0, subtotal: 0};
   },
   updateSubtotal: function() {
-    if (this.state.quantity && this.state.price) {
-      var subtotal = parseInt(this.state.quantity) * parseInt(this.state.price);
+    if (this.state.quantity && this.state.unitPrice) {
+      var subtotal = parseInt(this.state.quantity) * parseInt(this.state.unitPrice);
       this.setState({subtotal: subtotal});
     }
     else {
@@ -131,15 +131,15 @@ var ItemField = React.createClass({
   },
   handleQuantityChange: function(e) {
     this.setState({quantity: e.target.value}, this.updateSubtotal);
-    this.props.onItemFieldChange({id: this.props.id, quantity: e.target.value, price: this.state.price, itemId: this.state.itemId});
+    this.props.onItemFieldChange({id: this.props.id, quantity: e.target.value, unitPrice: this.state.unitPrice, itemId: this.state.itemId});
   },
   handlePriceChange: function(e) {
-    this.setState({price: e.target.value}, this.updateSubtotal);
-    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, price: e.target.value, itemId: this.state.itemId});
+    this.setState({unitPrice: e.target.value}, this.updateSubtotal);
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: e.target.value, itemId: this.state.itemId});
   },
   handleItemChange: function(e) {
     this.setState({itemId: e.target.value}, this.updateSubtotal);
-    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, price: this.state.price, itemId: e.target.value});
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: this.state.unitPrice, itemId: e.target.value});
   },
   render: function() {
     var optionNodes = this.props.items.map(function(item) {
@@ -154,9 +154,9 @@ var ItemField = React.createClass({
           <option key="0" value="0" disabled> -- 選取貨品 -- </option>
           {optionNodes}
         </select>
-        <label>Quantity</label><input onChange={this.handleQuantityChange} type="number" min="1" style={{width: '60px'}} />
-        <label>price</label><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
-        <label> 小計:</label><span>{this.state.subtotal}元</span>
+        <label>數量</label><input onChange={this.handleQuantityChange} type="number" min="1" style={{width: '60px'}} />
+        <label>單價</label><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
+        <label>小計:</label><span>{this.state.subtotal}元</span>
       </div>
     )
   }
@@ -166,7 +166,7 @@ var DynamicItemFieldList = React.createClass({
   getInitialState: function() {
     return {
       maxItemFieldId: 0,
-      itemFields: [{id: 0, quantity: null, price: null, itemId: null}],
+      itemFields: [{id: 0, quantity: null, unitPrice: null, itemId: null}],
       availableItems: [],
     };
   },
@@ -211,7 +211,7 @@ var DynamicItemFieldList = React.createClass({
     for (var i = 0; i < itemFields.length; i++) {
       if (itemFields[i].id == item.id) {
         itemFields[i].quantity = item.quantity;
-        itemFields[i].price = item.price;
+        itemFields[i].unitPrice = item.unitPrice;
         itemFields[i].itemId = item.itemId;
         this.setState({itemFields: itemFields});
         this.props.onDynamicItemFieldListChange(itemFields);
@@ -292,7 +292,7 @@ var SalesOrderForm = React.createClass({
     if (_.isEmpty(inputData.shippedOn))        {return;}
     if (_.isEmpty(inputData.items))            {return;}
     for (var i = 0; i < inputData.items.length; i++) {
-      if (_.isEmpty(inputData.items[i].price))    {return;}
+      if (_.isEmpty(inputData.items[i].unitPrice))    {return;}
       if (_.isEmpty(inputData.items[i].quantity)) {return;}
     }
 

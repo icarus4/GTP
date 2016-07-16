@@ -64,14 +64,15 @@ ActiveRecord::Schema.define(version: 20160623040424) do
     t.integer  "item_type_id"
     t.integer  "brand_id"
     t.string   "unit"
-    t.integer  "status",                      default: 0,  null: false
-    t.integer  "available_count",             default: 0,  null: false
-    t.integer  "on_hand_count",               default: 0,  null: false
+    t.integer  "status",                           default: 0,     null: false
+    t.boolean  "manufactured_by_self",             default: false, null: false
+    t.integer  "available_count",                  default: 0,     null: false
+    t.integer  "on_hand_count",                    default: 0,     null: false
     t.string   "sku"
-    t.string   "name",            limit: 255, default: "", null: false
+    t.string   "name",                 limit: 255, default: "",    null: false
     t.text     "description"
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
     t.string   "image"
   end
 
@@ -109,7 +110,7 @@ ActiveRecord::Schema.define(version: 20160623040424) do
     t.integer  "purchase_order_id"
     t.integer  "item_id"
     t.integer  "quantity"
-    t.integer  "cost_per_unit"
+    t.integer  "unit_price"
     t.date     "manufacturing_date"
     t.date     "expiry_date"
     t.datetime "created_at",         null: false
@@ -141,7 +142,7 @@ ActiveRecord::Schema.define(version: 20160623040424) do
     t.integer  "sales_order_id"
     t.integer  "variant_id"
     t.integer  "quantity"
-    t.integer  "cost_per_unit"
+    t.integer  "unit_price"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
   end

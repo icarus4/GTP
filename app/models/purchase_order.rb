@@ -45,7 +45,7 @@ class PurchaseOrder < ActiveRecord::Base
   validates :status, inclusion: { in: VALID_STATUSES }
 
   def update_total_amount
-    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.cost_per_unit * detail.quantity }
+    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
   end
 
   def update_item_available_count

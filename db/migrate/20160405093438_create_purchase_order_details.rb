@@ -4,7 +4,7 @@ class CreatePurchaseOrderDetails < ActiveRecord::Migration
       t.references :purchase_order, index: true
       t.references :item, index: true
       t.integer    :quantity
-      t.integer    :cost_per_unit
+      t.integer    :unit_price
       t.date       :manufacturing_date
       t.date       :expiry_date
 

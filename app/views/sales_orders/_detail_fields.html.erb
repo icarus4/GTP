@@ -2,7 +2,7 @@
   <div id="variant_from_list">
     <%= f.association :variant, label: '貨品', collection: Variant.all, prompt: 'Choose one' %>
     <%= f.input :quantity, label: '數量', as: :integer, input_html: { min: 1, value: 1 } %>
-    <%= f.input :cost_per_unit, label: '單價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
+    <%= f.input :unit_price, label: '單價', as: :integer, input_html: { min: 0, placeholder: 0 } %>
   </div>
   <%#= link_to_add_association 'or 新增貨品', f, :variant %>
   <div class="col-sm-offset-2">

@@ -48,7 +48,7 @@
         <td><%= detail.variant.sku_name %></td>
         <td><%= detail.quantity %></td>
         <%= "<td>#{detail.quantity_after_shipping}</td>".html_safe unless @sales_order.fulfilled? %>
-        <td><%= detail.cost_per_unit %></td>
+        <td><%= detail.unit_price %></td>
         <td><%= detail.amount %></td>
       </tr>
     <% end %>

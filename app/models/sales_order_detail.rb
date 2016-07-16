@@ -6,7 +6,7 @@
 #  sales_order_id :integer
 #  variant_id     :integer
 #  quantity       :integer
-#  cost_per_unit  :integer
+#  unit_price     :integer
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
@@ -18,7 +18,7 @@ class SalesOrderDetail < ActiveRecord::Base
   accepts_nested_attributes_for :variant, :reject_if => :all_blank
 
   def amount
-    quantity * cost_per_unit
+    quantity * unit_price
   end
 
   def quantity_after_shipping
