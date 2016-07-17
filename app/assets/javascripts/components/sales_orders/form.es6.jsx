@@ -421,7 +421,7 @@ var SalesOrderForm = React.createClass({
         <DynamicItemFieldList onDynamicItemFieldListChange={this.handleDynamicItemFieldListChange} />
         <br />
         <div>
-          <input type="submit" value="儲存出貨單" />
+          <input type="submit" value="建立出貨單" />
         </div>
       </form>
     );

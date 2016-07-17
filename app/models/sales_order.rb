@@ -78,6 +78,28 @@ class SalesOrder < ActiveRecord::Base
     where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001'
   end
 
+  def ship!
+    raise "Only active order can ship." unless active?
+    ActiveRecord::Base.transaction do
+      details.each do |detail|
+        variant = detail.variant
+        variant.with_lock do
+          variant.quantity -= detail.quantity
+          variant.save!
+        end
+
+        lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_from_location_id, variant_id: variant.id)
+        lv.with_lock do
+          lv.quantity -= detail.quantity
+          lv.save!
+        end
+      end
+
+      self.status = 'fulfilled'
+      save!
+    end
+  end
+
   private
 
     def setup_defaults

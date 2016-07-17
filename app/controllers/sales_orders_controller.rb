@@ -47,6 +47,17 @@ class SalesOrdersController < ApplicationController
     end
   end
 
+  def ship
+    sales_order = SalesOrder.find_by(id: params[:id], company: current_company)
+
+    if sales_order
+      sales_order.ship!
+      redirect_to sales_order_path(sales_order)
+    else
+      redirect_to sales_orders_path
+    end
+  end
+
   private
 
     def sales_order_params

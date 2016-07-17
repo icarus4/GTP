@@ -7,9 +7,13 @@ module ApplicationHelper
       '已成立'
     when 'received'
       '已收貨'
+    when 'fulfilled'
+      '已送貨'
+    else
+      raise ArgumentError, "Invalid status: #{status}"
     end
   end
-  
+
   def is_active_controller(controller_name)
     params[:controller] == controller_name ? "active" : nil
   end

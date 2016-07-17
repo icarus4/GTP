@@ -28,7 +28,9 @@ Rails.application.routes.draw do
     post :receive, on: :member
   end
 
-  resources :sales_orders, only: [:index, :new, :create, :show]
+  resources :sales_orders, only: [:index, :new, :create, :show] do
+    put :ship, on: :member
+  end
 
   resources :stock_transfers, only: [:index, :new, :create, :show]
 
