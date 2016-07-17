@@ -19,7 +19,7 @@
 
 FactoryGirl.define do
   factory :purchase_order do
-    company
+    company { Company.first || create(:company) }
     supplier
     association :bill_to, factory: :location
     association :ship_to, factory: :location

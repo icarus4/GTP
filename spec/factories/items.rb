@@ -22,7 +22,7 @@
 
 FactoryGirl.define do
   factory :item do
-    association :company, factory: :company
+    company { Company.first || create(:company) }
     supplier
     item_type
     brand
