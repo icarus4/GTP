@@ -47,12 +47,23 @@ class SalesOrdersController < ApplicationController
     end
   end
 
+  def ship
+    sales_order = SalesOrder.find_by(id: params[:id], company: current_company)
+
+    if sales_order
+      sales_order.ship!
+      redirect_to sales_order_path(sales_order)
+    else
+      redirect_to sales_orders_path
+    end
+  end
+
   private
 
     def sales_order_params
       params.require(:sales_order).permit(
         :order_number, :customer_id, :ship_to_location_id, :bill_to_location_id, :ship_from_location_id, :contact_email, :issued_on, :shipped_on,
-        details_attributes: [:id, :_destroy, :variant_id, :quantity, :cost_per_unit, variant_attributes: [:id]]
+        details_attributes: [:id, :_destroy, :variant_id, :quantity, :unit_price, variant_attributes: [:id]]
       )
     end
 end

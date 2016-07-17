@@ -23,11 +23,8 @@ class Variant < ActiveRecord::Base
   has_many :locations, through: :location_variants
 
   delegate :company, to: :item
+  delegate :sku_name, to: :item
 
-
-  def sku_name
-    "#{sku} #{name}"
-  end
 
   def update_cache_columns!
     update!(quantity: location_variants.sum(:quantity))

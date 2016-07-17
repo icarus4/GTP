@@ -31,5 +31,7 @@ module Gtp
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    Dir[File.join("lib", "monky_patches", "**/*.rb")].each  { |path| require(path.split('lib/').last) }
   end
 end

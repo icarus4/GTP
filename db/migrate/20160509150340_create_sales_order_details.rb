@@ -4,9 +4,10 @@ class CreateSalesOrderDetails < ActiveRecord::Migration
       t.references :sales_order, index: true
       t.references :variant, index: true
       t.integer :quantity
-      t.integer :cost_per_unit
+      t.integer :unit_price
 
       t.timestamps null: false
+      t.text :note
     end
   end
 end

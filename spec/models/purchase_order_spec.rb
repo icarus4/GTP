@@ -21,13 +21,7 @@ require 'rails_helper'
 
 RSpec.describe PurchaseOrder do
   describe '#receive!' do
-    it 'updates available_count of items belongs to it' do
-      order = create(:purchase_order)
-      ap order
-    end
-
-    it 'second' do
-      ap Company.all
+    xit 'updates available_count of items belongs to it' do
     end
   end
 end

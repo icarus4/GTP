@@ -23,13 +23,13 @@
   </div>
 </div>
 
-<!-- <div class="row">
-<#% if @sales_order.draft? %>
-  <%#= link_to "批准進貨單", approve_purchase_order_path(@sales_order), class: 'btn btn-success', method: :put %>
-<#% elsif @sales_order.active? %>
-  <%#= link_to "確認已收貨", receive_purchase_order_path(@sales_order), class: 'btn btn-success', method: :put %>
-<#% end %>
-</div> -->
+<div class="row">
+<% if @sales_order.draft? %>
+  <%= link_to "批准出貨單", approve_sales_order_path(@sales_order), class: 'btn btn-success', method: :put %>
+<% elsif @sales_order.active? %>
+  <%= link_to "確認已出貨", ship_sales_order_path(@sales_order), class: 'btn btn-success', method: :put %>
+<% end %>
+</div>
 
 <div class="row table-container">
   <table class="table">
@@ -40,6 +40,7 @@
         <%= "<th>出貨後剩餘數量</th>".html_safe unless @sales_order.fulfilled? %>
         <th>進貨單價</th>
         <th>總價</th>
+        <th>備註</th>
       </tr>
     </thead>
     <tbody>
@@ -48,8 +49,9 @@
         <td><%= detail.variant.sku_name %></td>
         <td><%= detail.quantity %></td>
         <%= "<td>#{detail.quantity_after_shipping}</td>".html_safe unless @sales_order.fulfilled? %>
-        <td><%= detail.cost_per_unit %></td>
+        <td><%= detail.unit_price %></td>
         <td><%= detail.amount %></td>
+        <td><%= detail.note %></td>
       </tr>
     <% end %>
     </tbody>

@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '2.3.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.6'
+gem 'rails', '4.2.7'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -48,6 +48,7 @@ group :development do
   gem 'xray-rails', '0.1.18'
   gem 'annotate', '2.7.0'
   gem 'guard-rspec', '4.7.2', require: false
+  gem 'rails_admin', '0.8.1'
 end
 
 group :development, :production do
@@ -65,7 +66,7 @@ gem 'bcrypt', '3.1.11'
 gem 'bootstrap-sass', '3.3.6'
 gem 'simple_form', '3.2.1'
 gem 'pg', '0.18.4'
-gem 'rails_12factor' # for Heroku
+gem 'rails_12factor', group: :production # for Heroku
 gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.0.1'
 gem 'cocoon', '1.2.9'
@@ -76,3 +77,4 @@ gem 'mini_magick', '4.5.1'
 gem 'fog-aws', '0.9.3'
 gem 'dotenv-rails', '2.1.1'
 gem 'react-rails', '1.7.2'
+gem 'lodash-rails', '4.13.1'

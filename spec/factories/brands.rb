@@ -11,6 +11,7 @@
 
 FactoryGirl.define do
   factory :brand do
+    company { Company.first || create(:company) }
     name { FFaker::Product.brand }
   end
 end

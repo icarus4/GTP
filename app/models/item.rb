@@ -2,21 +2,22 @@
 #
 # Table name: items
 #
-#  id              :integer          not null, primary key
-#  company_id      :integer
-#  supplier_id     :integer
-#  item_type_id    :integer
-#  brand_id        :integer
-#  unit            :string
-#  status          :integer          default(0), not null
-#  available_count :integer          default(0), not null
-#  on_hand_count   :integer          default(0), not null
-#  sku             :string
-#  name            :string(255)      default(""), not null
-#  description     :text
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  image           :string
+#  id                   :integer          not null, primary key
+#  company_id           :integer
+#  supplier_id          :integer
+#  item_type_id         :integer
+#  brand_id             :integer
+#  unit                 :string
+#  status               :integer          default(0), not null
+#  manufactured_by_self :boolean          default(FALSE), not null
+#  available_count      :integer          default(0), not null
+#  on_hand_count        :integer          default(0), not null
+#  sku                  :string
+#  name                 :string(255)      default(""), not null
+#  description          :text
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  image                :string
 #
 
 class Item < ActiveRecord::Base
@@ -28,7 +29,7 @@ class Item < ActiveRecord::Base
   belongs_to :item_type, class_name: 'ItemType'
   belongs_to :brand
 
-  has_many  :variants, -> { order(:expiry_date) }, dependent: :destroy
+  has_many :variants, -> { order(:expiry_date) }, dependent: :destroy
   has_many :purchase_order_details
   has_many :purchase_orders, through: :purchase_order_details
   has_many :sales_order_details
@@ -65,7 +66,6 @@ class Item < ActiveRecord::Base
 
   private
 
-
     def quantity_in_active_orders
       quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
     end
@@ -76,10 +76,7 @@ class Item < ActiveRecord::Base
     end
 
     def quantity_in_unshipped_sales_orders
-      # raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
-      # sales_order_details.joins(:sales_order).where(sales_orders: { company_id: company.id }).where("sales_orders.status IN ('active', 'finalized')").sum(:quantity)
-
-      # FIXME: implement later
-      0
+      raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
+      SalesOrderDetail.joins({variant: :item}, :sales_order).where(variants: { item_id: id }, sales_orders: { company_id: company_id, status: ['active', 'finalized']}).sum(:quantity)
     end
 end

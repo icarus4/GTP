@@ -28,7 +28,9 @@ Rails.application.routes.draw do
     post :receive, on: :member
   end
 
-  resources :sales_orders, only: [:index, :new, :create, :show]
+  resources :sales_orders, only: [:index, :new, :create, :show] do
+    put :ship, on: :member
+  end
 
   resources :stock_transfers, only: [:index, :new, :create, :show]
 
@@ -38,7 +40,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :sales_orders, only: [] do
+      resources :sales_orders, only: [:create] do
         get :next_number, on: :collection
       end
       resources :customers, only: [:index] do
@@ -48,6 +50,8 @@ Rails.application.routes.draw do
       resources :items, only: [:index]
     end
   end
+
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin' if Rails.env.development?
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

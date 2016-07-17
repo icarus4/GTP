@@ -49,7 +49,7 @@
         <td><%= detail.item.sku_name %></td>
         <td><%= detail.quantity %></td>
         <%= "<td>#{detail.quantity_after_receiving}</td>".html_safe unless @purchase_order.received? %>
-        <td><%= detail.cost_per_unit %></td>
+        <td><%= detail.unit_price %></td>
         <td><%= detail.amount %></td>
       </tr>
     <% end %>

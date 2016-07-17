@@ -25,7 +25,6 @@ class Company < ActiveRecord::Base
     disabled: 1
   }
 
-  has_many :companies
   has_many :suppliers
   has_many :customers
   has_many :items

@@ -12,15 +12,11 @@
 #  note           :text
 #
 
-class SalesOrderDetail < ActiveRecord::Base
-  belongs_to :variant
-  belongs_to :sales_order
-
-  def amount
-    quantity * unit_price
-  end
-
-  def quantity_after_shipping
-    variant.item.on_hand_count - quantity
+FactoryGirl.define do
+  factory :sales_order_detail do
+    sales_order
+    variant
+    quantity { [10, 20, 50, 100, 200, 500].sample }
+    unit_price { [10, 50, 100, 500, 1000].sample }
   end
 end
