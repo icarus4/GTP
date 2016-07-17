@@ -118,7 +118,7 @@ var DateField = React.createClass({
 
 var ItemField = React.createClass({
   getInitialState: function() {
-    return {quantity: null, unitPrice: null, itemId: 0, subtotal: 0};
+    return {quantity: null, unitPrice: null, itemId: 0, subtotal: 0, note: ""};
   },
   updateSubtotal: function() {
     if (this.state.quantity && this.state.unitPrice) {
@@ -131,20 +131,25 @@ var ItemField = React.createClass({
   },
   handleQuantityChange: function(e) {
     this.setState({quantity: e.target.value}, this.updateSubtotal);
-    this.props.onItemFieldChange({id: this.props.id, quantity: e.target.value, unitPrice: this.state.unitPrice, itemId: this.state.itemId});
+    this.props.onItemFieldChange({id: this.props.id, quantity: e.target.value, unitPrice: this.state.unitPrice, itemId: this.state.itemId, note: this.state.note});
   },
   handlePriceChange: function(e) {
     this.setState({unitPrice: e.target.value}, this.updateSubtotal);
-    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: e.target.value, itemId: this.state.itemId});
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: e.target.value, itemId: this.state.itemId, note: this.state.note});
   },
   handleItemChange: function(e) {
     this.setState({itemId: e.target.value}, this.updateSubtotal);
-    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: this.state.unitPrice, itemId: e.target.value});
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: this.state.unitPrice, itemId: e.target.value, note: this.state.note});
+  },
+  handleNoteChange: function(e) {
+    note = e.target.value.trim();
+    this.setState({note: note});
+    this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: this.state.unitPrice, itemId: this.state.itemId, note: note})
   },
   render: function() {
     var optionNodes = this.props.items.map(function(item) {
       return (
-        <option key={item.id} value={item.id}>{item.name}</option>
+        <option key={item.id} value={item.id}>{item.name} (剩餘數量: {item.available_count})</option>
       )
     })
     return(
@@ -154,9 +159,10 @@ var ItemField = React.createClass({
           <option key="0" value="0" disabled> -- 選取貨品 -- </option>
           {optionNodes}
         </select>
-        <label>數量</label><input onChange={this.handleQuantityChange} type="number" min="1" style={{width: '60px'}} />
-        <label>單價</label><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
-        <label>小計:</label><span>{this.state.subtotal}元</span>
+        <span> 數量</span><input onChange={this.handleQuantityChange} type="number" min="1" style={{width: '60px'}} />
+        <span> 單價</span><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
+        <span> 小計:</span><span>{this.state.subtotal}元</span>
+        <span> 備註:</span><input onChange={this.handleNoteChange} type="text" style={{width: '250px'}}/>
       </div>
     )
   }
@@ -166,7 +172,7 @@ var DynamicItemFieldList = React.createClass({
   getInitialState: function() {
     return {
       maxItemFieldId: 0,
-      itemFields: [{id: 0, quantity: null, unitPrice: null, itemId: null}],
+      itemFields: [{id: 0, quantity: null, unitPrice: null, itemId: null, note: ""}],
       availableItems: [],
     };
   },
@@ -210,9 +216,10 @@ var DynamicItemFieldList = React.createClass({
     // Otherwise add this input item to itemFields array
     for (var i = 0; i < itemFields.length; i++) {
       if (itemFields[i].id == item.id) {
-        itemFields[i].quantity = item.quantity;
+        itemFields[i].quantity  = item.quantity;
         itemFields[i].unitPrice = item.unitPrice;
-        itemFields[i].itemId = item.itemId;
+        itemFields[i].itemId    = item.itemId;
+        itemFields[i].note      = item.note;
         this.setState({itemFields: itemFields});
         this.props.onDynamicItemFieldListChange(itemFields);
         return;

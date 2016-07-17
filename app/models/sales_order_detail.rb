@@ -9,6 +9,7 @@
 #  unit_price     :integer
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  note           :text
 #
 
 class SalesOrderDetail < ActiveRecord::Base

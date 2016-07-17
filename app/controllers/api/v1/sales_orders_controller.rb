@@ -32,7 +32,8 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
         variant = Variant.where(item: item).order(:expiry_date).limit(1).first
         next if variant.nil?
         raise "Invalid quantity: #{item[:quantity]}" if item_params[:quantity].blank? || item_params[:quantity]&.is_not_integer?
-        sales_order.details.create!(variant: variant, quantity: item_params[:quantity].to_i, unit_price: item_params[:unitPrice].to_i)
+        note = item_params[:note].present? ? item_params[:note].strip : nil
+        sales_order.details.create!(variant: variant, quantity: item_params[:quantity].to_i, unit_price: item_params[:unitPrice].to_i, note: note)
       end
 
       sales_order.update_total_amount!

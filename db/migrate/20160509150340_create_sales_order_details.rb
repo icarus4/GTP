@@ -7,6 +7,7 @@ class CreateSalesOrderDetails < ActiveRecord::Migration
       t.integer :unit_price
 
       t.timestamps null: false
+      t.text :note
     end
   end
 end

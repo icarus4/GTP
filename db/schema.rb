@@ -145,6 +145,7 @@ ActiveRecord::Schema.define(version: 20160623040424) do
     t.integer  "unit_price"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.text     "note"
   end
 
   add_index "sales_order_details", ["sales_order_id"], name: "index_sales_order_details_on_sales_order_id", using: :btree
