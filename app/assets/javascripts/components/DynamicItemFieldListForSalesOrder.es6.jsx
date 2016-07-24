@@ -1,4 +1,4 @@
-var DynamicItemFieldList = React.createClass({
+var DynamicItemFieldListForSalesOrder = React.createClass({
   getInitialState: function() {
     return {
       maxItemFieldId: 0,

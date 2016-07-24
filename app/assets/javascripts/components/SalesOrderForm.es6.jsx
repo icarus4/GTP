@@ -160,7 +160,7 @@ var SalesOrderForm = React.createClass({
           <DateField defaultValue={this.defaultShippedOn()} onDateChange={this.handleDateChange} />
         </div>
         <br />
-        <DynamicItemFieldList onDynamicItemFieldListChange={this.handleDynamicItemFieldListChange} />
+        <DynamicItemFieldListForSalesOrder onDynamicItemFieldListChange={this.handleDynamicItemFieldListChange} />
         <br />
         <div>
           <input type="submit" value="建立出貨單" />
