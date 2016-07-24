@@ -5,6 +5,13 @@
     保存期限
     <input type="date" name="detail[expiry_date][<%= detail.id %>]", value="<%= detail.expiry_date.to_s || 7.days.from_now.to_date.to_s %>">
     <br>
+    <%= select_tag(
+      "detail[bin_location_id][#{detail.id}]",
+      options_for_select(
+        current_company.locations.find_by(id: @purchase_order.ship_to_location_id).bin_locations.map { |bl| ["#{bl.location.name} #{bl.name}", bl.id] }
+      )
+    ) %>
+    <br>
   <% end %>
 
   <br>

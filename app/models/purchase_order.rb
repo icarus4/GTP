@@ -82,7 +82,7 @@ class PurchaseOrder < ActiveRecord::Base
           variant.save!
         end
 
-        lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_to_location_id, variant_id: variant.id)
+        lv = LocationVariant.find_or_initialize_by(company_id: company_id, bin_location_id: detail.bin_location_id, variant_id: variant.id)
         lv.with_lock do
           lv.quantity += detail.quantity
           lv.save!

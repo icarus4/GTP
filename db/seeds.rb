@@ -15,6 +15,11 @@ cities.each { |city| City.find_or_create_by!(name: city) }
 l1 = c.locations.create!(city: City.first, address: '中山北路一段', name: '辦公室', holds_stock: false)
 l2 = c.locations.create!(city: City.first, address: '中山北路二段', name: '倉庫1', holds_stock: true)
 l3 = c.locations.create!(city: City.first, address: '中山北路三段', name: '倉庫2', holds_stock: true)
+l2.bin_locations.create!(name: '第一排')
+l2.bin_locations.create!(name: '第二排')
+l3.bin_locations.create!(name: '第一排')
+l3.bin_locations.create!(name: '第二排')
+l3.bin_locations.create!(name: '第三排')
 
 s1 = Supplier.find_or_create_by!(company: c, name: '我的供應商-1', status: 'active', email: 'service@supplier1.com')
 s2 = Supplier.find_or_create_by!(company: c, name: '我的供應商-2', status: 'active', email: 'service@supplier2.com')

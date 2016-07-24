@@ -5,6 +5,7 @@
 #  id                 :integer          not null, primary key
 #  purchase_order_id  :integer
 #  item_id            :integer
+#  bin_location_id    :integer
 #  quantity           :integer
 #  unit_price         :integer
 #  manufacturing_date :date

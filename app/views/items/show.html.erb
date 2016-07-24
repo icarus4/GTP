@@ -47,7 +47,7 @@
         <td>
           <%= variant.quantity %><br>
           <% variant.location_variants.each do |lv| %>
-            <small class="text-muted"><%= lv.quantity %> in <%= lv.location.name %></small>
+            <small class="text-muted"><%= lv.quantity %> in <%= "#{lv.bin_location.location.name} #{lv.bin_location.name}" %></small>
             <br>
           <% end %>
         </td>
