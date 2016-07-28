@@ -3,7 +3,7 @@ var DynamicItemFieldListForSalesOrder = React.createClass({
     return {
       maxItemFieldId: 0,
       itemFields: [{id: 0, quantity: null, unitPrice: null, itemId: null, note: ""}],
-      availableItems: [],
+      // availableItems: [],
     };
   },
   loadItemsFromServer: function() {
@@ -21,7 +21,7 @@ var DynamicItemFieldListForSalesOrder = React.createClass({
     });
   },
   componentWillMount: function() {
-    this.loadItemsFromServer();
+    // this.loadItemsFromServer();
   },
   handleClickAddItemButton: function() {
     var itemFields = this.state.itemFields;
@@ -60,7 +60,7 @@ var DynamicItemFieldListForSalesOrder = React.createClass({
     this.props.onDynamicItemFieldListChange(itemFields);
   },
   render: function() {
-    var availableItems = this.state.availableItems;
+    var availableItems = this.props.availableItems;
     var handleClickRemoveButton = this.handleClickRemoveButton;
     var itemFieldNodes = this.state.itemFields.map(function(itemField) {
       return (

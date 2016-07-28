@@ -18,6 +18,8 @@ class Location < ActiveRecord::Base
   belongs_to :city
   belongs_to :locationable, polymorphic: true
   has_many :bin_locations
+  has_many :location_variants, through: :bin_locations
+  has_many :variants, through: :location_variants
 
   validates :city_id, presence: true
   validates :address, presence: true

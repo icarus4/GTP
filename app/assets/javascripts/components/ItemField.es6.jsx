@@ -29,11 +29,27 @@ var ItemField = React.createClass({
     this.props.onItemFieldChange({id: this.props.id, quantity: this.state.quantity, unitPrice: this.state.unitPrice, itemId: this.state.itemId, note: note})
   },
   render: function() {
-    var optionNodes = this.props.items.map(function(item) {
-      return (
-        <option key={item.id} value={item.id}>{item.name} (剩餘數量: {item.available_count})</option>
-      )
-    })
+    var optionNodes = null;
+    if (this.props.items) {
+      optionNodes = this.props.items.map(function(item) {
+        return (
+          <option key={item.id} value={item.id}>{item.name} (剩餘數量: {item.available_count})</option>
+        )
+      });
+    }
+
+    var selectedItemDetail = null;
+    if (this.state.itemId > 0) {
+      var items = this.props.items;
+      var _this = this;
+      selectedItem = _.find(items, function(item) {return item.id == _this.state.itemId});
+      selectedItemDetail = selectedItem.variants.map(function(variant) {
+        return (
+          <span key={variant.id}>倉庫現有數量:{variant.quantity} 過期日:{variant.expiry_date}</span>
+        )
+      });
+    }
+
     return(
       <div>
         {this.props.label ? (<label>{this.props.label}</label>) : null}
@@ -45,6 +61,8 @@ var ItemField = React.createClass({
         <span> 單價</span><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
         <span> 小計:</span><span>{this.state.subtotal}元</span>
         <span> 備註:</span><input onChange={this.handleNoteChange} type="text" style={{width: '250px'}}/>
+        <br>
+        {selectedItemDetail}
       </div>
     )
   }

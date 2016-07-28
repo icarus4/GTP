@@ -16,6 +16,7 @@ var SalesOrderForm = React.createClass({
   },
   componentDidMount: function() {
     this.loadShipFromLocationsFromServer();
+    this.loadItemsFromServer();
   },
   defaultShippedOn: function() {
     return this.state.shippedOn;
@@ -94,6 +95,20 @@ var SalesOrderForm = React.createClass({
       }.bind(this)
     });
   },
+  loadItemsFromServer: function() {
+    $.ajax({
+      url: "/api/v1/items",
+      dataType: 'json',
+      type: 'GET',
+      cache: false,
+      success: function(data) {
+        this.setState({availableItems: data.items});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(status, err.toString());
+      }.bind(this)
+    });
+  },
   handleShipToLocationChange: function(location) {
     this.setState({shipToLocation: {id: location.id}});
   },
@@ -160,7 +175,7 @@ var SalesOrderForm = React.createClass({
           <DateField defaultValue={this.defaultShippedOn()} onDateChange={this.handleDateChange} />
         </div>
         <br />
-        <DynamicItemFieldListForSalesOrder onDynamicItemFieldListChange={this.handleDynamicItemFieldListChange} />
+        <DynamicItemFieldListForSalesOrder availableItems={this.state.availableItems} onDynamicItemFieldListChange={this.handleDynamicItemFieldListChange} />
         <br />
         <div>
           <input type="submit" value="建立出貨單" />

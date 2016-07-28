@@ -11,6 +11,7 @@
 
 class BinLocation < ActiveRecord::Base
   belongs_to :location
+  has_many :location_variants
 
   validates :location_id, presence: true
 end

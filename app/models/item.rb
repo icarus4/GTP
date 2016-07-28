@@ -30,6 +30,9 @@ class Item < ActiveRecord::Base
   belongs_to :brand
 
   has_many :variants, -> { order(:expiry_date) }, dependent: :destroy
+  has_many :location_variants, through: :variants
+  has_many :bin_locations, through: :location_variants
+  has_many :locations, through: :bin_locations
   has_many :purchase_order_details
   has_many :purchase_orders, through: :purchase_order_details
   has_many :sales_order_details
