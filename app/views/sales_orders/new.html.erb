@@ -1,3 +1,47 @@
 <div class="wrapper wrapper-content">
-  <%= react_component('SalesOrderForm', {}, {class: 'row', id: 'new-sales-order-form'}) %>
+  <div id="sales-order">
+    <div>
+      <span>送貨地點</span>
+      <select v-model="selectedShipToLocation">
+        <option v-for="shipToLocation in shipToLocations" v-bind:value="shipToLocation.id">
+          {{ shipToLocation.name }}
+        </option>
+      </select>
+      <span>selected: {{ selectedShipToLocation }}</span>
+    </div>
+    <br>
+
+    <div>
+      <span>出貨日期</span>
+      <input type="date" v-model="shippedOn">
+    </div>
+    <br>
+
+    <div v-for="(index, item) in items">
+      <span>選取貨品</span>
+      <select v-model="item.selectedId">
+        <option v-for="option in item.options" v-bind:value="option.id">
+          {{ option.name }}
+        </option>
+      </select>
+      <span>數量</span><input type="number" placeholder="輸入數量" v-model="item.quantity" style="width: 80px" v-on:change="updateSubtotal(item)">
+      <span>單價</span><input type="number" placeholder="輸入單價" v-model="item.unitPrice" style="width: 80px" v-on:change="updateSubtotal(item)">
+      <span>subtotal: {{ item.subtotal }}</span>
+      <input type="text" placeholder="備註" v-model="item.note">
+      <button class="label label-xs label-default" v-on:click="removeItem(item)">X</button>
+    </div>
+    <br>
+
+    <button v-on:click="addNewItem">+貨品</button>
+
+    <div>
+      <pre>{{ $data.items | json }}</pre>
+    </div>
+  </div>
+</div>
+
+<div id='parent'>
+  <parent></parent>
+  <br>
+  <!-- <child v-bind:my-message="parentMsg"></child> -->
 </div>

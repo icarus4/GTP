@@ -61,7 +61,7 @@ var ItemField = React.createClass({
         <span> 單價</span><input onChange={this.handlePriceChange} type="number" min="0" style={{width: '100px'}} />
         <span> 小計:</span><span>{this.state.subtotal}元</span>
         <span> 備註:</span><input onChange={this.handleNoteChange} type="text" style={{width: '250px'}}/>
-        <br>
+        <br />
         {selectedItemDetail}
       </div>
     )

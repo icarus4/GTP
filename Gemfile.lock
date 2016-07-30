@@ -310,6 +310,7 @@ GEM
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     unicode-display_width (0.1.1)
+    vuejs-rails (1.0.24)
     web-console (3.1.1)
       activemodel (>= 4.2)
       debug_inspector
@@ -357,6 +358,7 @@ DEPENDENCIES
   simple_form (= 3.2.1)
   spring (= 1.6.4)
   uglifier (= 2.7.2)
+  vuejs-rails (= 1.0.24)
   web-console (= 3.1.1)
   xray-rails (= 0.1.18)
 

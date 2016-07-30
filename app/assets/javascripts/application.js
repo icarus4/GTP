@@ -21,7 +21,5 @@
 //= require lodash
 //= require cocoon
 //= require items
-//= require react
-//= require react_ujs
-//= require components
+//= require vue
 //= require_tree .
