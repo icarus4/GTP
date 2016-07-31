@@ -19,6 +19,11 @@
 #  contact_email         :string(64)
 #  notes                 :text
 #
+# Indexes
+#
+#  index_sales_orders_on_company_id_and_customer_id  (company_id,customer_id)
+#  index_sales_orders_on_status                      (status)
+#
 
 class SalesOrder < ActiveRecord::Base
   after_initialize :setup_defaults

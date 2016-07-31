@@ -8,6 +8,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Indexes
+#
+#  index_brands_on_company_id_and_name  (company_id,name) UNIQUE
+#
 
 FactoryGirl.define do
   factory :brand do

@@ -10,6 +10,12 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_location_variants_on_company_id   (company_id)
+#  index_location_variants_on_location_id  (location_id)
+#  index_location_variants_on_variant_id   (variant_id)
+#
 
 class LocationVariant < ActiveRecord::Base
   belongs_to :company

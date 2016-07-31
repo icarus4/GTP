@@ -23,7 +23,7 @@
 #  index_companies_on_type        (type)
 #
 
-class Customer < Company
+class Manufacturer < Company
   belongs_to :company
   has_many :locations, as: :locationable
 

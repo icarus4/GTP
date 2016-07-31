@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160623040424) do
+ActiveRecord::Schema.define(version: 20160801151423) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,28 +51,38 @@ ActiveRecord::Schema.define(version: 20160623040424) do
   add_index "companies", ["company_id"], name: "index_companies_on_company_id", using: :btree
   add_index "companies", ["type"], name: "index_companies_on_type", using: :btree
 
-  create_table "item_types", force: :cascade do |t|
-    t.integer  "company_id",             null: false
-    t.string   "name",       limit: 255, null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+  create_table "item_series", force: :cascade do |t|
+    t.integer  "company_id",                      null: false
+    t.integer  "brand_id"
+    t.integer  "manufacturer_id"
+    t.integer  "storage_and_transport_condition"
+    t.text     "raw_material"
+    t.text     "food_additives"
+    t.text     "warnings"
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
   end
 
   create_table "items", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "supplier_id"
-    t.integer  "item_type_id"
-    t.integer  "brand_id"
-    t.string   "unit"
-    t.integer  "status",                           default: 0,     null: false
-    t.boolean  "manufactured_by_self",             default: false, null: false
-    t.integer  "available_count",                  default: 0,     null: false
-    t.integer  "on_hand_count",                    default: 0,     null: false
-    t.string   "sku"
-    t.string   "name",                 limit: 255, default: "",    null: false
+    t.integer  "company_id",                                                               null: false
+    t.integer  "item_series_id"
+    t.integer  "available_count",                                          default: 0,     null: false
+    t.integer  "on_hand_count",                                            default: 0,     null: false
+    t.integer  "cost_per_unit"
+    t.integer  "purchase_price"
+    t.integer  "wholesale_price"
+    t.integer  "retail_price"
+    t.integer  "low_stock_alert_level"
+    t.integer  "status",                limit: 2,                          default: 0,     null: false
+    t.integer  "weight_unit",           limit: 2
+    t.decimal  "weight_value",                    precision: 10, scale: 2
+    t.boolean  "manufactured_by_self",                                     default: false, null: false
+    t.boolean  "expirable",                                                default: true,  null: false
+    t.text     "sku"
+    t.text     "name",                                                     default: "",    null: false
     t.text     "description"
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
+    t.datetime "created_at",                                                               null: false
+    t.datetime "updated_at",                                                               null: false
     t.string   "image"
   end
 

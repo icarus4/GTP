@@ -6,6 +6,10 @@
 #  name       :string(32)       not null
 #  created_at :datetime
 #
+# Indexes
+#
+#  index_cities_on_name  (name)
+#
 
 class City < ActiveRecord::Base
   has_many :locations

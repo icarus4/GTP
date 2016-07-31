@@ -12,6 +12,11 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
+# Indexes
+#
+#  index_purchase_order_details_on_item_id            (item_id)
+#  index_purchase_order_details_on_purchase_order_id  (purchase_order_id)
+#
 
 class PurchaseOrderDetail < ActiveRecord::Base
   belongs_to :item

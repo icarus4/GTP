@@ -16,6 +16,11 @@
 #  contact_email       :string(64)
 #  notes               :text
 #
+# Indexes
+#
+#  index_purchase_orders_on_company_id_and_supplier_id  (company_id,supplier_id)
+#  index_purchase_orders_on_status                      (status)
+#
 
 require 'rails_helper'
 

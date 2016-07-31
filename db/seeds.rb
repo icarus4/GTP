@@ -16,10 +16,10 @@ l1 = c.locations.create!(city: City.first, address: '中山北路一段', name: 
 l2 = c.locations.create!(city: City.first, address: '中山北路二段', name: '倉庫1', holds_stock: true)
 l3 = c.locations.create!(city: City.first, address: '中山北路三段', name: '倉庫2', holds_stock: true)
 
-s1 = Supplier.find_or_create_by!(company: c, name: '我的供應商-1', status: 'active', email: 'service@supplier1.com')
-s2 = Supplier.find_or_create_by!(company: c, name: '我的供應商-2', status: 'active', email: 'service@supplier2.com')
-c1 = Customer.find_or_create_by!(company: c, name: '我的顧客-1', status: 'active', email: 'service@customer1.com')
-c2 = Customer.find_or_create_by!(company: c, name: '我的顧客-2', status: 'active', email: 'service@customer2.com')
+s1 = Supplier.find_or_create_by!(company: c, name: '供應商1', status: 'active', email: 'service@supplier1.com')
+s2 = Supplier.find_or_create_by!(company: c, name: '供應商2', status: 'active', email: 'service@supplier2.com')
+c1 = Customer.find_or_create_by!(company: c, name: '顧客1', status: 'active', email: 'service@customer1.com')
+c2 = Customer.find_or_create_by!(company: c, name: '顧客2', status: 'active', email: 'service@customer2.com')
 
 c1.locations.create!(city: City.first, address: '羅斯福路一段', name: '顧客1 辦公室')
 c1.locations.create!(city: City.first, address: '羅斯福路二段', name: '顧客1 店面-1')
@@ -28,14 +28,10 @@ c2.locations.create!(city: City.first, address: '中山北路一段', name: '顧
 c2.locations.create!(city: City.first, address: '中山北路二段', name: '顧客2 店面-1')
 c2.locations.create!(city: City.first, address: '中山北路三段', name: '顧客2 店面-2')
 
-item_type1 = ItemType.find_or_create_by!(name: '安全帽', company: c)
-item_type2 = ItemType.find_or_create_by!(name: '茶', company: c)
-item_type3 = ItemType.find_or_create_by!(name: '酒', company: c)
-
 b1 = Brand.find_or_create_by!(company: c, name: '統一')
 b2 = Brand.find_or_create_by!(company: c, name: '統二')
 
-i1 = Item.find_or_create_by!(company: c, supplier: s1, item_type: item_type2, brand: b1, name: '紅茶', description: '好茶，不買嗎？')
-i2 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item_type2, brand: b2, name: '綠茶', description: '好茶，不買嗎？')
-i3 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item_type2, brand: b2, name: '烏龍茶', description: '好茶，不買嗎？')
-i4 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item_type2, brand: b2, name: '普洱茶', description: '好茶，不買嗎？')
+# i1 = Item.find_or_create_by!(company: c, supplier: s1, item_type: item_type2, brand: b1, name: '紅茶', description: '好茶，不買嗎？')
+# i2 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item_type2, brand: b2, name: '綠茶', description: '好茶，不買嗎？')
+# i3 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item_type2, brand: b2, name: '烏龍茶', description: '好茶，不買嗎？')
+# i4 = Item.find_or_create_by!(company: c, supplier: s2, item_type: item_type2, brand: b2, name: '普洱茶', description: '好茶，不買嗎？')
