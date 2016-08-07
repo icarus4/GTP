@@ -118,7 +118,7 @@ ActiveRecord::Schema.define(version: 20160807075826) do
 
   create_table "manufacturers", force: :cascade do |t|
     t.integer "company_id"
-    t.boolean "foreign",             default: false, null: false
+    t.integer "location_type",       limit: 2
     t.string  "name"
     t.string  "registration_number"
     t.string  "address"

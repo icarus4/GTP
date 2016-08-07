@@ -15,4 +15,17 @@
 #
 
 class ItemSeries < ActiveRecord::Base
+  belongs_to :company
+  belongs_to :brand
+  belongs_to :manufacturer
+
+  validates :company_id, presence: true
+
+  enum storage_and_transport_condition: {
+    freezing:         1, # 冷凍 (<= -18 degree)
+    refrigeration:    2, # 冷藏 (0~7 degree)
+    eighteen_degrees: 3, # 18度C
+    room_temperature: 4, # 常溫
+    other:            5, # 其他
+  }
 end

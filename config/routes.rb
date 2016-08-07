@@ -49,6 +49,7 @@ Rails.application.routes.draw do
       resources :locations, only: [:index]
       resources :items, only: [:index]
       resources :brands, only: [:index, :create]
+      resources :manufacturers, only: [:index, :create]
     end
   end
 

@@ -4,7 +4,7 @@
 #
 #  id                  :integer          not null, primary key
 #  company_id          :integer
-#  foreign             :boolean          default(FALSE), not null
+#  location_type       :integer
 #  name                :string
 #  registration_number :string
 #  address             :string
@@ -17,5 +17,11 @@
 class Manufacturer < ActiveRecord::Base
   belongs_to :company
 
-  validates :name, :company_id, presence: true
+  validates :name, :company_id, :location_type, presence: true
+  validates :registration_number, uniqueness: { scope: :company_id }
+
+  enum location_type: {
+    domestic: 0,
+    foreign:  1,
+  }
 end
