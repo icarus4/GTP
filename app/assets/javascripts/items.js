@@ -13,7 +13,7 @@ new Vue({
   el: '#new-item-form',
   data: {
     options: {
-      brands: null,
+      brands: [],
       storage_and_transport_conditions: [
         { id: 1, name: '冷藏' },
         { id: 2, name: '冷凍' },
@@ -37,6 +37,7 @@ new Vue({
     },
     item: null,
     items: [],
+    new_brand_name: "",
   },
   created: function() {
     this.item = _.cloneDeep(this.itemTemplate)
@@ -54,6 +55,22 @@ new Vue({
         url: "/api/v1/brands"
       }).done(function(data) {
         that.options.brands = data.brands
+      })
+    },
+    createBrand: function() {
+      that = this;
+      $.ajax({
+        url: "/api/v1/brands",
+        method: 'POST',
+        dataType: 'JSON',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: {brand: {name: that.new_brand_name}}
+      }).done(function(data) {
+        that.options.brands.push(data.brand)
+        that.series.brand_id = data.brand.id
+        $("#new-brand-modal").modal('hide')
+      }).fail(function(data) {
+        alert(data.errors.full_messages)
       })
     }
   }
