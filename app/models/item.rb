@@ -36,8 +36,7 @@ class Item < ActiveRecord::Base
 
   belongs_to :company
   belongs_to :supplier
-  belongs_to :item_type, class_name: 'ItemType'
-  belongs_to :brand
+  belongs_to :item_series
 
   has_many :variants, -> { order(:expiry_date) }, dependent: :destroy
   has_many :purchase_order_details
@@ -56,7 +55,6 @@ class Item < ActiveRecord::Base
 
   validates :name,         presence: true
   validates :company_id,   presence: true
-  validates :brand_id,     presence: true
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
 

@@ -18,6 +18,7 @@ class ItemSeries < ActiveRecord::Base
   belongs_to :company
   belongs_to :brand
   belongs_to :manufacturer
+  has_many :items
 
   validates :company_id, presence: true
 
