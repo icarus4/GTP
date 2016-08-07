@@ -10,6 +10,10 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
+# Indexes
+#
+#  index_variants_on_item_id  (item_id)
+#
 
 FactoryGirl.define do
   factory :variant do

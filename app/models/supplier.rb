@@ -17,6 +17,11 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_companies_on_company_id  (company_id)
+#  index_companies_on_type        (type)
+#
 
 class Supplier < Company
   belongs_to :company

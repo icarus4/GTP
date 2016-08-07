@@ -10,6 +10,10 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
+# Indexes
+#
+#  index_variants_on_item_id  (item_id)
+#
 
 class Variant < ActiveRecord::Base
   after_save :update_item_on_hand_count

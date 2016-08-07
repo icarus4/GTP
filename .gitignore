@@ -37,6 +37,7 @@ rerun.txt
 pickle-email-*.html
 /public/uploads
 public/assets
+.byebug_history
 
 ## Environment normalisation:
 /.bundle
@@ -53,3 +54,6 @@ public/assets
 
 # Environment variables
 .env
+
+# Atom
+.tags

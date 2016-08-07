@@ -11,6 +11,11 @@
 #  updated_at     :datetime         not null
 #  note           :text
 #
+# Indexes
+#
+#  index_sales_order_details_on_sales_order_id  (sales_order_id)
+#  index_sales_order_details_on_variant_id      (variant_id)
+#
 
 FactoryGirl.define do
   factory :sales_order_detail do

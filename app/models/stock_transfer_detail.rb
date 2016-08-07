@@ -9,6 +9,10 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
+# Indexes
+#
+#  index_stock_transfer_details_on_stock_transfer_id  (stock_transfer_id)
+#
 
 class StockTransferDetail < ActiveRecord::Base
   belongs_to :stock_transfer
