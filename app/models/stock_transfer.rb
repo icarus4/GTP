@@ -13,6 +13,11 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #
+# Indexes
+#
+#  index_stock_transfers_on_company_id  (company_id)
+#  index_stock_transfers_on_status      (status)
+#
 
 class StockTransfer < ActiveRecord::Base
   after_initialize :setup_defaults

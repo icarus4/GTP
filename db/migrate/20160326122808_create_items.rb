@@ -1,19 +1,24 @@
 class CreateItems < ActiveRecord::Migration
   def change
     create_table :items do |t|
-      t.references :company
-      t.references :supplier
-      t.references :item_type
-      t.references :brand
-      t.string     :unit
-      t.integer    :status,           default: 0,  null: false
-      t.boolean    :manufactured_by_self, default: false, null: false
-      t.string     :unit
-      t.integer    :available_count, null: false, default: 0
-      t.integer    :on_hand_count,   null: false, default: 0
-      t.string     :sku
-      t.string     :name,             default: '', null: false, limit: 255
+      t.references :company, null: false
+      t.references :item_series
+      t.integer    :available_count,      null: false, default: 0
+      t.integer    :on_hand_count,        null: false, default: 0
+      t.integer    :cost_per_unit
+      t.integer    :purchase_price
+      t.integer    :wholesale_price
+      t.integer    :retail_price
+      t.integer    :low_stock_alert_level
+      t.integer    :status,               null: false, default: 0, limit: 1
+      t.integer    :weight_unit,          limit: 1
+      t.decimal    :weight_value,         precision: 10, scale: 2
+      t.boolean    :manufactured_by_self, null: false, default: false
+      t.boolean    :expirable,            null: false, default: true
+      t.text       :sku
+      t.text       :name,                 null: false, default: ''
       t.text       :description
+
 
       t.timestamps null: false
     end

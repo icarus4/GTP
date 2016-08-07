@@ -20,8 +20,6 @@
 //= require inspinia.js
 //= require lodash
 //= require cocoon
+//= require vue
 //= require items
-//= require react
-//= require react_ujs
-//= require components
 //= require_tree .

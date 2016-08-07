@@ -17,6 +17,11 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_companies_on_company_id  (company_id)
+#  index_companies_on_type        (type)
+#
 
 class Company < ActiveRecord::Base
 
@@ -30,6 +35,7 @@ class Company < ActiveRecord::Base
   has_many :items
   has_many :variants, through: :items
   has_many :brands
+  has_many :manufacturers
   has_many :item_types
   has_many :locations, as: :locationable
   has_many :purchase_orders
