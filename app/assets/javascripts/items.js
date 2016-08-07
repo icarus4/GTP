@@ -16,8 +16,8 @@ new Vue({
       brands: [],
       manufacturers: [],
       storage_and_transport_conditions: [
-        { id: 1, name: '冷藏' },
-        { id: 2, name: '冷凍' },
+        { id: 1, name: '冷凍' },
+        { id: 2, name: '冷藏' },
         { id: 3, name: '18度C' },
         { id: 4, name: '常溫' },
         { id: 5, name: '其他' },
@@ -53,7 +53,18 @@ new Vue({
   },
   methods: {
     submitForm: function() {
-
+      that = this
+      $.ajax({
+        url: "/api/v1/items",
+        method: 'POST',
+        dataType: 'JSON',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: {item_series: that.series, item: that.item}
+      }).done(function(data) {
+        alert('成功建立商品')
+      }).fail(function(data) {
+        alert('建立商品失敗')
+      })
     },
     getBrandList: function() {
       that = this;
