@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160801151423) do
+ActiveRecord::Schema.define(version: 20160807075826) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,16 @@ ActiveRecord::Schema.define(version: 20160801151423) do
   end
 
   add_index "locations", ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
+
+  create_table "manufacturers", force: :cascade do |t|
+    t.integer "company_id"
+    t.boolean "foreign",             default: false, null: false
+    t.string  "name"
+    t.string  "registration_number"
+    t.string  "address"
+  end
+
+  add_index "manufacturers", ["company_id"], name: "index_manufacturers_on_company_id", using: :btree
 
   create_table "purchase_order_details", force: :cascade do |t|
     t.integer  "purchase_order_id"

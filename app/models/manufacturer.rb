@@ -1,31 +1,21 @@
 # == Schema Information
 #
-# Table name: companies
+# Table name: manufacturers
 #
-#  id          :integer          not null, primary key
-#  company_id  :integer
-#  assignee_id :integer
-#  status      :integer          default(0), not null
-#  type        :string           default(""), not null
-#  name        :string
-#  email       :string
-#  vat_number  :string
-#  phone       :string
-#  fax         :string
-#  website     :string
-#  description :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id                  :integer          not null, primary key
+#  company_id          :integer
+#  foreign             :boolean          default(FALSE), not null
+#  name                :string
+#  registration_number :string
+#  address             :string
 #
 # Indexes
 #
-#  index_companies_on_company_id  (company_id)
-#  index_companies_on_type        (type)
+#  index_manufacturers_on_company_id  (company_id)
 #
 
-class Manufacturer < Company
+class Manufacturer < ActiveRecord::Base
   belongs_to :company
-  has_many :locations, as: :locationable
 
   validates :name, :company_id, presence: true
 end
