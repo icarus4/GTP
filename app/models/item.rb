@@ -34,6 +34,11 @@ class Item < ActiveRecord::Base
   attr_accessor :initial_location_id
   mount_uploader :image, ImageUploader
 
+  delegate :supplier,
+           :brand,
+           :manufacturer,
+           to: :item_series
+
   belongs_to :company
   belongs_to :supplier
   belongs_to :item_series

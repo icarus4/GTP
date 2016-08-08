@@ -10,10 +10,9 @@
   <div class="col-md-4">
     <dl class="dl-horizontal">
       <dt>貨品名稱</dt><dd><%= @item.name %></dd>
-      <dt>貨品類型</dt><dd><%= @item.item_type.name %></dd>
-      <dt>供應商</dt><dd><%= @item.supplier.name %></dd>
+      <!-- <dt>貨品類型</dt><dd><%#= @item.item_type.name %></dd> -->
+      <dt>製造商</dt><dd><%= @item.manufacturer.name %></dd>
       <dt>品牌</dt><dd><%= @item.brand.name %></dd>
-      <dt>單位</dt><dd><%= @item.unit %></dd>
     </dl>
   </div>
 
@@ -36,7 +35,7 @@
       <tr>
         <th>製造日期</th>
         <th>保存期限</th>
-        <th>數量<%= " (#{@item.unit})" if @item.unit %></th>
+        <th>數量</th>
       </tr>
     </thead>
     <tbody>

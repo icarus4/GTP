@@ -8,8 +8,7 @@
       <tr>
         <th>圖片</th>
         <th>貨品名稱</th>
-        <th>供應商</th>
-        <th>貨品類型</th>
+        <th>製造商</th>
         <th>品牌</th>
         <th>庫存量</th>
         <th>倉庫現有數量</th>
@@ -22,8 +21,7 @@
       <tr data-link="<%= item_path(item) %>">
         <td><%= image_tag(item.image.thumb, size: '32x32') if item.image.present? %></td>
         <td><%= item.name %></td>
-        <td><%= item.supplier.name %></td>
-        <td><%= item.item_type.name %></td>
+        <td><%= item.manufacturer.name %></td>
         <td><%= item.brand.name %></td>
         <td><%= item.available_count %></td>
         <td><%= item.on_hand_count %></td>
