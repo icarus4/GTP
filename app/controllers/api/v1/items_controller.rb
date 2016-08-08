@@ -5,10 +5,12 @@ class Api::V1::ItemsController < Api::V1::BaseController
   end
 
   def create
+    storage_and_transport_condition_note = params[:item_series][:storage_and_transport_condition_note].present? ? params[:item_series][:storage_and_transport_condition_note].strip : nil
     series = current_company.item_series.build(
-      brand_id:                        params[:item_series][:brand_id],
-      manufacturer_id:                 params[:item_series][:manufacturer_id],
-      storage_and_transport_condition: params[:item_series][:storage_and_transport_condition_id].to_i,
+      brand_id:                             params[:item_series][:brand_id],
+      manufacturer_id:                      params[:item_series][:manufacturer_id],
+      storage_and_transport_condition:      params[:item_series][:storage_and_transport_condition_id].to_i,
+      storage_and_transport_condition_note: storage_and_transport_condition_note,
     )
 
     ActiveRecord::Base.transaction do

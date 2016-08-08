@@ -34,6 +34,17 @@ class Item < ActiveRecord::Base
   attr_accessor :initial_location_id
   mount_uploader :image, ImageUploader
 
+  delegate :supplier,
+           :brand,
+           :manufacturer,
+           :storage_and_transport_condition,
+           :storage_and_transport_condition_in_chinese,
+           :storage_and_transport_condition_note,
+           :raw_material,
+           :food_additives,
+           :warnings,
+           to: :item_series
+
   belongs_to :company
   belongs_to :supplier
   belongs_to :item_series
@@ -51,6 +62,11 @@ class Item < ActiveRecord::Base
   enum status: {
     active: 0,
     disabled: 1,
+  }
+
+  enum weight_unit: {
+    g:  0,
+    kg: 1,
   }
 
   validates :name,         presence: true

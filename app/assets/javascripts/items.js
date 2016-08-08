@@ -27,6 +27,7 @@ new Vue({
       brand_id: 0,
       manufacturer_id: 0,
       storage_and_transport_condition_id: 0,
+      storage_and_transport_condition_note: "",
     },
     itemTemplate: {
       name: "",
