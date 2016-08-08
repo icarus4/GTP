@@ -2,16 +2,17 @@
 #
 # Table name: item_series
 #
-#  id                              :integer          not null, primary key
-#  company_id                      :integer          not null
-#  brand_id                        :integer
-#  manufacturer_id                 :integer
-#  storage_and_transport_condition :integer
-#  raw_material                    :text
-#  food_additives                  :text
-#  warnings                        :text
-#  created_at                      :datetime         not null
-#  updated_at                      :datetime         not null
+#  id                                   :integer          not null, primary key
+#  company_id                           :integer          not null
+#  brand_id                             :integer
+#  manufacturer_id                      :integer
+#  storage_and_transport_condition      :integer
+#  storage_and_transport_condition_note :text
+#  raw_material                         :text
+#  food_additives                       :text
+#  warnings                             :text
+#  created_at                           :datetime         not null
+#  updated_at                           :datetime         not null
 #
 
 class ItemSeries < ActiveRecord::Base
@@ -29,4 +30,15 @@ class ItemSeries < ActiveRecord::Base
     room_temperature: 4, # 常溫
     other:            5, # 其他
   }
+
+  def storage_and_transport_condition_in_chinese
+    mapping = {
+      'freezing'         => '冷凍',
+      'refrigeration'    => '冷藏',
+      'eighteen_degrees' => '18度C',
+      'room_temperature' => '常溫',
+      'other'            => '其他',
+    }
+    mapping[storage_and_transport_condition]
+  end
 end
