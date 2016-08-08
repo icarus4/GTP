@@ -24,7 +24,7 @@
 
 class ItemsController < ApplicationController
   def index
-    @items = current_company.items.includes(:supplier, :brand)
+    @items = current_company.items.includes(item_series: [:brand, :manufacturer]).order(:item_series_id)
   end
 
   def new

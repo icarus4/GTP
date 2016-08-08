@@ -5,6 +5,7 @@ class CreateItemSeries < ActiveRecord::Migration
       t.references :brand
       t.references :manufacturer
       t.integer    :storage_and_transport_condition
+      t.text       :storage_and_transport_condition_note
       t.text       :raw_material
       t.text       :food_additives
       t.text       :warnings

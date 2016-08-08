@@ -52,15 +52,16 @@ ActiveRecord::Schema.define(version: 20160807075826) do
   add_index "companies", ["type"], name: "index_companies_on_type", using: :btree
 
   create_table "item_series", force: :cascade do |t|
-    t.integer  "company_id",                      null: false
+    t.integer  "company_id",                           null: false
     t.integer  "brand_id"
     t.integer  "manufacturer_id"
     t.integer  "storage_and_transport_condition"
+    t.text     "storage_and_transport_condition_note"
     t.text     "raw_material"
     t.text     "food_additives"
     t.text     "warnings"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
   end
 
   create_table "items", force: :cascade do |t|
