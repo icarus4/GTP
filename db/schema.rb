@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160807075826) do
+ActiveRecord::Schema.define(version: 20160509150340) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,13 +56,18 @@ ActiveRecord::Schema.define(version: 20160807075826) do
     t.integer  "brand_id"
     t.integer  "manufacturer_id"
     t.integer  "storage_and_transport_condition"
-    t.text     "storage_and_transport_condition_note"
+    t.string   "name"
+    t.string   "sku"
+    t.string   "storage_and_transport_condition_note"
     t.text     "raw_material"
+    t.text     "main_and_auxiliary_material"
     t.text     "food_additives"
     t.text     "warnings"
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
   end
+
+  add_index "item_series", ["company_id"], name: "index_item_series_on_company_id", using: :btree
 
   create_table "items", force: :cascade do |t|
     t.integer  "company_id",                                                               null: false
@@ -79,12 +84,12 @@ ActiveRecord::Schema.define(version: 20160807075826) do
     t.decimal  "weight_value",                    precision: 10, scale: 2
     t.boolean  "manufactured_by_self",                                     default: false, null: false
     t.boolean  "expirable",                                                default: true,  null: false
-    t.text     "sku"
-    t.text     "name",                                                     default: "",    null: false
+    t.string   "image"
+    t.string   "sku"
+    t.string   "name",                                                     default: "",    null: false
     t.text     "description"
     t.datetime "created_at",                                                               null: false
     t.datetime "updated_at",                                                               null: false
-    t.string   "image"
   end
 
   add_index "items", ["company_id"], name: "index_items_on_company_id", using: :btree
@@ -166,7 +171,7 @@ ActiveRecord::Schema.define(version: 20160807075826) do
     t.integer  "unit_price"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-    t.text     "note"
+    t.text     "notes"
   end
 
   add_index "sales_order_details", ["sales_order_id"], name: "index_sales_order_details_on_sales_order_id", using: :btree
@@ -256,4 +261,34 @@ ActiveRecord::Schema.define(version: 20160807075826) do
 
   add_index "variants", ["item_id"], name: "index_variants_on_item_id", using: :btree
 
+  add_foreign_key "brands", "companies"
+  add_foreign_key "item_series", "brands"
+  add_foreign_key "item_series", "companies"
+  add_foreign_key "item_series", "manufacturers"
+  add_foreign_key "items", "companies"
+  add_foreign_key "items", "item_series"
+  add_foreign_key "location_variants", "companies"
+  add_foreign_key "location_variants", "locations"
+  add_foreign_key "location_variants", "variants"
+  add_foreign_key "locations", "cities"
+  add_foreign_key "manufacturers", "companies"
+  add_foreign_key "purchase_order_details", "items"
+  add_foreign_key "purchase_order_details", "purchase_orders"
+  add_foreign_key "purchase_orders", "companies"
+  add_foreign_key "purchase_orders", "companies", column: "supplier_id"
+  add_foreign_key "purchase_orders", "locations", column: "bill_to_location_id"
+  add_foreign_key "purchase_orders", "locations", column: "ship_to_location_id"
+  add_foreign_key "sales_order_details", "sales_orders"
+  add_foreign_key "sales_order_details", "variants"
+  add_foreign_key "sales_orders", "companies"
+  add_foreign_key "sales_orders", "companies", column: "customer_id"
+  add_foreign_key "sales_orders", "locations", column: "bill_to_location_id"
+  add_foreign_key "sales_orders", "locations", column: "ship_from_location_id"
+  add_foreign_key "sales_orders", "locations", column: "ship_to_location_id"
+  add_foreign_key "stock_transfer_details", "stock_transfers"
+  add_foreign_key "stock_transfer_details", "variants"
+  add_foreign_key "stock_transfers", "companies"
+  add_foreign_key "stock_transfers", "locations", column: "destination_location_id"
+  add_foreign_key "stock_transfers", "locations", column: "source_location_id"
+  add_foreign_key "variants", "items"
 end

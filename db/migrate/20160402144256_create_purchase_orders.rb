@@ -1,7 +1,7 @@
 class CreatePurchaseOrders < ActiveRecord::Migration
   def change
     create_table :purchase_orders do |t|
-      t.references :company
+      t.references :company,          foreign_key: true
       t.references :supplier
       t.references :bill_to_location
       t.references :ship_to_location
@@ -16,5 +16,8 @@ class CreatePurchaseOrders < ActiveRecord::Migration
 
     add_index :purchase_orders, [:company_id, :supplier_id]
     add_index :purchase_orders, :status
+    add_foreign_key :purchase_orders, :companies, column: :supplier_id
+    add_foreign_key :purchase_orders, :locations, column: :bill_to_location_id
+    add_foreign_key :purchase_orders, :locations, column: :ship_to_location_id
   end
 end
