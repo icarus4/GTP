@@ -17,12 +17,12 @@
 #  weight_value          :decimal(10, 2)
 #  manufactured_by_self  :boolean          default(FALSE), not null
 #  expirable             :boolean          default(TRUE), not null
-#  sku                   :text
-#  name                  :text             default(""), not null
+#  image                 :string
+#  sku                   :string
+#  name                  :string           default(""), not null
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  image                 :string
 #
 # Indexes
 #

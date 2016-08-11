@@ -21,5 +21,6 @@
 //= require lodash
 //= require cocoon
 //= require vue
+//= require item_series
 //= require items
 //= require_tree .

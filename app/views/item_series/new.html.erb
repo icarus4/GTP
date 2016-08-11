@@ -1,0 +1,222 @@
+<div id="new-item-series-form">
+  <div class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">* 商品系列名稱</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="series.name" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">* SKU</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="series.sku" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">商品類別(NIY)</label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">品牌</label>
+      <div class="col-sm-4">
+        <select class="form-control input-sm" v-model="series.brand_id">
+          <option value="0">-- 選取品牌 --</option>
+          <option v-for="brand in options.brands" v-bind:value="brand.id">
+            {{ brand.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-default btn-circle" data-toggle="modal" data-target="#new-brand-modal">
+          <i class="fa fa-plus"></i>
+        </button>
+        <span>新增品牌</span>
+      </div>
+      <%= render "new_brand_modal" %>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">* 製造商</label>
+      <div class="col-sm-4">
+        <select class="form-control input-sm" v-model="series.manufacturer_id">
+          <option value="0">-- 選取製造商 --</option>
+          <option v-for="manufacturer in options.manufacturers" v-bind:value="manufacturer.id">
+            {{ manufacturer.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-default btn-circle" data-toggle="modal" data-target="#new-manufacturer-modal">
+          <i class="fa fa-plus"></i>
+        </button>
+        <span>新增製造商</span>
+      </div>
+      <%= render "new_manufacturer_modal" %>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">* 儲運條件</label>
+      <div class="col-sm-4">
+        <select class="form-control input-sm" v-model="series.storage_and_transport_condition">
+          <option value="0">-- 選取儲運條件 --</option>
+          <option v-for="storage_and_transport_condition in options.storage_and_transport_conditions" v-bind:value="storage_and_transport_condition.id">
+            {{ storage_and_transport_condition.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-sm-3">
+        <input type="text" placeholder="輸入儲運條件備註" class="form-control input-sm" v-model="series.storage_and_transport_condition_note" v-show="series.storage_and_transport_condition === 'other'">
+      </div>
+    </div>
+
+
+    <!-- <div class="form-group">
+      <label class="col-sm-2 control-label">商品描述</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="item.description" class="form-control input-sm">
+      </div>
+    </div> -->
+
+    <hr>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">商品原材料</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="series.raw_material" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">主副原料</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="series.main_and_auxiliary_material" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">食品添加物</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="series.food_additives" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">警語</label>
+      <div class="col-sm-4">
+        <input type="text" v-model="series.warnings" class="form-control input-sm">
+      </div>
+    </div>
+
+    <!-- <div class="form-group">
+      <label class="col-sm-2 control-label">單位買進成本</label>
+      <div class="col-sm-2">
+        <input type="number" v-model="item.cost_per_unit" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">進貨價</label>
+      <div class="col-sm-2">
+        <input type="number" v-model="item.purchase_price" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">批發價</label>
+      <div class="col-sm-2">
+        <input type="number" v-model="item.wholesale_price" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">零售價</label>
+      <div class="col-sm-2">
+        <input type="number" v-model="item.retail_price" class="form-control input-sm">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">低庫存警示量</label>
+      <div class="col-sm-2">
+        <input type="number" v-model="item.low_stock_alert_level" class="form-control input-sm">
+      </div>
+    </div> -->
+
+    <!-- <div class="form-group">
+      <label class="col-sm-2 control-label">在庫數量</label>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-sm-12">
+            <table class="table table-bordered" id="new-item-table">
+              <thead>
+                <tr>
+                  <th><small>數量</small></th>
+                  <th><small>期效</small></th>
+                  <th><small>倉庫</small></th>
+                  <th><small>倉位</small></th>
+                  <th><small>輸入許可號碼</small></th>
+                  <th><small>報單號碼</small></th>
+                  <th><small>項次</small></th>
+                  <th><small>批號</small></th>
+                  <th><small>出口代碼</small></th>
+                  <th><small>許可證</small></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="number">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="date">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-2">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-2">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                  <td class="col-sm-1">
+                    <input class="col-sm-12 form-control" type="text">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <div class="form-group">
+      <div class="col-sm-4 col-sm-offset-2">
+        <button v-on:click="submitForm" class="btn btn-primary">建立新商品系列</button>
+      </div>
+    </div>
+
+  <% if Rails.env.development? %>
+    <div>
+      <pre>{{ $data | json }}</pre>
+    </div>
+  <% end %>
+  </div>
+</div>
