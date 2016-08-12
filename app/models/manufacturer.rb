@@ -18,7 +18,7 @@ class Manufacturer < ActiveRecord::Base
   belongs_to :company
 
   validates :name, :company_id, :location_type, presence: true
-  validates :registration_number, uniqueness: { scope: :company_id }
+  validates :registration_number, uniqueness: { scope: :company_id }, allow_nil: true
 
   enum location_type: {
     domestic: 0,

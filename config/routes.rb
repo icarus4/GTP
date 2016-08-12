@@ -17,10 +17,11 @@ Rails.application.routes.draw do
   resources :companies, only: [:index]
   resources :suppliers, only: [:index, :new, :create]
   resources :customers, only: [:index, :new, :create]
-  resources :item_series, only: [:new]
-  resources :items do
-    post :upload_image, on: :member
-    resources :variants, shallow: true
+  resources :item_series, only: [:new, :index, :show] do
+    resources :items, shallow: true do
+      post :upload_image, on: :member
+      resources :variants, shallow: true
+    end
   end
 
   resources :purchase_orders, only: [:index, :new, :create, :show] do

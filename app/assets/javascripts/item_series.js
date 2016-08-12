@@ -56,6 +56,7 @@ new Vue({
         data: {item_series: that.series}
       }).done(function(data) {
         alert('成功建立商品系列')
+        window.location.replace("/item_series/" + data.id)
       }).fail(function(data) {
         console.log(data.errors);
         alert(data.errors)

@@ -1,7 +1,6 @@
 class Api::V1::ItemSeriesController < Api::V1::BaseController
   def create
     item_series = current_company.item_series.build(item_series_params)
-    byebug
     if item_series.save
       render json: item_series
     else
