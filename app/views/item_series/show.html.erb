@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>貨品名稱</dt><dd><%= @item_series.name %></dd>
+      <dt>製造商</dt><dd><%= @item_series.manufacturer.name %></dd>
+      <dt>品牌</dt><dd><%= @item_series.brand.name %></dd>
+      <dt>SKU</dt><dd><%= @item_series.sku %></dd>
+      <dt>儲運條件</dt><dd><%= @item_series.storage_and_transport_condition_in_chinese %><%= "(#{@item_series.storage_and_transport_condition_note})" if @item_series.storage_and_transport_condition == 'other' %></dd>
+      <dt>原料</dt><dd><%= @item_series.raw_material %></dd>
+      <dt>食品添加物</dt><dd><%= @item_series.food_additives %></dd>
+      <dt>警語</dt><dd><%= @item_series.warnings %></dd>
+    </dl>
+  </div>
+
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@item_series.updated_at) %> ago</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="row table-container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>名稱</th>
+        <th>SKU</th>
+        <th>進貨價</th>
+        <th>批發價</th>
+        <th>零售價</th>
+        <th>數量</th>
+        <th>在庫數量</th>
+        <th>狀態</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @item_series.items.each do |item| %>
+      <tr>
+        <td>item.name</td>
+        <td>item.sku</td>
+        <td>item.purchase_price</td>
+        <td>item.wholesale_price</td>
+        <td>item.retail_price</td>
+        <td>item.available_count</td>
+        <td>item.on_hand_count</td>
+        <td>item.status</td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="row">
+  <%= link_to "新增商品於此系列", new_item_series_item_path(@item_series), class: 'btn btn-default btn-md' %>
+</div>

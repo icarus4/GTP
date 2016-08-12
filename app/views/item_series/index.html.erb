@@ -1,0 +1,34 @@
+<div class="row">
+  <%= link_to "新增商品系列", new_item_series_path, class: 'btn btn-default btn-md' %>
+</div>
+
+<div class="row table-container">
+  <table class="table table-hover tr-link">
+    <thead>
+      <tr>
+        <th>名稱</th>
+        <th>SKU</th>
+        <th>品牌</th>
+        <th>製造商</th>
+        <th>儲運條件</th>
+        <th>商品原材料</th>
+        <th>主副原料</th>
+        <th>更新時間</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @item_series.each do |item_series| %>
+      <tr data-link="<%= item_series_path(item_series) %>">
+        <td><%= item_series.name %></td>
+        <td><%= item_series.sku %></td>
+        <td><%= item_series.brand.name %></td>
+        <td><%= item_series.manufacturer.name %></td>
+        <td><%= item_series.storage_and_transport_condition_in_chinese %></td>
+        <td><%= item_series.raw_material %></td>
+        <td><%= item_series.main_and_auxiliary_material %></td>
+        <td><%= item_series.updated_at %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,7 +1,7 @@
 class CreateSalesOrders < ActiveRecord::Migration
   def change
     create_table :sales_orders do |t|
-      t.references :company
+      t.references :company,            foreign_key: true
       t.references :customer
       t.references :bill_to_location
       t.references :ship_to_location
@@ -19,5 +19,9 @@ class CreateSalesOrders < ActiveRecord::Migration
 
     add_index :sales_orders, [:company_id, :customer_id]
     add_index :sales_orders, :status
+    add_foreign_key :sales_orders, :companies, column: :customer_id
+    add_foreign_key :sales_orders, :locations, column: :bill_to_location_id
+    add_foreign_key :sales_orders, :locations, column: :ship_to_location_id
+    add_foreign_key :sales_orders, :locations, column: :ship_from_location_id
   end
 end

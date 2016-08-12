@@ -1,8 +1,8 @@
 class CreateItems < ActiveRecord::Migration
   def change
     create_table :items do |t|
-      t.references :company, null: false
-      t.references :item_series
+      t.references :company, null: false, foreign_key: true
+      t.references :item_series,          foreign_key: true
       t.integer    :available_count,      null: false, default: 0
       t.integer    :on_hand_count,        null: false, default: 0
       t.integer    :cost_per_unit
@@ -15,8 +15,9 @@ class CreateItems < ActiveRecord::Migration
       t.decimal    :weight_value,         precision: 10, scale: 2
       t.boolean    :manufactured_by_self, null: false, default: false
       t.boolean    :expirable,            null: false, default: true
-      t.text       :sku
-      t.text       :name,                 null: false, default: ''
+      t.string     :image
+      t.string     :sku
+      t.string     :name,                 null: false, default: ''
       t.text       :description
 
 

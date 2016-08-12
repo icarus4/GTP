@@ -7,12 +7,19 @@
 #  brand_id                             :integer
 #  manufacturer_id                      :integer
 #  storage_and_transport_condition      :integer
-#  storage_and_transport_condition_note :text
+#  name                                 :string
+#  sku                                  :string
+#  storage_and_transport_condition_note :string
 #  raw_material                         :text
+#  main_and_auxiliary_material          :text
 #  food_additives                       :text
 #  warnings                             :text
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
+#
+# Indexes
+#
+#  index_item_series_on_company_id  (company_id)
 #
 
 class ItemSeries < ActiveRecord::Base
@@ -22,6 +29,10 @@ class ItemSeries < ActiveRecord::Base
   has_many :items
 
   validates :company_id, presence: true
+  validates :brand_id, presence: true
+  validates :manufacturer_id, presence: true
+  validates :name, presence: true, uniqueness: { scope: :company_id }
+  validates :sku, presence: true, uniqueness: { scope: :company_id }
 
   enum storage_and_transport_condition: {
     freezing:         1, # 冷凍 (<= -18 degree)

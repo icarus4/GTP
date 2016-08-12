@@ -17,9 +17,11 @@ Rails.application.routes.draw do
   resources :companies, only: [:index]
   resources :suppliers, only: [:index, :new, :create]
   resources :customers, only: [:index, :new, :create]
-  resources :items do
-    post :upload_image, on: :member
-    resources :variants, shallow: true
+  resources :item_series, only: [:new, :index, :show] do
+    resources :items, shallow: true do
+      post :upload_image, on: :member
+      resources :variants, shallow: true
+    end
   end
 
   resources :purchase_orders, only: [:index, :new, :create, :show] do
@@ -47,6 +49,7 @@ Rails.application.routes.draw do
         get :locations, on: :member
       end
       resources :locations, only: [:index]
+      resources :item_series, only: [:create]
       resources :items, only: [:index, :create]
       resources :brands, only: [:index, :create]
       resources :manufacturers, only: [:index, :create]
