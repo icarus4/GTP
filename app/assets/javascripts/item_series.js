@@ -167,6 +167,7 @@ new Vue({
         data: that.new_items[index]
       }).done(function(data) {
         that.items.push(data.item)
+        that.new_items.$remove(that.new_items[index])
       }).fail(function(data) {
         console.log(data)
         alert(data.errors)
