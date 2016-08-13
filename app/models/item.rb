@@ -55,10 +55,6 @@ class Item < ActiveRecord::Base
   has_many :sales_order_details
   has_many :sales_orders, through: :sales_order_details
 
-  validates_associated :variants
-
-  accepts_nested_attributes_for :variants
-
   enum status: {
     active: 0,
     disabled: 1,
@@ -72,6 +68,7 @@ class Item < ActiveRecord::Base
   validates :name,         presence: true
   validates :company_id,   presence: true
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :sku, uniqueness: { scope: :company_id }, allow_blank: true
 
 
   def sku_name

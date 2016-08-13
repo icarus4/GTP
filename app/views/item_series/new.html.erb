@@ -213,10 +213,6 @@
       </div>
     </div>
 
-  <% if Rails.env.development? %>
-    <div>
-      <pre>{{ $data | json }}</pre>
-    </div>
-  <% end %>
+    <%= render 'common/vue_data' %>
   </div>
 </div>

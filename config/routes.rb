@@ -49,8 +49,9 @@ Rails.application.routes.draw do
         get :locations, on: :member
       end
       resources :locations, only: [:index]
-      resources :item_series, only: [:create]
-      resources :items, only: [:index, :create]
+      resources :item_series, only: [:create] do
+        resources :items, only: [:index, :create]
+      end
       resources :brands, only: [:index, :create]
       resources :manufacturers, only: [:index, :create]
     end
