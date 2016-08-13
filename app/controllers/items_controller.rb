@@ -27,11 +27,6 @@ class ItemsController < ApplicationController
     @items = current_company.items.includes(item_series: [:brand, :manufacturer]).order(:item_series_id)
   end
 
-  def new
-    @item = current_company.items.build
-    @item.variants.build
-  end
-
   def create
     @item = current_company.items.build(item_params)
     if @item.save

@@ -1,0 +1,6 @@
+<% if Rails.env.development? %>
+  <hr>
+  <div>
+    <pre>{{ $data | json }}</pre>
+  </div>
+<% end %>

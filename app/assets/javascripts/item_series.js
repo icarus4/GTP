@@ -117,3 +117,60 @@ new Vue({
     }
   }
 });
+
+
+new Vue({
+  el: "#item-table",
+  data: {
+    item_series_id: null,
+    itemTemplate: {
+      name: null,
+      sku: null,
+      purchase_price: null,
+      wholesale_price: null,
+      retail_price: null,
+      cost_per_unit: null,
+      on_hand_count: null,
+      low_stock_alert_level: null,
+    },
+    items: [],
+    new_items: [],
+  },
+  created: function() {
+    this.getItemSeriesId()
+  },
+  ready: function() {
+    this.getItemList()
+  },
+  methods: {
+    getItemSeriesId: function() {
+      this.item_series_id = $("input#item-series-id").val()
+    },
+    getItemList: function() {
+      that = this
+      $.ajax({
+        url: "/api/v1/item_series/" + that.item_series_id + "/items"
+      }).done(function(data) {
+        that.items = data.items
+      })
+    },
+    addNewItemForm: function() {
+      this.new_items.push(_.cloneDeep(this.itemTemplate))
+    },
+    submitItemForm: function(index) {
+      that = this;
+      $.ajax({
+        url: "/api/v1/item_series/" + that.item_series_id + "/items",
+        method: "POST",
+        dataType: 'JSON',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: that.new_items[index]
+      }).done(function(data) {
+        that.items.push(data.item)
+      }).fail(function(data) {
+        console.log(data)
+        alert(data.errors)
+      })
+    }
+  }
+})

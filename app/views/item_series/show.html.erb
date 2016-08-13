@@ -1,3 +1,4 @@
+
 <div class="row">
   <div class="col-md-4">
     <dl class="dl-horizontal">
@@ -19,37 +20,59 @@
   </div>
 </div>
 
-<div class="row table-container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>名稱</th>
-        <th>SKU</th>
-        <th>進貨價</th>
-        <th>批發價</th>
-        <th>零售價</th>
-        <th>數量</th>
-        <th>在庫數量</th>
-        <th>狀態</th>
-      </tr>
-    </thead>
-    <tbody>
-    <% @item_series.items.each do |item| %>
-      <tr>
-        <td>item.name</td>
-        <td>item.sku</td>
-        <td>item.purchase_price</td>
-        <td>item.wholesale_price</td>
-        <td>item.retail_price</td>
-        <td>item.available_count</td>
-        <td>item.on_hand_count</td>
-        <td>item.status</td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-</div>
+<div id="item-table">
+  <div class="row table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-sm-1">名稱</th>
+          <th class="col-sm-1">SKU</th>
+          <th class="col-sm-1">買進價</th>
+          <th class="col-sm-1">批發價</th>
+          <th class="col-sm-1">零售價</th>
+          <th class="col-sm-1">單位庫存成本</th>
+          <th class="col-sm-1">可用數量</th>
+          <th class="col-sm-1">在庫數量</th>
+          <th class="col-sm-1">低庫存警示量</th>
+          <th class="col-sm-1">狀態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Existing items -->
+        <tr v-for="item in items">
+          <td class="col-sm-1">{{ item.name }}</td>
+          <td class="col-sm-1">{{ item.sku }}</td>
+          <td class="col-sm-1">{{ item.purchase_price }}</td>
+          <td class="col-sm-1">{{ item.wholesale_price }}</td>
+          <td class="col-sm-1">{{ item.retail_price }}</td>
+          <td class="col-sm-1">{{ item.cost_per_unit }}</td>
+          <td class="col-sm-1">{{ item.available_count }}</td>
+          <td class="col-sm-1">{{ item.on_hand_count }}</td>
+          <td class="col-sm-1">{{ item.low_stock_alert_level }}</td>
+          <td class="col-sm-1">{{ item.status }}</td>
+        </tr>
+        <!-- New item form -->
+        <tr v-for="new_item in new_items">
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="text" v-model="new_items[$index].name"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="text" v-model="new_items[$index].sku"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].purchase_price"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].wholesale_price"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].retail_price"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].cost_per_unit"></td>
+          <td class="col-sm-1"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].on_hand_count"></td>
+          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].low_stock_alert_level"></td>
+          <td class="col-sm-1"><button class="btn btn-sm btn-default" v-on:click="submitItemForm($index)">儲存</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<div class="row">
-  <%= link_to "新增商品於此系列", new_item_series_item_path(@item_series), class: 'btn btn-default btn-md' %>
+  <div class="row">
+    <input id="item-series-id" type="hidden" value="<%= @item_series.id %>">
+    <button class="btn btn-default btn-md" v-on:click="addNewItemForm">新增商品</button>
+  </div>
+
+  <%= render 'common/vue_data' %>
+
 </div>
