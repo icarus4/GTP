@@ -1,28 +1,201 @@
 <div class="row">
-  <%= link_to "新增據點", new_location_path, class: 'btn btn-default btn-md' %>
+  <%= link_to "新增地點", new_location_path, class: 'btn btn-default btn-md' %>
 </div>
 
-<div class="row table-container">
-  <table class="table">
+<div class="row table-container" id="location-table">
+  <table class="table table-hover">
     <thead>
       <tr>
-        <th>據點名稱</th>
+        <th>地點名稱</th>
         <th>城市</th>
         <th>地址</th>
         <th>含倉庫？</th>
+        <th>倉位</th>
       </tr>
     </thead>
     <tbody>
-    <% @locations.each do |location| %>
-      <tr>
-        <td><%= location.name %></td>
-        <td><%= location.city.name %></td>
-        <td><%= location.address %></td>
+      <tr v-for="location in locations"
+          style="cursor: pointer"
+          data-toggle="modal"
+          data-target="#edit-location-modal"
+          @click="setupEditLocation($index)">
+        <td>{{ location.name }}</td>
+        <td>{{ location.city.name }}</td>
+        <td>{{ location.address }}</td>
         <td>
-          <% if location.holds_stock? %><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><% end %>
+          <span class="glyphicon glyphicon-ok" aria-hidden="true" v-show="location.holds_stock"></span>
+        </td>
+        <td>
+          <ul>
+            <li v-for="bin_location in location.bin_locations">{{ bin_location.name }}</li>
+          </ul>
         </td>
       </tr>
-    <% end %>
     </tbody>
   </table>
+
+  <!-- Edit location modal -->
+  <div class="modal inmodal" id="edit-location-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content animated fadeIn">
+
+        <div class="modal-header">
+          <h4 class="modal-title">編輯地點</h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-3 control-label">* 名稱</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.name">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">* 城市</label>
+              <div class="col-md-7">
+                <select v-model="editing_location.city_id" class="form-control input-sm">
+                  <option v-for="city in options.cities" :value="city.id">{{ city.name }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">郵遞區號</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.zip">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">* 地址</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.address">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">含倉庫?</label>
+              <div class="col-md-7">
+                <label class="control-label" v-if="editing_location.holds_stock">有</label>
+                <label class="control-label" v-else>無</label>
+              </div>
+            </div>
+
+            <!-- 新增倉位 -->
+            <div v-if="editing_location.holds_stock">
+              <div class="text-center"><h3>倉位</h3></div>
+
+              <!-- Existing bin locations -->
+              <div class="form-group" v-for="bin_location in editing_location.bin_locations">
+                <div class="col-md-7 col-md-offset-3" >
+                  <input type="text" class="form-control input-sm" v-model="bin_location.name" disabled>
+                </div>
+              </div>
+
+              <!-- New bin location form -->
+              <div class="form-group" v-if="show_new_bin_location_form">
+                <div class="col-md-7 col-md-offset-3" >
+                  <input type="text" class="form-control input-sm" v-model="new_bin_location.name">
+                </div>
+                <div class="col-md-1">
+                  <button @click="createBinLocation()" class="btn btn-default btn-sm">建立</button>
+                </div>
+              </div>
+
+              <!-- Show new bin location form button -->
+              <div class="text-center" v-else>
+                <button @click="showNewBinLocationForm(editing_location.id)" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> 新增倉位</button>
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div> <!-- modal body -->
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" v-on:click="updateLocation()" disabled="">儲存(NIY)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%= render 'common/vue_data' %>
+
 </div>
+
+<% content_for :js do %>
+<script type="text/javascript">
+  new Vue({
+    el: "#location-table",
+    data: {
+      options: {
+        cities: [],
+      },
+      locations: [],
+      editing_location: {},
+      new_bin_location: {},
+      show_new_bin_location_form: false,
+    },
+    ready: function() {
+      this.getLocationList()
+      this.getCityList()
+    },
+    methods: {
+      getLocationList: function() {
+        that = this
+        $.ajax({
+          url: '/api/v1/locations',
+          dataType: 'JSON',
+        }).done(function(data) {
+          that.locations = data.locations
+        }).fail(function(data) {
+          alert('get locations fail')
+        })
+      },
+      getCityList: function() {
+        that = this
+        $.ajax({
+          url: '/api/v1/cities',
+          dataType: 'JSON',
+        }).done(function(data) {
+          that.options.cities = data.cities
+        }).fail(function(data) {
+          alert('get cities fail')
+        })
+      },
+      setupEditLocation: function(location_index) {
+        this.editing_location = this.locations[location_index]
+      },
+      updateLocation: function() {
+
+      },
+      showNewBinLocationForm: function() {
+        this.show_new_bin_location_form = true
+      },
+      createBinLocation: function() {
+        that = this;
+        $.ajax({
+          url: "/api/v1/locations/" + that.editing_location.id + "/bin_locations",
+          method: "POST",
+          dataType: 'JSON',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.new_bin_location,
+        }).done(function(data) {
+          that.editing_location.bin_locations.push(data.bin_location)
+          that.show_new_bin_location_form = false
+          that.new_bin_location = {}
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON.errors)
+        })
+      },
+    }
+  })
+</script>
+<% end %>

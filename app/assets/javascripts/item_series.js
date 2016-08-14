@@ -168,7 +168,7 @@ new Vue({
     getLocationList: function() {
       that = this
       $.ajax({
-        url: "/api/v1/locations"
+        url: "/api/v1/locations/holds_stock"
       }).done(function(data) {
         that.options.locations = data.locations
       }).fail(function(data) {

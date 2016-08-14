@@ -48,12 +48,16 @@ Rails.application.routes.draw do
       resources :customers, only: [:index] do
         get :locations, on: :member
       end
-      resources :locations, only: [:index]
+      resources :locations, only: [:index] do
+        get :holds_stock, on: :collection
+        resources :bin_locations, only: [:create]
+      end
       resources :item_series, only: [:create] do
         resources :items, only: [:index, :create]
       end
       resources :brands, only: [:index, :create]
       resources :manufacturers, only: [:index, :create]
+      resources :cities, only: [:index]
     end
   end
 
