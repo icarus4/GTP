@@ -137,12 +137,12 @@ new Vue({
     itemDetailTemplate: {
       on_hand_count: null,
       expiry_date: null,
-      location_id: null,
-      bin_location_id: null,
+      location_id: 0,
+      bin_location_id: 0,
     },
     options: {
       locations: [],
-    }
+    },
     items: [],
     new_items: [],
   },
@@ -171,10 +171,14 @@ new Vue({
         url: "/api/v1/locations"
       }).done(function(data) {
         that.options.locations = data.locations
+      }).fail(function(data) {
+        alert('getLocationList failed')
       })
     },
     addNewItemForm: function() {
-      this.new_items.push(_.cloneDeep(this.itemTemplate))
+      var new_item = _.cloneDeep(this.itemTemplate)
+      new_item.item_details.push(_.cloneDeep(this.itemDetailTemplate))
+      this.new_items.push(new_item)
     },
     submitItemForm: function(index) {
       that = this;
@@ -191,6 +195,17 @@ new Vue({
         console.log(data)
         alert(data.errors)
       })
+    },
+    find_bin_locations_by_location_id: function(location_id) {
+      if (location_id == 0) {
+        return []
+      }
+      else {
+        var selected_location = _.find(this.options.locations, function(location) {
+          return location.id == location_id
+        })
+        return selected_location.bin_locations
+      }
     }
   }
 })

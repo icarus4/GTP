@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160509150340) do
+ActiveRecord::Schema.define(version: 20160814042401) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "bin_locations", force: :cascade do |t|
+    t.integer  "location_id", null: false
+    t.string   "name"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "bin_locations", ["location_id"], name: "index_bin_locations_on_location_id", using: :btree
 
   create_table "brands", force: :cascade do |t|
     t.integer  "company_id",             null: false
@@ -261,6 +270,7 @@ ActiveRecord::Schema.define(version: 20160509150340) do
 
   add_index "variants", ["item_id"], name: "index_variants_on_item_id", using: :btree
 
+  add_foreign_key "bin_locations", "locations"
   add_foreign_key "brands", "companies"
   add_foreign_key "item_series", "brands"
   add_foreign_key "item_series", "companies"

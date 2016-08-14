@@ -101,19 +101,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><input type="number" style="width: 50px" min="0"></td>
+              <tr v-for="item_detail in new_item.item_details">
+                <td><input v-model="item_detail.on_hand_count" type="number" style="width: 50px" min="0"></td>
                 <td><input type="date"></td>
                 <td>
-                  <select>
+                  <select v-model="item_detail.location_id">
                     <option value="0">--選取倉庫--</option>
-                    <option value="1">小倉庫</option>
+                    <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
                   </select>
                 </td>
                 <td>
-                  <select>
+                  <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == 0">
                     <option value="0">--選取倉位--</option>
-                    <option value="1">小倉位</option>
+                    <option v-for="bin_location in find_bin_locations_by_location_id(item_detail.location_id)" :value="bin_location.id">{{ bin_location.name }}</option>
                   </select>
                 </td>
                 <td><input type="text" size="10"></td>
