@@ -1,5 +1,6 @@
 class Api::V1::LocationsController < Api::V1::BaseController
   def index
-    render json: { locations: current_company.locations }
+    locations = current_company.locations#.includes(:bin_locations)
+    render json: { locations: locations }
   end
 end

@@ -131,8 +131,18 @@ new Vue({
       retail_price: null,
       cost_per_unit: null,
       on_hand_count: null,
+      item_details: [],
       low_stock_alert_level: null,
     },
+    itemDetailTemplate: {
+      on_hand_count: null,
+      expiry_date: null,
+      location_id: null,
+      bin_location_id: null,
+    },
+    options: {
+      locations: [],
+    }
     items: [],
     new_items: [],
   },
@@ -141,6 +151,7 @@ new Vue({
   },
   ready: function() {
     this.getItemList()
+    this.getLocationList()
   },
   methods: {
     getItemSeriesId: function() {
@@ -152,6 +163,14 @@ new Vue({
         url: "/api/v1/item_series/" + that.item_series_id + "/items"
       }).done(function(data) {
         that.items = data.items
+      })
+    },
+    getLocationList: function() {
+      that = this
+      $.ajax({
+        url: "/api/v1/locations"
+      }).done(function(data) {
+        that.options.locations = data.locations
       })
     },
     addNewItemForm: function() {
