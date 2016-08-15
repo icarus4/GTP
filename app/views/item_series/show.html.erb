@@ -60,9 +60,13 @@
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].retail_price"></td>
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].cost_per_unit"></td>
           <td class="col-sm-1"></td>
-          <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].on_hand_count"></td>
+          <td class="col-sm-1">
+              <input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].on_hand_count">
+              <button class="col-sm-12 btn btn-sm btn-default" data-toggle="modal" data-target="#new-item-location-modal-{{$index}}">進階庫存設定</button>
+          </td>
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].low_stock_alert_level"></td>
           <td class="col-sm-1"><button class="btn btn-sm btn-default" v-on:click="submitItemForm($index)">儲存</button></td>
+
         </tr>
       </tbody>
     </table>
@@ -72,6 +76,63 @@
     <input id="item-series-id" type="hidden" value="<%= @item_series.id %>">
     <button class="btn btn-default btn-md" v-on:click="addNewItemForm">新增商品</button>
   </div>
+
+
+  <!-- Item location modal -->
+  <div v-for="new_item in new_items" class="modal inmodal" id="new-item-location-modal-{{$index}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content animated fadeIn">
+        <div class="modal-header">
+          <h4 class="modal-title">庫存設定</h4>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered" id="new-item-table">
+            <thead>
+              <tr>
+                <th>數量</th>
+                <th>期效</th>
+                <th>倉庫</th>
+                <th>倉位</th>
+                <th>輸入許可證號碼</th>
+                <th>報單號碼</th>
+                <th>項次</th>
+                <th>批號</th>
+                <th>出口代碼</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item_detail in new_item.item_details">
+                <td><input v-model="item_detail.on_hand_count" type="number" style="width: 50px" min="0"></td>
+                <td><input type="date"></td>
+                <td>
+                  <select v-model="item_detail.location_id">
+                    <option value="0">--選取倉庫--</option>
+                    <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
+                  </select>
+                </td>
+                <td>
+                  <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == 0">
+                    <option value="0">--選取倉位--</option>
+                    <option v-for="bin_location in find_bin_locations_by_location_id(item_detail.location_id)" :value="bin_location.id">{{ bin_location.name }}</option>
+                  </select>
+                </td>
+                <td><input type="text" size="10"></td>
+                <td><input type="text" size="8"></td>
+                <td><input type="text" size="8"></td>
+                <td><input type="text" size="8"></td>
+                <td><input type="text" size="8"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary">新增</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <%= render 'common/vue_data' %>
 
