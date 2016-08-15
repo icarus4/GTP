@@ -48,7 +48,7 @@ Rails.application.routes.draw do
       resources :customers, only: [:index] do
         get :locations, on: :member
       end
-      resources :locations, only: [:index] do
+      resources :locations, only: [:index, :update] do
         get :holds_stock, on: :collection
         resources :bin_locations, only: [:create]
       end

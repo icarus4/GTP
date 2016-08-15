@@ -106,7 +106,7 @@
               </div>
 
               <!-- Show new bin location form button -->
-              <div class="text-center" v-else>
+              <div class="text-center" v-if="!show_new_bin_location_form">
                 <button @click="showNewBinLocationForm(editing_location.id)" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> 新增倉位</button>
               </div>
 
@@ -119,7 +119,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-          <button type="button" class="btn btn-primary" v-on:click="updateLocation()" disabled="">儲存(NIY)</button>
+          <button type="button" class="btn btn-primary" v-on:click="updateLocation()" data-dismiss="modal">儲存</button>
         </div>
       </div>
     </div>
@@ -170,10 +170,26 @@
         })
       },
       setupEditLocation: function(location_index) {
-        this.editing_location = this.locations[location_index]
+        this.editing_location = _.cloneDeep(this.locations[location_index])
       },
       updateLocation: function() {
-
+        that = this;
+        $.ajax({
+          url: "/api/v1/locations/" + that.editing_location.id,
+          method: "PATCH",
+          dataType: 'JSON',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.editing_location,
+        }).done(function(data) {
+          for (var i = 0; i < that.locations.length; i++) {
+            if (that.locations[i].id == data.location.id) {
+              that.locations.$set(i, data.location) // Here "$set" is necessary. Please refer to http://vuejs.org/guide/list.html#Caveats
+            }
+          }
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON.errors)
+        })
       },
       showNewBinLocationForm: function() {
         this.show_new_bin_location_form = true
