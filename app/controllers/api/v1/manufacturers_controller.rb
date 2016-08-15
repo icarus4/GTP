@@ -4,9 +4,9 @@ class Api::V1::ManufacturersController < Api::V1::BaseController
   end
 
   def create
-    registration_number = params[:registration_number].present? ? params[:registration_number].strip : nil
-    address = params[:address].present? ? params[:address].strip : nil
-    location_type = params[:location_type]
+    registration_number = params[:registration_number].strip.presence
+    address             = params[:address].strip.presence
+    location_type       = params[:location_type]
 
     # TODO: validate location_type
 

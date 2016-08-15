@@ -7,8 +7,7 @@ class Api::V1::ItemsController < Api::V1::BaseController
   def create
     item_series = ItemSeries.find_by(company: current_company, id: params[:item_series_id])
     if item_series.blank?
-      render json: { errors: "item_series not found" }, status: :bad_request
-      return
+      render json: { errors: "item_series not found" }, status: :bad_request and return
     end
 
     item = item_series.items.build(

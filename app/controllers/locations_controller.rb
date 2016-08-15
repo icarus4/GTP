@@ -16,7 +16,6 @@
 
 class LocationsController < ApplicationController
   def index
-    @locations = current_company.locations
   end
 
   def new
