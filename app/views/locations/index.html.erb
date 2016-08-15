@@ -154,8 +154,8 @@
           dataType: 'JSON',
         }).done(function(data) {
           that.locations = data.locations
-        }).fail(function(data) {
-          alert('get locations fail')
+        }).fail(function(err) {
+          console.log(err)
         })
       },
       getCityList: function() {
@@ -165,8 +165,8 @@
           dataType: 'JSON',
         }).done(function(data) {
           that.options.cities = data.cities
-        }).fail(function(data) {
-          alert('get cities fail')
+        }).fail(function(err) {
+          console.log(err)
         })
       },
       setupEditLocation: function(location_index) {

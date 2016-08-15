@@ -57,9 +57,9 @@ new Vue({
       }).done(function(data) {
         alert('成功建立商品系列')
         window.location.replace("/item_series/" + data.id)
-      }).fail(function(data) {
-        console.log(data.errors);
-        alert(data.errors)
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
       })
     },
     getBrandList: function() {
@@ -90,8 +90,9 @@ new Vue({
         that.options.brands.push(data.brand)
         that.series.brand_id = data.brand.id
         $("#new-brand-modal").modal('hide')
-      }).fail(function(data) {
-        console.log(data.errors.full_messages)
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
       })
     },
     createManufacturer: function() {
@@ -111,8 +112,9 @@ new Vue({
         that.options.manufacturers.push(data.manufacturer)
         that.series.manufacturer_id = data.manufacturer.id
         $("#new-manufacturer-modal").modal('hide')
-      }).fail(function(data) {
-        console.log(data.errors.full_messages)
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
       })
     }
   }
@@ -171,8 +173,8 @@ new Vue({
         url: "/api/v1/locations/holds_stock"
       }).done(function(data) {
         that.options.locations = data.locations
-      }).fail(function(data) {
-        alert('getLocationList failed')
+      }).fail(function(err) {
+        console.log(err)
       })
     },
     addNewItemForm: function() {
@@ -191,9 +193,9 @@ new Vue({
       }).done(function(data) {
         that.items.push(data.item)
         that.new_items.$remove(that.new_items[index])
-      }).fail(function(data) {
-        console.log(data)
-        alert(data.errors)
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
       })
     },
     find_bin_locations_by_location_id: function(location_id) {
