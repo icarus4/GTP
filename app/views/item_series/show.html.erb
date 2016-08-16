@@ -27,6 +27,7 @@
         <tr>
           <th class="col-sm-1">名稱</th>
           <th class="col-sm-1">SKU</th>
+          <th class="col-sm-1">包裝規格</th>
           <th class="col-sm-1">買進價</th>
           <th class="col-sm-1">批發價</th>
           <th class="col-sm-1">零售價</th>
@@ -43,6 +44,7 @@
           <td class="col-sm-1">{{ item.name }}</td>
           <td class="col-sm-1">{{ item.sku }}</td>
           <td class="col-sm-1">{{ item.purchase_price }}</td>
+          <td class="col-sm-1">{{ item.weight_value }} {{ item.weight_unit }} / {{ item.packaging_type.name }}</td>
           <td class="col-sm-1">{{ item.wholesale_price }}</td>
           <td class="col-sm-1">{{ item.retail_price }}</td>
           <td class="col-sm-1">{{ item.cost_per_unit }}</td>

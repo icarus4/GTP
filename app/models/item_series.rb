@@ -8,7 +8,6 @@
 #  manufacturer_id                      :integer
 #  storage_and_transport_condition      :integer
 #  name                                 :string
-#  sku                                  :string
 #  storage_and_transport_condition_note :string
 #  raw_material                         :text
 #  main_and_auxiliary_material          :text
@@ -32,7 +31,6 @@ class ItemSeries < ActiveRecord::Base
   validates :brand_id, presence: true
   validates :manufacturer_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :company_id }
-  validates :sku, presence: true, uniqueness: { scope: :company_id }
 
   enum storage_and_transport_condition: {
     freezing:         1, # 冷凍 (<= -18 degree)
@@ -51,5 +49,9 @@ class ItemSeries < ActiveRecord::Base
       'other'            => '其他',
     }
     mapping[storage_and_transport_condition]
+  end
+
+  def sku
+    "IS%04d" % id
   end
 end

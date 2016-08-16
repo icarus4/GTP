@@ -5,6 +5,7 @@
 #  id                    :integer          not null, primary key
 #  company_id            :integer          not null
 #  item_series_id        :integer
+#  packaging_type_id     :integer
 #  available_count       :integer          default(0), not null
 #  on_hand_count         :integer          default(0), not null
 #  cost_per_unit         :integer
@@ -31,8 +32,9 @@
 #
 
 class Item < ActiveRecord::Base
-  attr_accessor :initial_location_id
   mount_uploader :image, ImageUploader
+
+  after_initialize :setup_defaults
 
   delegate :supplier,
            :brand,
@@ -48,6 +50,7 @@ class Item < ActiveRecord::Base
   belongs_to :company
   belongs_to :supplier
   belongs_to :item_series
+  belongs_to :packaging_type
 
   has_many :variants, -> { order(:expiry_date) }, dependent: :destroy
   has_many :purchase_order_details
@@ -67,8 +70,10 @@ class Item < ActiveRecord::Base
 
   validates :name,         presence: true
   validates :company_id,   presence: true
+  validates :weight_unit,  presence: true
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :sku, uniqueness: { scope: :company_id }, allow_blank: true
+  validates :packaging_type_id, presence: true
 
 
   def sku_name
@@ -97,5 +102,9 @@ class Item < ActiveRecord::Base
     def quantity_in_unshipped_sales_orders
       raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
       SalesOrderDetail.joins({variant: :item}, :sales_order).where(variants: { item_id: id }, sales_orders: { company_id: company_id, status: ['active', 'finalized']}).sum(:quantity)
+    end
+
+    def setup_defaults
+      self.weight_unit = 'g'
     end
 end
