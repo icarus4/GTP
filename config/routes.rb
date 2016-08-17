@@ -58,6 +58,7 @@ Rails.application.routes.draw do
       resources :brands, only: [:index, :create]
       resources :manufacturers, only: [:index, :create]
       resources :cities, only: [:index]
+      resources :packaging_types, only: [:index]
     end
   end
 

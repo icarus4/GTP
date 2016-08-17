@@ -48,7 +48,6 @@ class Item < ActiveRecord::Base
            to: :item_series
 
   belongs_to :company
-  belongs_to :supplier
   belongs_to :item_series
   belongs_to :packaging_type
 

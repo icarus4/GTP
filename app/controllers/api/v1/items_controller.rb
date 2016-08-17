@@ -1,7 +1,7 @@
 class Api::V1::ItemsController < Api::V1::BaseController
   def index
-    items = current_company.items.where(item_series_id: params[:item_series_id]).includes(:variants)
-    render json: { items: items.as_json(include: :variants, except: [:created_at, :updated_at]) }
+    items = current_company.items.where(item_series_id: params[:item_series_id]).includes(:variants, :packaging_type)
+    render json: { items: items.as_json(include: [:variants, :packaging_type], except: [:created_at, :updated_at]) }
   end
 
   def create
