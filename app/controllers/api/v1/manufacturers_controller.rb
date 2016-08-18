@@ -4,17 +4,18 @@ class Api::V1::ManufacturersController < Api::V1::BaseController
   end
 
   def create
-    registration_number = params[:registration_number].strip.presence
-    address             = params[:address].strip.presence
-    location_type       = params[:location_type]
-
+    # Reason of &.strip&.presence:
+    # Convert "" or " " to nil
+    # Convert "a" or "a " to "a"
+    registration_number = params[:registration_number]&.strip&.presence
+    address             = params[:address]&.strip&.presence
     # TODO: validate location_type
 
     manufacturer = current_company.manufacturers.build(
-      name: params[:name].strip,
+      name:                params[:name].strip,
       registration_number: registration_number,
-      location_type: location_type,
-      address: address,
+      location_type:       params[:location_type],
+      address:             address,
     )
     if manufacturer.save
       render json: { manufacturer: manufacturer }

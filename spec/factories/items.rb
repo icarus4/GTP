@@ -5,6 +5,7 @@
 #  id                    :integer          not null, primary key
 #  company_id            :integer          not null
 #  item_series_id        :integer
+#  packaging_type_id     :integer
 #  available_count       :integer          default(0), not null
 #  on_hand_count         :integer          default(0), not null
 #  cost_per_unit         :integer

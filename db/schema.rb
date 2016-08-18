@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160814042401) do
+ActiveRecord::Schema.define(version: 20160815104724) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -66,7 +66,6 @@ ActiveRecord::Schema.define(version: 20160814042401) do
     t.integer  "manufacturer_id"
     t.integer  "storage_and_transport_condition"
     t.string   "name"
-    t.string   "sku"
     t.string   "storage_and_transport_condition_note"
     t.text     "raw_material"
     t.text     "main_and_auxiliary_material"
@@ -81,6 +80,7 @@ ActiveRecord::Schema.define(version: 20160814042401) do
   create_table "items", force: :cascade do |t|
     t.integer  "company_id",                                                               null: false
     t.integer  "item_series_id"
+    t.integer  "packaging_type_id"
     t.integer  "available_count",                                          default: 0,     null: false
     t.integer  "on_hand_count",                                            default: 0,     null: false
     t.integer  "cost_per_unit"
@@ -106,15 +106,15 @@ ActiveRecord::Schema.define(version: 20160814042401) do
 
   create_table "location_variants", force: :cascade do |t|
     t.integer  "company_id"
-    t.integer  "location_id"
+    t.integer  "bin_location_id"
     t.integer  "variant_id"
-    t.integer  "quantity"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.integer  "quantity",        default: 0, null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
+  add_index "location_variants", ["bin_location_id"], name: "index_location_variants_on_bin_location_id", using: :btree
   add_index "location_variants", ["company_id"], name: "index_location_variants_on_company_id", using: :btree
-  add_index "location_variants", ["location_id"], name: "index_location_variants_on_location_id", using: :btree
   add_index "location_variants", ["variant_id"], name: "index_location_variants_on_variant_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
@@ -140,6 +140,16 @@ ActiveRecord::Schema.define(version: 20160814042401) do
   end
 
   add_index "manufacturers", ["company_id"], name: "index_manufacturers_on_company_id", using: :btree
+
+  create_table "packaging_types", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.string   "code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "packaging_types", ["company_id"], name: "index_packaging_types_on_company_id", using: :btree
 
   create_table "purchase_order_details", force: :cascade do |t|
     t.integer  "purchase_order_id"
@@ -260,14 +270,21 @@ ActiveRecord::Schema.define(version: 20160814042401) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "variants", force: :cascade do |t|
-    t.integer  "item_id",                        null: false
-    t.integer  "quantity",           default: 0, null: false
+    t.integer  "item_id",                                               null: false
+    t.integer  "quantity",                                  default: 0, null: false
     t.date     "manufacturing_date"
     t.date     "expiry_date"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.string   "import_admitted_notice_number", limit: 255
+    t.string   "goods_declaration_number",      limit: 255
+    t.string   "item_number",                   limit: 255
+    t.string   "lot_number",                    limit: 255
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
   end
 
+  add_index "variants", ["expiry_date"], name: "index_variants_on_expiry_date", using: :btree
+  add_index "variants", ["goods_declaration_number"], name: "index_variants_on_goods_declaration_number", using: :btree
+  add_index "variants", ["import_admitted_notice_number"], name: "index_variants_on_import_admitted_notice_number", using: :btree
   add_index "variants", ["item_id"], name: "index_variants_on_item_id", using: :btree
 
   add_foreign_key "bin_locations", "locations"
@@ -277,11 +294,13 @@ ActiveRecord::Schema.define(version: 20160814042401) do
   add_foreign_key "item_series", "manufacturers"
   add_foreign_key "items", "companies"
   add_foreign_key "items", "item_series"
+  add_foreign_key "items", "packaging_types"
+  add_foreign_key "location_variants", "bin_locations"
   add_foreign_key "location_variants", "companies"
-  add_foreign_key "location_variants", "locations"
   add_foreign_key "location_variants", "variants"
   add_foreign_key "locations", "cities"
   add_foreign_key "manufacturers", "companies"
+  add_foreign_key "packaging_types", "companies"
   add_foreign_key "purchase_order_details", "items"
   add_foreign_key "purchase_order_details", "purchase_orders"
   add_foreign_key "purchase_orders", "companies"

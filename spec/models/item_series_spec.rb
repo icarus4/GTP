@@ -8,7 +8,6 @@
 #  manufacturer_id                      :integer
 #  storage_and_transport_condition      :integer
 #  name                                 :string
-#  sku                                  :string
 #  storage_and_transport_condition_note :string
 #  raw_material                         :text
 #  main_and_auxiliary_material          :text

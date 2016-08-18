@@ -14,7 +14,6 @@ class Api::V1::ItemSeriesController < Api::V1::BaseController
       params.require(:item_series).permit(
         :brand_id,
         :name,
-        :sku,
         :manufacturer_id,
         :storage_and_transport_condition,
         :storage_and_transport_condition_note,
