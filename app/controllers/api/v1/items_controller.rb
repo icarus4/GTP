@@ -36,7 +36,7 @@ class Api::V1::ItemsController < Api::V1::BaseController
             goods_declaration_number:      item_detail[:goods_declaration_number]&.strip.presence,
           )
           variant.item_number = item_detail[:item_number]&.strip.presence
-          variant.lot_number  = item_detail[:log_number]&.strip.presence
+          variant.lot_number  = item_detail[:lot_number]&.strip.presence
           variant.save!
 
           lv = LocationVariant.find_or_initialize_by(
