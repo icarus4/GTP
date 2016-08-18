@@ -53,7 +53,7 @@
           <td class="col-sm-1">{{ item.status }}</td>
         </tr>
         <!-- New item form -->
-        <tr v-for="new_item in new_items">
+        <!-- <tr v-for="new_item in new_items">
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="text" v-model="new_items[$index].name"></td>
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="text" v-model="new_items[$index].sku"></td>
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].purchase_price"></td>
@@ -68,7 +68,7 @@
           <td class="col-sm-1"><input class="col-sm-12 form-control input-sm" type="number" v-model="new_items[$index].low_stock_alert_level"></td>
           <td class="col-sm-1"><button class="btn btn-sm btn-default" v-on:click="submitItemForm($index)">儲存</button></td>
 
-        </tr>
+        </tr> -->
       </tbody>
     </table>
   </div>
@@ -183,27 +183,22 @@ new Vue({
         that.options.packaging_types = data.packaging_types
       })
     },
-    // addNewItemForm: function() {
-    //   var new_item = _.cloneDeep(this.itemTemplate)
-    //   new_item.item_details.push(_.cloneDeep(this.itemDetailTemplate))
-    //   this.new_items.push(new_item)
-    // },
-    // submitItemForm: function(index) {
-    //   that = this;
-    //   $.ajax({
-    //     url: "/api/v1/item_series/" + that.item_series_id + "/items",
-    //     method: "POST",
-    //     dataType: 'JSON',
-    //     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-    //     data: that.new_items[index]
-    //   }).done(function(data) {
-    //     that.items.push(data.item)
-    //     that.new_items.$remove(that.new_items[index])
-    //   }).fail(function(err) {
-    //     console.log(err)
-    //     alert(err.responseJSON.errors)
-    //   })
-    // },
+    submitItemForm: function() {
+      that = this;
+      $.ajax({
+        url: "/api/v1/item_series/" + that.item_series_id + "/items",
+        method: "POST",
+        dataType: 'JSON',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: that.new_item
+      }).done(function(data) {
+        that.items.push(data.item)
+        that.new_item = {}
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
+      })
+    },
     findBinLocationsByLocationId: function(location_id) {
       if (location_id == 0) {
         return []
@@ -220,6 +215,9 @@ new Vue({
     },
     resetBinLocation: function(item_detail) {
       item_detail.bin_location_id = 0
+    },
+    removeItemDetail: function(item_detail) {
+      this.new_item.item_details.$remove(item_detail)
     }
   }
 })

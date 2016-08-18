@@ -74,6 +74,7 @@ class Item < ActiveRecord::Base
   validates :sku, uniqueness: { scope: :company_id }, allow_blank: true
   validates :packaging_type_id, presence: true
 
+  scope :includes_for_api, -> { includes(:variants, :packaging_type)  }
 
   def sku_name
     "#{sku} #{name}"

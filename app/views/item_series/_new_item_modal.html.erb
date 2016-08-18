@@ -6,25 +6,27 @@
       </div>
       <div class="modal-body">
         <!-- item -->
-        <h3 class="text-center">商品基本資訊</h3>
+        <div class="text-center">
+          <h3 class="">商品基本資訊</h3>
+        </div>
         <div class="form-horizontal">
           <div class="form-group">
-            <label class="col-md-3 control-label">* 商品名稱</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">* 商品名稱</label>
+            <div class="col-md-6">
               <input type="text" class="form-control input-sm" v-model="new_item.name">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">* SKU</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">* SKU</label>
+            <div class="col-md-6">
               <input type="text" class="form-control input-sm" v-model="new_item.sku">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">* 包裝規格</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">* 包裝規格</label>
+            <div class="col-md-6">
               <input type="number" min="0" class="form-control input-sm" v-model="new_item.weight_value" style="width: 140px; display: inline-block">
               <select v-model="new_item.weight_unit" class="form-control input-sm" style="width: 50px; display: inline-block">
                 <option value="g">g</option>
@@ -40,36 +42,36 @@
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">買進價</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">買進價</label>
+            <div class="col-md-6">
               <input type="number" class="form-control input-sm" v-model="new_item.purchase_price">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">批發價</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">批發價</label>
+            <div class="col-md-6">
               <input type="number" class="form-control input-sm" v-model="new_item.wholesale_price">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">零售價</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">零售價</label>
+            <div class="col-md-6">
               <input type="number" class="form-control input-sm" v-model="new_item.retail_price">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">* 單位庫存成本</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">* 單位庫存成本</label>
+            <div class="col-md-6">
               <input type="number" class="form-control input-sm" v-model="new_item.cost_per_unit">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-md-3 control-label">* 低庫存警示數量</label>
-            <div class="col-md-7">
+            <label class="col-md-4 control-label">* 低庫存警示數量</label>
+            <div class="col-md-6">
               <input type="number" class="form-control input-sm" v-model="new_item.low_stock_alert_level">
             </div>
           </div>
@@ -81,16 +83,6 @@
         <!-- item details -->
         <h3 class="text-center">商品庫存資訊</h3>
         <table class="table table-bordered" id="new-item-table">
-          <!-- <col width="50">
-          <col width="80">
-          <col width="30">
-          <col width="50">
-          <col width="50">
-          <col width="50">
-          <col width="50">
-          <col width="50">
-          <col width="50">
-          <col width="50"> -->
           <thead>
             <tr>
               <th>*數量</th>
@@ -120,11 +112,12 @@
                 </select>
               </td>
               <td><input v-model="item_detail.expiry_date" type="date"></td>
-              <td><input v-model="item_detail.import_permit_number" type="text" size="10"></td>
-              <td><input v-model="item_detail.import_entry_number" type="text" size="8"></td>
+              <td><input v-model="item_detail.import_admitted_notice_number" type="text" size="10"></td>
+              <td><input v-model="item_detail.goods_declaration_number" type="text" size="8"></td>
               <td><input v-model="item_detail.item_number" type="text" size="8"></td>
-              <td><input v-model="item_detail.batch_number" type="text" size="8"></td>
+              <td><input v-model="item_detail.lot_number" type="text" size="8"></td>
               <td><input v-model="item_detail.export_code" type="text" size="8"></td>
+              <td class="text-center" style="width: 20px"><a @click="removeItemDetail(item_detail)" href="#"><i class="fa fa-times"></i></a></td>
             </tr>
           </tbody>
         </table>
@@ -134,7 +127,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary">新增</button>
+        <button type="button" class="btn btn-primary" @click="submitItemForm">新增</button>
       </div>
     </div>
   </div>
