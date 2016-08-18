@@ -98,7 +98,7 @@
           </thead>
           <tbody>
             <tr v-for="item_detail in new_item.item_details">
-              <td><input v-model="item_detail.on_hand_count" type="number" style="width: 50px" min="0"></td>
+              <td><input v-model="item_detail.on_hand_count" type="number" style="width: 70px" min="0"></td>
               <td>
                 <select v-model="item_detail.location_id" v-on:change="resetBinLocation(item_detail)">
                   <option value="0">選取倉庫</option>
