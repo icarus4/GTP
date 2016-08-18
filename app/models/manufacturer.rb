@@ -17,6 +17,8 @@
 class Manufacturer < ActiveRecord::Base
   belongs_to :company
 
+  after_initialize :setup_defaults
+
   validates :name, :company_id, :location_type, presence: true
   validates :registration_number, uniqueness: { scope: :company_id }, allow_nil: true
 
@@ -24,4 +26,10 @@ class Manufacturer < ActiveRecord::Base
     domestic: 0,
     foreign:  1,
   }
+
+  private
+
+    def setup_defaults
+      self.location_type = 'domestic'
+    end
 end

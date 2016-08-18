@@ -1,0 +1,134 @@
+<div class="modal inmodal" id="new-item-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content animated fadeIn">
+      <div class="modal-header">
+        <h4 class="modal-title">新增商品</h4>
+      </div>
+      <div class="modal-body">
+        <!-- item -->
+        <div class="text-center">
+          <h3 class="">商品基本資訊</h3>
+        </div>
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-md-4 control-label">* 商品名稱</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">* SKU</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.sku">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">* 包裝規格</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.weight_value" style="width: 140px; display: inline-block" placeholder="ex: 100">
+              <select v-model="new_item.weight_unit" class="form-control input-sm" style="width: 50px; display: inline-block">
+                <option value="g">g</option>
+                <option value="kg">kg</option>
+              </select>
+              <strong><samp>&frasl;</samp></strong>
+              <select v-model="new_item.packaging_type_id" class="form-control input-sm" style="width: 70px; display: inline-block">
+                <option value="0">請選取</option>
+                <option v-for="packaging_type in options.packaging_types" v-bind:value="packaging_type.id">{{ packaging_type.name }}</option>
+              </select>
+              <!-- <p style="display: inline-block; margin-left: 10px">每? {{ new_item.weight_value }} {{ new_item.weight_unit}}</p></div> -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">買進價</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.purchase_price">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">批發價</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.wholesale_price">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">零售價</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.retail_price">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">* 單位庫存成本</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.cost_per_unit">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">* 低庫存警示數量</label>
+            <div class="col-md-6">
+              <input type="text" class="form-control input-sm" v-model="new_item.low_stock_alert_level">
+            </div>
+          </div>
+
+        </div>
+
+        <hr>
+
+        <!-- item details -->
+        <h3 class="text-center">商品庫存資訊</h3>
+        <table class="table table-bordered" id="new-item-table">
+          <thead>
+            <tr>
+              <th>*數量</th>
+              <th>*倉庫</th>
+              <th>*倉位</th>
+              <th>期效</th>
+              <th>輸入許可證號碼</th>
+              <th>報單號碼</th>
+              <th>項次</th>
+              <th>批號</th>
+              <th>出口代碼</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item_detail in new_item.item_details">
+              <td><input v-model="item_detail.on_hand_count" type="text" style="width: 70px"></td>
+              <td>
+                <select v-model="item_detail.location_id" v-on:change="resetBinLocation(item_detail)">
+                  <option value="0">選取倉庫</option>
+                  <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
+                </select>
+              </td>
+              <td>
+                <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == 0">
+                  <option value="0">選取倉位</option>
+                  <option v-for="bin_location in findBinLocationsByLocationId(item_detail.location_id)" :value="bin_location.id">{{ bin_location.name }}</option>
+                </select>
+              </td>
+              <td><input v-model="item_detail.expiry_date" type="date"></td>
+              <td><input v-model="item_detail.import_admitted_notice_number" type="text" size="10"></td>
+              <td><input v-model="item_detail.goods_declaration_number" type="text" size="8"></td>
+              <td><input v-model="item_detail.item_number" type="text" size="8"></td>
+              <td><input v-model="item_detail.lot_number" type="text" size="8"></td>
+              <td><input v-model="item_detail.export_code" type="text" size="8"></td>
+              <td class="text-center" style="width: 20px"><a @click="removeItemDetail(item_detail)" href="#"><i class="fa fa-times"></i></a></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="text-center">
+          <button class="btn btn-circle btn-default" @click="addNewItemDetail"><i class="fa fa-plus"></i></button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" @click="submitItemForm" data-dismiss="modal">新增</button>
+      </div>
+    </div>
+  </div>
+</div>

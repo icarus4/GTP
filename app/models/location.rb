@@ -23,6 +23,8 @@ class Location < ActiveRecord::Base
   belongs_to :locationable, polymorphic: true
   has_many :bin_locations
 
+  after_create :create_default_bin_location
+
   validates :city_id, presence: true
   validates :address, presence: true
   validates :name,    presence: true
@@ -31,5 +33,9 @@ class Location < ActiveRecord::Base
 
   def holds_stock?
     holds_stock
+  end
+
+  def create_default_bin_location
+    bin_locations.create(name: '預設') if holds_stock
   end
 end

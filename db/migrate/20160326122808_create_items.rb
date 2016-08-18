@@ -3,6 +3,7 @@ class CreateItems < ActiveRecord::Migration
     create_table :items do |t|
       t.references :company, null: false, foreign_key: true
       t.references :item_series,          foreign_key: true
+      t.references :packaging_type,       foreign_key: true
       t.integer    :available_count,      null: false, default: 0
       t.integer    :on_hand_count,        null: false, default: 0
       t.integer    :cost_per_unit
