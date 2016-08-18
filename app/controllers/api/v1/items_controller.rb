@@ -47,6 +47,7 @@ class Api::V1::ItemsController < Api::V1::BaseController
           )
           lv.save!
         end
+        item.update_available_count!
       end
     rescue => e
       error_message = e.to_s

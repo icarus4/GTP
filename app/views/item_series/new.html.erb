@@ -67,14 +67,6 @@
       </div>
     </div>
 
-
-    <!-- <div class="form-group">
-      <label class="col-sm-2 control-label">商品描述</label>
-      <div class="col-sm-4">
-        <input type="text" v-model="item.description" class="form-control input-sm">
-      </div>
-    </div> -->
-
     <hr>
 
     <div class="form-group">
@@ -104,101 +96,6 @@
         <input type="text" v-model="series.warnings" class="form-control input-sm">
       </div>
     </div>
-
-    <!-- <div class="form-group">
-      <label class="col-sm-2 control-label">單位買進成本</label>
-      <div class="col-sm-2">
-        <input type="number" v-model="item.cost_per_unit" class="form-control input-sm">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="col-sm-2 control-label">進貨價</label>
-      <div class="col-sm-2">
-        <input type="number" v-model="item.purchase_price" class="form-control input-sm">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="col-sm-2 control-label">批發價</label>
-      <div class="col-sm-2">
-        <input type="number" v-model="item.wholesale_price" class="form-control input-sm">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="col-sm-2 control-label">零售價</label>
-      <div class="col-sm-2">
-        <input type="number" v-model="item.retail_price" class="form-control input-sm">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="col-sm-2 control-label">低庫存警示量</label>
-      <div class="col-sm-2">
-        <input type="number" v-model="item.low_stock_alert_level" class="form-control input-sm">
-      </div>
-    </div> -->
-
-    <!-- <div class="form-group">
-      <label class="col-sm-2 control-label">在庫數量</label>
-      <div class="col-sm-10">
-        <div class="row">
-          <div class="col-sm-12">
-            <table class="table table-bordered" id="new-item-table">
-              <thead>
-                <tr>
-                  <th><small>數量</small></th>
-                  <th><small>期效</small></th>
-                  <th><small>倉庫</small></th>
-                  <th><small>倉位</small></th>
-                  <th><small>輸入許可號碼</small></th>
-                  <th><small>報單號碼</small></th>
-                  <th><small>項次</small></th>
-                  <th><small>批號</small></th>
-                  <th><small>出口代碼</small></th>
-                  <th><small>許可證</small></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="number">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="date">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-2">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-2">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                  <td class="col-sm-1">
-                    <input class="col-sm-12 form-control" type="text">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <div class="form-group">
       <div class="col-sm-4 col-sm-offset-2">
@@ -266,7 +163,7 @@ new Vue({
         data: {item_series: that.series}
       }).done(function(data) {
         alert('成功建立商品系列')
-        window.location.replace("/item_series/" + data.id)
+        window.location.href = "/item_series/" + data.id
       }).fail(function(err) {
         console.log(err)
         alert(err.responseJSON.errors)

@@ -37,23 +37,31 @@
   <table class="table">
     <thead>
       <tr>
-        <th>製造日期</th>
-        <th>保存期限</th>
+        <th>期效</th>
         <th>數量</th>
+        <th>輸入許可證號碼</th>
+        <th>報單號碼</th>
+        <th>項次</th>
+        <th>批號</th>
+        <th>出口代碼(NIY)</th>
       </tr>
     </thead>
     <tbody>
     <% @item.variants.each do |variant| %>
       <tr>
-        <td><%= variant.manufacturing_date %></td>
         <td><%= variant.expiry_date %></td>
         <td>
           <%= variant.quantity %><br>
           <% variant.location_variants.each do |lv| %>
-            <small class="text-muted"><%= lv.quantity %> in <%= lv.location.name %></small>
+            <small class="text-muted"><%= lv.quantity %> in <%= "#{lv.bin_location.location.name} #{lv.bin_location.name}" %></small>
             <br>
           <% end %>
         </td>
+        <td><%= variant.import_admitted_notice_number %></td>
+        <td><%= variant.goods_declaration_number %></td>
+        <td><%= variant.item_number %></td>
+        <td><%= variant.lot_number %></td>
+        <td></td>
       </tr>
     <% end %>
     </tbody>

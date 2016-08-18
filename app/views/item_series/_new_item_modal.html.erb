@@ -27,13 +27,13 @@
           <div class="form-group">
             <label class="col-md-4 control-label">* 包裝規格</label>
             <div class="col-md-6">
-              <input type="number" min="0" class="form-control input-sm" v-model="new_item.weight_value" style="width: 140px; display: inline-block">
+              <input type="text" class="form-control input-sm" v-model="new_item.weight_value" style="width: 140px; display: inline-block" placeholder="ex: 100">
               <select v-model="new_item.weight_unit" class="form-control input-sm" style="width: 50px; display: inline-block">
                 <option value="g">g</option>
                 <option value="kg">kg</option>
               </select>
               <strong><samp>&frasl;</samp></strong>
-              <select v-model="new_item.packaging_type_id" class="form-control input-sm" style="width: 60px; display: inline-block">
+              <select v-model="new_item.packaging_type_id" class="form-control input-sm" style="width: 70px; display: inline-block">
                 <option value="0">請選取</option>
                 <option v-for="packaging_type in options.packaging_types" v-bind:value="packaging_type.id">{{ packaging_type.name }}</option>
               </select>
@@ -44,35 +44,35 @@
           <div class="form-group">
             <label class="col-md-4 control-label">買進價</label>
             <div class="col-md-6">
-              <input type="number" class="form-control input-sm" v-model="new_item.purchase_price">
+              <input type="text" class="form-control input-sm" v-model="new_item.purchase_price">
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-md-4 control-label">批發價</label>
             <div class="col-md-6">
-              <input type="number" class="form-control input-sm" v-model="new_item.wholesale_price">
+              <input type="text" class="form-control input-sm" v-model="new_item.wholesale_price">
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-md-4 control-label">零售價</label>
             <div class="col-md-6">
-              <input type="number" class="form-control input-sm" v-model="new_item.retail_price">
+              <input type="text" class="form-control input-sm" v-model="new_item.retail_price">
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-md-4 control-label">* 單位庫存成本</label>
             <div class="col-md-6">
-              <input type="number" class="form-control input-sm" v-model="new_item.cost_per_unit">
+              <input type="text" class="form-control input-sm" v-model="new_item.cost_per_unit">
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-md-4 control-label">* 低庫存警示數量</label>
             <div class="col-md-6">
-              <input type="number" class="form-control input-sm" v-model="new_item.low_stock_alert_level">
+              <input type="text" class="form-control input-sm" v-model="new_item.low_stock_alert_level">
             </div>
           </div>
 
@@ -98,7 +98,7 @@
           </thead>
           <tbody>
             <tr v-for="item_detail in new_item.item_details">
-              <td><input v-model="item_detail.on_hand_count" type="number" style="width: 70px" min="0"></td>
+              <td><input v-model="item_detail.on_hand_count" type="text" style="width: 70px"></td>
               <td>
                 <select v-model="item_detail.location_id" v-on:change="resetBinLocation(item_detail)">
                   <option value="0">選取倉庫</option>
@@ -127,7 +127,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary" @click="submitItemForm">新增</button>
+        <button type="button" class="btn btn-primary" @click="submitItemForm" data-dismiss="modal">新增</button>
       </div>
     </div>
   </div>

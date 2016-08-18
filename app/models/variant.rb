@@ -31,7 +31,7 @@ class Variant < ActiveRecord::Base
   has_many :sales_order_details
   has_many :sales_orders, through: :sales_order_details
   has_many :location_variants
-  has_many :locations, through: :location_variants
+  has_many :bin_locations, through: :location_variants
 
   delegate :company, to: :item
   delegate :sku_name, to: :item
