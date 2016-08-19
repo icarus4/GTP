@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 20160815104724) do
   end
 
   add_index "item_series", ["company_id"], name: "index_item_series_on_company_id", using: :btree
+  add_index "item_series", ["name"], name: "index_item_series_on_name", using: :btree
 
   create_table "items", force: :cascade do |t|
     t.integer  "company_id",                                                               null: false

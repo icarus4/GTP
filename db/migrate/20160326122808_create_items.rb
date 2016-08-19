@@ -21,7 +21,6 @@ class CreateItems < ActiveRecord::Migration
       t.string     :name,                 null: false, default: ''
       t.text       :description
 
-
       t.timestamps null: false
     end
 

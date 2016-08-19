@@ -5,7 +5,7 @@ class CreateItemSeries < ActiveRecord::Migration
       t.references :brand,                             foreign_key: true
       t.references :manufacturer,                      foreign_key: true
       t.integer    :storage_and_transport_condition
-      t.string     :name
+      t.string     :name, index: true
       t.string     :storage_and_transport_condition_note
       t.text       :raw_material
       t.text       :main_and_auxiliary_material

@@ -19,6 +19,7 @@
 # Indexes
 #
 #  index_item_series_on_company_id  (company_id)
+#  index_item_series_on_name        (name)
 #
 
 class ItemSeries < ActiveRecord::Base
