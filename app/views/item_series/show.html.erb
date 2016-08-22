@@ -1,19 +1,20 @@
 <div class="row">
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>貨品名稱</dt><dd><%= @item_series.name %></dd>
+      <dt>商品系列名稱</dt><dd><%= @item_series.name %></dd>
       <dt>製造商</dt><dd><%= @item_series.manufacturer.name %></dd>
       <dt>品牌</dt><dd><%= @item_series.brand.name %></dd>
       <dt>儲運條件</dt><dd><%= @item_series.storage_and_transport_condition_in_chinese %><%= "(#{@item_series.storage_and_transport_condition_note})" if @item_series.storage_and_transport_condition == 'other' %></dd>
-      <dt>原料</dt><dd><%= @item_series.raw_material %></dd>
-      <dt>食品添加物</dt><dd><%= @item_series.food_additives %></dd>
-      <dt>警語</dt><dd><%= @item_series.warnings %></dd>
+      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@item_series.updated_at) %> ago</dd>
     </dl>
   </div>
 
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@item_series.updated_at) %> ago</dd>
+      <dt>商品原材料</dt><dd><%= @item_series.raw_material %></dd>
+      <dt>主副原料</dt><dd><%= @item_series.main_and_auxiliary_material %></dd>
+      <dt>食品添加物</dt><dd><%= @item_series.food_additives %></dd>
+      <dt>警語</dt><dd><%= @item_series.warnings %></dd>
     </dl>
   </div>
 </div>
