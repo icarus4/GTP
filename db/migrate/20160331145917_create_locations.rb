@@ -4,9 +4,11 @@ class CreateLocations < ActiveRecord::Migration
       t.references :locationable, polymorphic: true, index: true
       t.references :city, foreign_key: true
       t.string     :zip,     limit: 8
+      t.string     :phone,   limit: 32
+      t.string     :email,   limit: 64
       t.string     :address, limit: 255
       t.string     :name,    limit: 255
-      t.boolean    :holds_stock, default: true
+      t.boolean    :holds_stock, null: false, default: false
 
       t.timestamps null: false
     end

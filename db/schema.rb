@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160815104724) do
+ActiveRecord::Schema.define(version: 20160826133819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,11 +123,13 @@ ActiveRecord::Schema.define(version: 20160815104724) do
     t.string   "locationable_type"
     t.integer  "city_id"
     t.string   "zip",               limit: 8
+    t.string   "phone",             limit: 32
+    t.string   "email",             limit: 64
     t.string   "address",           limit: 255
     t.string   "name",              limit: 255
-    t.boolean  "holds_stock",                   default: true
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.boolean  "holds_stock",                   default: false, null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
   end
 
   add_index "locations", ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
@@ -151,6 +153,45 @@ ActiveRecord::Schema.define(version: 20160815104724) do
   end
 
   add_index "packaging_types", ["company_id"], name: "index_packaging_types_on_company_id", using: :btree
+
+  create_table "partner_relationships", force: :cascade do |t|
+    t.integer  "partner_id",      null: false
+    t.integer  "partner_role_id", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "partner_relationships", ["partner_id", "partner_role_id"], name: "index_partner_relationships_on_partner_id_and_partner_role_id", unique: true, using: :btree
+
+  create_table "partner_roles", force: :cascade do |t|
+    t.string   "name",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "partners", force: :cascade do |t|
+    t.integer  "company_id",                                            null: false
+    t.integer  "partner_type",                              default: 0, null: false
+    t.integer  "location_type",                             default: 0, null: false
+    t.integer  "status",                                    default: 0, null: false
+    t.string   "name",                          limit: 128,             null: false
+    t.string   "alias_name",                    limit: 128
+    t.string   "email",                         limit: 64
+    t.string   "tax_number",                    limit: 32
+    t.string   "phone",                         limit: 32
+    t.string   "fax",                           limit: 32
+    t.string   "food_industry_register_number", limit: 64
+    t.string   "factory_register_number",       limit: 64
+    t.string   "website",                       limit: 255
+    t.string   "no_register_number_reason",     limit: 255
+    t.text     "description"
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
+  end
+
+  add_index "partners", ["alias_name"], name: "index_partners_on_alias_name", using: :btree
+  add_index "partners", ["company_id"], name: "index_partners_on_company_id", using: :btree
+  add_index "partners", ["name"], name: "index_partners_on_name", using: :btree
 
   create_table "purchase_order_details", force: :cascade do |t|
     t.integer  "purchase_order_id"
@@ -302,6 +343,9 @@ ActiveRecord::Schema.define(version: 20160815104724) do
   add_foreign_key "locations", "cities"
   add_foreign_key "manufacturers", "companies"
   add_foreign_key "packaging_types", "companies"
+  add_foreign_key "partner_relationships", "partner_roles"
+  add_foreign_key "partner_relationships", "partners"
+  add_foreign_key "partners", "companies"
   add_foreign_key "purchase_order_details", "items"
   add_foreign_key "purchase_order_details", "purchase_orders"
   add_foreign_key "purchase_orders", "companies"
