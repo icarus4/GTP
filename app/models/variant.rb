@@ -23,7 +23,7 @@
 #
 
 class Variant < ActiveRecord::Base
-  after_save :update_item_on_hand_count
+  after_save :update_item_on_hand_count!
 
   belongs_to :item
   has_many :purchase_order_details
@@ -45,7 +45,7 @@ class Variant < ActiveRecord::Base
     update!(quantity: location_variants.sum(:quantity))
   end
 
-  def update_item_on_hand_count
+  def update_item_on_hand_count!
     item.update_on_hand_count!
   end
 end

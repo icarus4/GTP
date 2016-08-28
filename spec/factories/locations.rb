@@ -7,9 +7,11 @@
 #  locationable_type :string
 #  city_id           :integer
 #  zip               :string(8)
+#  phone             :string(32)
+#  email             :string(64)
 #  address           :string(255)
 #  name              :string(255)
-#  holds_stock       :boolean          default(TRUE)
+#  holds_stock       :boolean          default(FALSE), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #

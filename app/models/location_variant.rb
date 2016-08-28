@@ -22,7 +22,7 @@ class LocationVariant < ActiveRecord::Base
   belongs_to :bin_location
   belongs_to :variant
 
-  after_save :update_variant_cache_data!
+  after_save :update_variant_cache_columns!
   after_initialize :setup_defaults
 
   validates :company_id, :variant_id, :quantity, presence: true
@@ -30,7 +30,7 @@ class LocationVariant < ActiveRecord::Base
 
   private
 
-    def update_variant_cache_data!
+    def update_variant_cache_columns!
       variant.update_cache_columns!
     end
 

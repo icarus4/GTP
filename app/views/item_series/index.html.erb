@@ -7,7 +7,6 @@
     <thead>
       <tr>
         <th>系列名稱</th>
-        <th>SKU</th>
         <th>品牌</th>
         <th>製造商</th>
         <th>儲運條件</th>
@@ -20,7 +19,6 @@
     <% @item_series.each do |item_series| %>
       <tr data-link="<%= item_series_path(item_series) %>">
         <td><%= item_series.name %></td>
-        <td><%= item_series.sku %></td>
         <td><%= item_series.brand.name %></td>
         <td><%= item_series.manufacturer.name %></td>
         <td><%= item_series.storage_and_transport_condition_in_chinese %></td>
