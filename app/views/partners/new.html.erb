@@ -133,24 +133,24 @@
         </div>
       </div>
 
-      <div class="form-group" v-show="show_food_industry_register_number">
+      <div class="form-group" v-show="show_food_industry_registration_number">
         <label class="col-sm-3 control-label">食品業者登錄字號</label>
         <div class="col-sm-4">
-          <input type="text" v-model="partner.food_industry_register_number" class="form-control input-sm">
+          <input type="text" v-model="partner.food_industry_registration_number" class="form-control input-sm">
         </div>
       </div>
 
-      <div class="form-group" v-show="show_food_industry_register_number">
+      <div class="form-group" v-show="show_no_food_industry_registration_number_reason">
         <label class="col-sm-3 control-label">若無食品業者登錄字號，請填原因</label>
         <div class="col-sm-4">
-          <input type="text" v-model="partner.no_register_number_reason" class="form-control input-sm">
+          <input type="text" v-model="partner.no_food_industry_registration_number_reason" class="form-control input-sm">
         </div>
       </div>
 
-      <div class="form-group" v-show="show_factory_register_number">
+      <div class="form-group" v-show="show_factory_registration_number">
         <label class="col-sm-3 control-label">工廠登錄字號</label>
         <div class="col-sm-4">
-          <input type="text" v-model="partner.factory_register_number" class="form-control input-sm">
+          <input type="text" v-model="partner.factory_registration_number" class="form-control input-sm">
         </div>
       </div>
 
@@ -206,8 +206,9 @@ new Vue({
       partner_type: null,
       location_type: null,
       roles: [],
-      factory_register_number: null,
-      no_register_number_reason: null,
+      food_industry_registration_number: null,
+      no_food_industry_registration_number_reason: null,
+      factory_registration_number: null,
       location: {},
     },
   },
@@ -230,14 +231,17 @@ new Vue({
     show_exporter: function() {
       return this.partner.location_type === 'foreign'
     },
-    show_factory_register_number: function() {
+    show_factory_registration_number: function() {
       return this.partner.location_type === 'domestic' && _.includes(this.partner.roles, 'manufacturer')
     },
     show_tax_number: function() {
       return this.partner.partner_type === 'company'
     },
-    show_food_industry_register_number: function() {
+    show_food_industry_registration_number: function() {
       return this.partner.location_type === 'domestic' && this.partner.partner_type === 'company'
+    },
+    show_no_food_industry_registration_number_reason: function() {
+      return this.partner.location_type === 'domestic' && this.partner.partner_type === 'company' && _.isEmpty(this.partner.food_industry_registration_number)
     }
   },
   watch: {
@@ -255,21 +259,26 @@ new Vue({
         // 刪除"國內/國外"
         this.partner.location_type = null
         // 刪除"無食品業者登錄字號原因"
-        this.partner.no_register_number_reason = null
+        this.partner.no_food_industry_registration_number_reason = null
       }
       // 若為散客
       if (val === 'person') {
         // "關係"自動設為客戶
         this.partner.roles = ['customer']
         // "無食品業者登錄字號原因"自動設為散客
-        this.partner.no_register_number_reason = '散客'
+        this.partner.no_food_industry_registration_number_reason = '散客'
         // "國內/國外"自動設為國內
         this.partner.location_type = 'domestic'
       }
     },
-    'show_factory_register_number': function(val, oldVal) {
+    'show_factory_registration_number': function(val, oldVal) {
       if (val !== true) {
-        this.partner.factory_register_number = null
+        this.partner.factory_registration_number = null
+      }
+    },
+    'show_no_food_industry_registration_number_reason': function(val) {
+      if (val !== true) {
+        this.partner.no_food_industry_registration_number_reason = null
       }
     },
   },

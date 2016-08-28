@@ -170,23 +170,23 @@ ActiveRecord::Schema.define(version: 20160826133819) do
   end
 
   create_table "partners", force: :cascade do |t|
-    t.integer  "company_id",                                            null: false
-    t.integer  "partner_type",                              default: 0, null: false
-    t.integer  "location_type",                             default: 0, null: false
-    t.integer  "status",                                    default: 0, null: false
-    t.string   "name",                          limit: 128,             null: false
-    t.string   "alias_name",                    limit: 128
-    t.string   "email",                         limit: 64
-    t.string   "tax_number",                    limit: 32
-    t.string   "phone",                         limit: 32
-    t.string   "fax",                           limit: 32
-    t.string   "food_industry_register_number", limit: 64
-    t.string   "factory_register_number",       limit: 64
-    t.string   "website",                       limit: 255
-    t.string   "no_register_number_reason",     limit: 255
+    t.integer  "company_id",                                                          null: false
+    t.integer  "partner_type",                                            default: 0, null: false
+    t.integer  "location_type",                                           default: 0, null: false
+    t.integer  "status",                                                  default: 0, null: false
+    t.string   "name",                                        limit: 128,             null: false
+    t.string   "alias_name",                                  limit: 128
+    t.string   "email",                                       limit: 64
+    t.string   "tax_number",                                  limit: 32
+    t.string   "phone",                                       limit: 32
+    t.string   "fax",                                         limit: 32
+    t.string   "food_industry_registration_number",           limit: 64
+    t.string   "factory_registration_number",                 limit: 64
+    t.string   "website",                                     limit: 255
+    t.string   "no_food_industry_registration_number_reason", limit: 255
     t.text     "description"
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
+    t.datetime "created_at",                                                          null: false
+    t.datetime "updated_at",                                                          null: false
   end
 
   add_index "partners", ["alias_name"], name: "index_partners_on_alias_name", using: :btree
