@@ -19,6 +19,7 @@
 //= require slimscroll/jquery.slimscroll.min.js
 //= require inspinia.js
 //= require lodash
+//= require common
 //= require cocoon
 //= require vue
 //= require item_series

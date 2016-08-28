@@ -2,24 +2,24 @@
 #
 # Table name: partners
 #
-#  id                            :integer          not null, primary key
-#  company_id                    :integer          not null
-#  partner_type                  :integer          default(0), not null
-#  location_type                 :integer          default(0), not null
-#  status                        :integer          default(0), not null
-#  name                          :string(128)      not null
-#  alias_name                    :string(128)
-#  email                         :string(64)
-#  tax_number                    :string(32)
-#  phone                         :string(32)
-#  fax                           :string(32)
-#  food_industry_register_number :string(64)
-#  factory_register_number       :string(64)
-#  website                       :string(255)
-#  no_register_number_reason     :string(255)
-#  description                   :text
-#  created_at                    :datetime         not null
-#  updated_at                    :datetime         not null
+#  id                                          :integer          not null, primary key
+#  company_id                                  :integer          not null
+#  partner_type                                :integer          default(0), not null
+#  location_type                               :integer          default(0), not null
+#  status                                      :integer          default(0), not null
+#  name                                        :string(128)      not null
+#  alias_name                                  :string(128)
+#  email                                       :string(64)
+#  tax_number                                  :string(32)
+#  phone                                       :string(32)
+#  fax                                         :string(32)
+#  food_industry_registration_number           :string(64)
+#  factory_registration_number                 :string(64)
+#  website                                     :string(255)
+#  no_food_industry_registration_number_reason :string(255)
+#  description                                 :text
+#  created_at                                  :datetime         not null
+#  updated_at                                  :datetime         not null
 #
 # Indexes
 #

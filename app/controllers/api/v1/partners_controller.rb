@@ -10,9 +10,9 @@ class Api::V1::PartnersController < Api::V1::BaseController
       tax_number:    params[:tax_number],
       phone:         params[:phone],
       fax:           params[:fax],
-      food_industry_register_number: params[:food_industry_register_number],
-      no_register_number_reason:     params[:no_register_number_reason],
-      factory_register_number:       params[:factory_register_number],
+      food_industry_registration_number:           params[:food_industry_registration_number],
+      no_food_industry_registration_number_reason: params[:no_food_industry_registration_number_reason],
+      factory_registration_number:                 params[:factory_registration_number],
       website:       params[:website],
       description:   params[:description],
     )
@@ -39,5 +39,13 @@ class Api::V1::PartnersController < Api::V1::BaseController
     else
       render json: { errors: error_message }, status: :bad_request
     end
+  end
+
+  def locations
+    partner = current_company.partners.find_by(id: params[:id])
+    if partner.nil?
+      render json: { errors: 'Partner not found' }, status: :bad_request and return
+    end
+    render json: { locations: partner.locations }
   end
 end

@@ -11,10 +11,10 @@ class CreatePartners < ActiveRecord::Migration
       t.string     :tax_number,      limit: 32
       t.string     :phone,           limit: 32
       t.string     :fax,             limit: 32
-      t.string     :food_industry_register_number, limit: 64
-      t.string     :factory_register_number,       limit: 64
-      t.string     :website,                       limit: 255
-      t.string     :no_register_number_reason,     limit: 255
+      t.string     :food_industry_registration_number,           limit: 64
+      t.string     :factory_registration_number,                 limit: 64
+      t.string     :no_food_industry_registration_number_reason, limit: 255
+      t.string     :website,                                     limit: 255
       t.text       :description
 
       t.timestamps null: false

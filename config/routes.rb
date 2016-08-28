@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   # Company
   resources :companies, only: [:index]
-  resources :partners, only: [:new, :index]
+  resources :partners, only: [:new, :index, :show]
   resources :suppliers, only: [:index, :new, :create]
   resources :customers, only: [:index, :new, :create]
   resources :item_series, only: [:new, :index, :show] do
@@ -60,7 +60,9 @@ Rails.application.routes.draw do
       resources :manufacturers, only: [:index, :create]
       resources :cities, only: [:index]
       resources :packaging_types, only: [:index]
-      resources :partners, only: [:create]
+      resources :partners, only: [:create] do
+        resources :locations, only: [:index, :update], controller: 'partners/locations'
+      end
     end
   end
 
