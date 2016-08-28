@@ -51,4 +51,8 @@ class Partner < ActiveRecord::Base
     company: 0,
     person: 1
   }
+
+  def name_and_alias_name
+    alias_name.present? ? "#{alias_name} (#{name})" : name
+  end
 end

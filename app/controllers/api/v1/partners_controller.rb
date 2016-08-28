@@ -40,4 +40,12 @@ class Api::V1::PartnersController < Api::V1::BaseController
       render json: { errors: error_message }, status: :bad_request
     end
   end
+
+  def locations
+    partner = current_company.partners.find_by(id: params[:id])
+    if partner.nil?
+      render json: { errors: 'Partner not found' }, status: :bad_request and return
+    end
+    render json: { locations: partner.locations }
+  end
 end

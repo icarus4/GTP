@@ -15,7 +15,7 @@
     </thead>
     <tbody>
     <% @partners.each do |partner| %>
-      <tr>
+      <tr data-link="<%= partner_path(partner) %>" class="cursor-pointer">
         <td><%= partner.name %></td>
         <td>
           <ul class="list-unstyled">

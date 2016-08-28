@@ -1,0 +1,182 @@
+<div class="row">
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <dt>名稱</dt><dd><%= @partner.name_and_alias_name %></dd>
+      <dt>關係</dt>
+                  <dd>
+                    <ul class="list-unstyled">
+                    <% @partner.roles.each do |role| %>
+                      <li><%= role.name %></li>
+                    <% end %>
+                    </ul>
+                  </dd>
+      <dt>統一編號</dt><dd><%= @partner.tax_number %></dd>
+      <dt>食品業者登錄字號</dt><dd><%= @partner.food_industry_registration_number %></dd>
+    </dl>
+  </div>
+
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>聯絡電話</dt><dd><%= @partner.phone %></dd>
+      <dt>Email</dt><dd><%= @partner.email %></dd>
+      <dt>網站</dt><dd><%= @partner.website %></dd>
+      <dt>描述</dt><dd><%= @partner.description %></dd>
+      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@partner.updated_at) %> ago</dd>
+    </dl>
+  </div>
+</div>
+
+<div id="partner-data" class="tabs-container">
+  <input type="hidden" id="partner-id" value="<%= @partner.id %>">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#tab-1">地點</a></li>
+    <li class=""><a data-toggle="tab" href="#tab-2">聯絡人 (施工中)</a></li>
+  </ul>
+  <div class="tab-content">
+    <div id="tab-1" class="tab-pane active">
+      <div class="panel-body">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>名稱</th>
+              <th>地址</th>
+              <th>電話</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="location in locations"
+              class="cursor-pointer"
+              data-toggle="modal"
+              data-target="#edit-location-modal"
+              @click="setupEditLocation($index)">
+              <td>{{ location.name }}</td>
+              <td>{{ location.address }}</td>
+              <td>{{ location.phone }}</td>
+              <td>{{ location.email }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="tab-2" class="tab-pane">
+      <div class="panel-body">
+        <p>施工中...</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Edit location modal -->
+  <div class="modal inmodal" id="edit-location-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content animated fadeIn">
+
+        <div class="modal-header">
+          <h4 class="modal-title">編輯地點</h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-3 control-label">* 名稱</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.name">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">* 地址</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.address">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">電話</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.phone">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">Email</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_location.email">
+              </div>
+            </div>
+
+          </div>
+        </div> <!-- modal body -->>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" @click="updateLocation" data-dismiss="modal">儲存</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <%= render 'common/vue_data' %>
+
+</div>
+
+<% content_for :js do %>
+<script type="text/javascript">
+  new Vue({
+    el: "#partner-data",
+    data: {
+      partner_id: null,
+      locations: [],
+      editing_location: {},
+    },
+    created: function() {
+      this.setupPartnerId()
+    },
+    ready: function() {
+      this.getLocationList()
+    },
+    methods: {
+      setupPartnerId: function() {
+        this.partner_id = $("input#partner-id").val()
+      },
+      getLocationList: function() {
+        that = this
+        $.ajax({
+          url: "/api/v1/partners/" + that.partner_id + "/locations",
+          method: "GET",
+          dataType: "JSON"
+        }).done(function(data) {
+          that.locations = data.locations
+        }).fail(function(err) {
+          console.log(err)
+        })
+      },
+      setupEditLocation: function(location_index) {
+        this.editing_location = _.cloneDeep(this.locations[location_index])
+      },
+      updateLocation: function() {
+        that = this
+        $.ajax({
+          url: "/api/v1/partners/" + that.partner_id + "/locations/" + that.editing_location.id,
+          method: "PATCH",
+          dataType: "JSON",
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.editing_location,
+        }).done(function(data) {
+          for (var i = 0; i < that.locations.length; i++) {
+            if (that.locations[i].id == data.location.id) {
+              that.locations.$set(i, data.location) // Here "$set" is necessary. Please refer to http://vuejs.org/guide/list.html#Caveats
+            }
+          }
+        }).fail(function(err) {
+          alert(err.responseJSON.errors)
+        })
+      }
+    }
+  })
+</script>
+<% end %>
