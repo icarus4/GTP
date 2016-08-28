@@ -1,0 +1,298 @@
+<div id="new-partner-form">
+  <div class="form-horizontal">
+
+    <div class="form-group">
+      <label class="col-sm-3 control-label">客戶/廠商類型</label>
+      <div class="col-sm-4">
+        <div>
+          <label class="control-label">
+            <input type="radio" value="company" name="partner_type" v-model="partner.partner_type"> 公司
+          </label>
+        </div>
+        <div>
+          <label class="control-label">
+            <input type="radio" value="person" name="partner_type" v-model="partner.partner_type"> 散客
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="show_location_types">
+      <div class="hr-line-dashed"></div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">國內/國外</label>
+        <div class="col-sm-4">
+          <div>
+            <label class="control-label">
+              <input type="radio" value="domestic" name="location_type" v-model="partner.location_type"> 國內
+            </label>
+          </div>
+          <div>
+            <label class="control-label">
+              <input type="radio" value="foreign" name="location_type" v-model="partner.location_type"> 國外
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="show_roles">
+      <div class="hr-line-dashed"></div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">關係</label>
+        <div class="col-sm-4">
+          <div>
+            <label class="control-label">
+              <input type="checkbox" value="customer" v-model="partner.roles"> 客戶
+            </label>
+          </div>
+          <div v-show="show_supplier">
+            <label class="control-label">
+              <input type="checkbox" value="supplier" v-model="partner.roles"> 供應商
+            </label>
+          </div>
+          <div>
+            <label class="control-label">
+              <input type="checkbox" value="manufacturer" v-model="partner.roles"> 製造商
+            </label>
+          </div>
+          <div v-show="show_logistics">
+            <label class="control-label">
+              <input type="checkbox" value="logistics" v-model="partner.roles"> 物流商
+            </label>
+          </div>
+          <div v-show="show_exporter">
+            <label class="control-label">
+              <input type="checkbox" value="exporter" v-model="partner.roles"> 國外出口商
+            </label>
+          </div>
+          <div>
+            <label class="control-label">
+              <input type="checkbox" value="responsibility" v-model="partner.roles"> 責任廠商
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="show_details">
+      <div class="hr-line-dashed"></div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">* 名稱 (全名)</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.name" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">簡稱/別名</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.alias_name" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_tax_number">
+        <label class="col-sm-3 control-label">統一編號</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.tax_number" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">描述</label>
+        <div class="col-sm-4">
+          <textarea v-model="partner.description" class="form-control input-sm"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">* 電話</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.phone" class="form-control input-sm" placeholder="02-23456789">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">傳真</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.fax" class="form-control input-sm" placeholder="02-98765432">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">網址</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.website" class="form-control input-sm" placeholder="https://example.com">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Email</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.email" class="form-control input-sm" placeholder="bob@gmail.com">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_food_industry_register_number">
+        <label class="col-sm-3 control-label">食品業者登錄字號</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.food_industry_register_number" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_food_industry_register_number">
+        <label class="col-sm-3 control-label">若無食品業者登錄字號，請填原因</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.no_register_number_reason" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_factory_register_number">
+        <label class="col-sm-3 control-label">工廠登錄字號</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.factory_register_number" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="hr-line-dashed"></div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">* 地址名稱</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.name" class="form-control input-sm" placeholder="辦公室 / 倉庫 / 收貨地址 / 帳單地址">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Email</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.email" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">聯絡電話</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.phone" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">* 地址</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.address" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-4 col-sm-offset-3">
+          <button class="btn btn-default" @click="redirectToPartersPath">取消</button>
+          <button class="btn btn-primary" @click="submitForm">建立</button>
+        </div>
+      </div>
+    </div><!-- <div v-show="show_details"> -->
+
+  </div>
+
+  <%= render'common/vue_data' %>
+</div>
+
+<% content_for :js do %>
+<script type="text/javascript">
+new Vue({
+  el: "#new-partner-form",
+  data: {
+    partner: {
+      partner_type: null,
+      location_type: null,
+      roles: [],
+      factory_register_number: null,
+      no_register_number_reason: null,
+      location: {},
+    },
+  },
+  computed: {
+    show_location_types: function() {
+      return (this.partner.partner_type !== null && this.partner.partner_type !== 'person')
+    },
+    show_roles: function() {
+      return (this.partner.location_type !== null && this.partner.partner_type !== 'person')
+    },
+    show_details: function() {
+      return (!(_.isEmpty(this.partner.roles)) || this.partner.partner_type === 'person')
+    },
+    show_supplier: function() {
+      return this.partner.location_type === 'domestic'
+    },
+    show_logistics: function() {
+      return this.partner.location_type === 'domestic'
+    },
+    show_exporter: function() {
+      return this.partner.location_type === 'foreign'
+    },
+    show_factory_register_number: function() {
+      return this.partner.location_type === 'domestic' && _.includes(this.partner.roles, 'manufacturer')
+    },
+    show_tax_number: function() {
+      return this.partner.partner_type === 'company'
+    },
+    show_food_industry_register_number: function() {
+      return this.partner.location_type === 'domestic' && this.partner.partner_type === 'company'
+    }
+  },
+  watch: {
+    'partner.location_type': function(val, oldVal) {
+      // 切換"國內/國外""設定時，將關係清空，以免切換後被遮蔽的欄位遺留前值
+      if (val !== oldVal) {
+        this.partner.roles = []
+      }
+    },
+    'partner.partner_type': function(val, oldVal) {
+      // 切換"客戶/廠商類型"時
+      if (val !== oldVal) {
+        // 將關係清空，以免切換後被遮蔽的欄位遺留前值
+        this.partner.roles = []
+        // 刪除"國內/國外"
+        this.partner.location_type = null
+        // 刪除"無食品業者登錄字號原因"
+        this.partner.no_register_number_reason = null
+      }
+      // 若為散客
+      if (val === 'person') {
+        // "關係"自動設為客戶
+        this.partner.roles = ['customer']
+        // "無食品業者登錄字號原因"自動設為散客
+        this.partner.no_register_number_reason = '散客'
+        // "國內/國外"自動設為國內
+        this.partner.location_type = 'domestic'
+      }
+    },
+    'show_factory_register_number': function(val, oldVal) {
+      if (val !== true) {
+        this.partner.factory_register_number = null
+      }
+    },
+  },
+  methods: {
+    submitForm: function() {
+      that = this
+      $.ajax({
+        url: "/api/v1/partners",
+        method: "POST",
+        dataType: "JSON",
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: that.partner
+      }).done(function(data) {
+        window.location.href = "/partners"
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
+      })
+    },
+    redirectToPartersPath: function() {
+      window.location.href = "/partners"
+    }
+  }
+})
+</script>
+<% end %>

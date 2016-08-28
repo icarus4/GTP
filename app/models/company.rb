@@ -32,6 +32,7 @@ class Company < ActiveRecord::Base
 
   has_many :suppliers
   has_many :customers
+  has_many :partners
   has_many :items
   has_many :variants, through: :items
   has_many :brands
