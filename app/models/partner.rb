@@ -29,6 +29,8 @@
 #
 
 class Partner < ActiveRecord::Base
+  after_initialize :setup_defaults
+
   belongs_to :company
   has_many :partner_relationships
   has_many :roles, through: :partner_relationships, class_name: 'PartnerRole', foreign_key: 'partner_role_id'
@@ -42,17 +44,20 @@ class Partner < ActiveRecord::Base
     active: 0
   }
 
-  enum location_type: {
-    domestic: 0,
-    foreign:  1,
-  }
-
   enum partner_type: {
-    company: 0,
-    person: 1
+    domestic_company: 0,
+    foreign_company: 1,
+    person: 2,
   }
 
   def name_and_alias_name
     alias_name.present? ? "#{alias_name} (#{name})" : name
   end
+
+  private
+
+    def setup_defaults
+      self.partner_type = 'domestic_company'
+      self.status = 'active'
+    end
 end
