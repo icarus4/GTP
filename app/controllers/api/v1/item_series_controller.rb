@@ -20,7 +20,8 @@ class Api::V1::ItemSeriesController < Api::V1::BaseController
         :raw_material,
         :main_and_auxiliary_material,
         :food_additives,
-        :warnings
+        :warnings,
+        :expiration_alert_days
       )
     end
 end

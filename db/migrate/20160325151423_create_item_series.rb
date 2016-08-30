@@ -3,8 +3,9 @@ class CreateItemSeries < ActiveRecord::Migration
     create_table :item_series do |t|
       t.references :company, null: false, index: true, foreign_key: true
       t.references :brand,                             foreign_key: true
-      t.references :manufacturer,                      foreign_key: true
+      t.references :manufacturer
       t.integer    :storage_and_transport_condition
+      t.integer    :expiration_alert_days
       t.string     :name, index: true
       t.string     :storage_and_transport_condition_note
       t.text       :raw_material
@@ -14,5 +15,7 @@ class CreateItemSeries < ActiveRecord::Migration
 
       t.timestamps null: false
     end
+
+    add_foreign_key :item_series, :partners, column: :manufacturer_id
   end
 end

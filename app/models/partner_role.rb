@@ -12,5 +12,6 @@ class PartnerRole < ActiveRecord::Base
   has_many :partner_relationships
   has_many :partners, through: :partner_relationships
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
+  validates :chinese_name, presence: true, uniqueness: true
 end

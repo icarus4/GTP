@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160826133819) do
+ActiveRecord::Schema.define(version: 20160815104724) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 20160826133819) do
     t.integer  "brand_id"
     t.integer  "manufacturer_id"
     t.integer  "storage_and_transport_condition"
+    t.integer  "expiration_alert_days"
     t.string   "name"
     t.string   "storage_and_transport_condition_note"
     t.text     "raw_material"
@@ -164,17 +165,18 @@ ActiveRecord::Schema.define(version: 20160826133819) do
   add_index "partner_relationships", ["partner_id", "partner_role_id"], name: "index_partner_relationships_on_partner_id_and_partner_role_id", unique: true, using: :btree
 
   create_table "partner_roles", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",         null: false
+    t.string   "chinese_name"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "partners", force: :cascade do |t|
-    t.integer  "company_id",                                                          null: false
-    t.integer  "partner_type",                                            default: 0, null: false
-    t.integer  "location_type",                                           default: 0, null: false
-    t.integer  "status",                                                  default: 0, null: false
-    t.string   "name",                                        limit: 128,             null: false
+    t.integer  "company_id",                                              null: false
+    t.integer  "partner_type",                                            null: false
+    t.integer  "status",                                                  null: false
+    t.integer  "receipt_type",                                            null: false
+    t.string   "name",                                        limit: 128, null: false
     t.string   "alias_name",                                  limit: 128
     t.string   "email",                                       limit: 64
     t.string   "tax_number",                                  limit: 32
@@ -182,11 +184,11 @@ ActiveRecord::Schema.define(version: 20160826133819) do
     t.string   "fax",                                         limit: 32
     t.string   "food_industry_registration_number",           limit: 64
     t.string   "factory_registration_number",                 limit: 64
-    t.string   "website",                                     limit: 255
     t.string   "no_food_industry_registration_number_reason", limit: 255
+    t.string   "website",                                     limit: 255
     t.text     "description"
-    t.datetime "created_at",                                                          null: false
-    t.datetime "updated_at",                                                          null: false
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
   end
 
   add_index "partners", ["alias_name"], name: "index_partners_on_alias_name", using: :btree
@@ -333,7 +335,7 @@ ActiveRecord::Schema.define(version: 20160826133819) do
   add_foreign_key "brands", "companies"
   add_foreign_key "item_series", "brands"
   add_foreign_key "item_series", "companies"
-  add_foreign_key "item_series", "manufacturers"
+  add_foreign_key "item_series", "partners", column: "manufacturer_id"
   add_foreign_key "items", "companies"
   add_foreign_key "items", "item_series"
   add_foreign_key "items", "packaging_types"

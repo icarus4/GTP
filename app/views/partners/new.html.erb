@@ -6,32 +6,18 @@
       <div class="col-sm-4">
         <div>
           <label class="control-label">
-            <input type="radio" value="company" name="partner_type" v-model="partner.partner_type"> 公司
+            <input type="radio" value="domestic_company" name="partner_type" v-model="partner.partner_type"> 國內公司
+          </label>
+        </div>
+        <div>
+          <label class="control-label">
+            <input type="radio" value="foreign_company" name="partner_type" v-model="partner.partner_type"> 國外公司
           </label>
         </div>
         <div>
           <label class="control-label">
             <input type="radio" value="person" name="partner_type" v-model="partner.partner_type"> 散客
           </label>
-        </div>
-      </div>
-    </div>
-
-    <div v-show="show_location_types">
-      <div class="hr-line-dashed"></div>
-      <div class="form-group">
-        <label class="col-sm-3 control-label">國內/國外</label>
-        <div class="col-sm-4">
-          <div>
-            <label class="control-label">
-              <input type="radio" value="domestic" name="location_type" v-model="partner.location_type"> 國內
-            </label>
-          </div>
-          <div>
-            <label class="control-label">
-              <input type="radio" value="foreign" name="location_type" v-model="partner.location_type"> 國外
-            </label>
-          </div>
         </div>
       </div>
     </div>
@@ -157,6 +143,19 @@
       <div class="hr-line-dashed"></div>
 
       <div class="form-group">
+        <label class="col-sm-3 control-label">發票聯式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.receipt_type">
+            <option value="receipt_free">不開發票</option>
+            <option value="two_parts">二聯式</option>
+            <option value="three_parts">三聯式</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hr-line-dashed"></div>
+
+      <div class="form-group">
         <label class="col-sm-3 control-label">* 地址名稱</label>
         <div class="col-sm-4">
           <input type="text" v-model="partner.location.name" class="form-control input-sm" placeholder="辦公室 / 倉庫 / 收貨地址 / 帳單地址">
@@ -204,60 +203,49 @@ new Vue({
   data: {
     partner: {
       partner_type: null,
-      location_type: null,
       roles: [],
       food_industry_registration_number: null,
       no_food_industry_registration_number_reason: null,
       factory_registration_number: null,
       location: {},
+      receipt_type: 'receipt_free',
     },
   },
   computed: {
-    show_location_types: function() {
-      return (this.partner.partner_type !== null && this.partner.partner_type !== 'person')
-    },
     show_roles: function() {
-      return (this.partner.location_type !== null && this.partner.partner_type !== 'person')
+      return (this.partner.partner_type !== null && this.partner.partner_type !== 'person')
     },
     show_details: function() {
       return (!(_.isEmpty(this.partner.roles)) || this.partner.partner_type === 'person')
     },
     show_supplier: function() {
-      return this.partner.location_type === 'domestic'
+      return this.partner.partner_type === 'domestic_company'
     },
     show_logistics: function() {
-      return this.partner.location_type === 'domestic'
+      return this.partner.partner_type === 'domestic_company'
     },
     show_exporter: function() {
-      return this.partner.location_type === 'foreign'
+      return this.partner.partner_type === 'foreign_company'
     },
     show_factory_registration_number: function() {
-      return this.partner.location_type === 'domestic' && _.includes(this.partner.roles, 'manufacturer')
+      return this.partner.partner_type === 'domestic_company' && _.includes(this.partner.roles, 'manufacturer')
     },
     show_tax_number: function() {
-      return this.partner.partner_type === 'company'
+      return this.partner.partner_type === 'domestic_company' || this.partner.partner_type === 'foreign_company'
     },
     show_food_industry_registration_number: function() {
-      return this.partner.location_type === 'domestic' && this.partner.partner_type === 'company'
+      return this.partner.partner_type === 'domestic_company'
     },
     show_no_food_industry_registration_number_reason: function() {
-      return this.partner.location_type === 'domestic' && this.partner.partner_type === 'company' && _.isEmpty(this.partner.food_industry_registration_number)
+      return this.partner.partner_type === 'domestic_company' && _.isEmpty(this.partner.food_industry_registration_number)
     }
   },
   watch: {
-    'partner.location_type': function(val, oldVal) {
-      // 切換"國內/國外""設定時，將關係清空，以免切換後被遮蔽的欄位遺留前值
-      if (val !== oldVal) {
-        this.partner.roles = []
-      }
-    },
     'partner.partner_type': function(val, oldVal) {
       // 切換"客戶/廠商類型"時
       if (val !== oldVal) {
         // 將關係清空，以免切換後被遮蔽的欄位遺留前值
         this.partner.roles = []
-        // 刪除"國內/國外"
-        this.partner.location_type = null
         // 刪除"無食品業者登錄字號原因"
         this.partner.no_food_industry_registration_number_reason = null
       }
@@ -267,8 +255,6 @@ new Vue({
         this.partner.roles = ['customer']
         // "無食品業者登錄字號原因"自動設為散客
         this.partner.no_food_industry_registration_number_reason = '散客'
-        // "國內/國外"自動設為國內
-        this.partner.location_type = 'domestic'
       }
     },
     'show_factory_registration_number': function(val, oldVal) {

@@ -7,6 +7,7 @@
 #  brand_id                             :integer
 #  manufacturer_id                      :integer
 #  storage_and_transport_condition      :integer
+#  expiration_alert_days                :integer
 #  name                                 :string
 #  storage_and_transport_condition_note :string
 #  raw_material                         :text
@@ -25,13 +26,14 @@
 class ItemSeries < ActiveRecord::Base
   belongs_to :company
   belongs_to :brand
-  belongs_to :manufacturer
+  belongs_to :manufacturer, class_name: 'Partner'
   has_many :items
 
   validates :company_id, presence: true
   validates :brand_id, presence: true
   validates :manufacturer_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :company_id }
+  validates :expiration_alert_days, numericality: { greater_than_or_equal_to: 0, only_integer: true}, allow_nil: true
 
   enum storage_and_transport_condition: {
     freezing:         1, # 冷凍 (<= -18 degree)

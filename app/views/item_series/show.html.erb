@@ -17,6 +17,12 @@
       <dt>警語</dt><dd><%= @item_series.warnings %></dd>
     </dl>
   </div>
+
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>過期警告天數</dt><dd><%= @item_series.expiration_alert_days ? "#{@item_series.expiration_alert_days} 天前" : '無' %></dd>
+    </dl>
+  </div>
 </div>
 
 <div id="item-table">

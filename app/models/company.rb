@@ -36,7 +36,7 @@ class Company < ActiveRecord::Base
   has_many :items
   has_many :variants, through: :items
   has_many :brands
-  has_many :manufacturers
+  has_many :manufacturers, -> { joins(:roles).where(partner_roles: { name: 'manufacturer' }) }, class_name: 'Partner'
   has_many :item_series
   has_many :locations, as: :locationable
   has_many :purchase_orders

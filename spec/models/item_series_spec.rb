@@ -7,6 +7,7 @@
 #  brand_id                             :integer
 #  manufacturer_id                      :integer
 #  storage_and_transport_condition      :integer
+#  expiration_alert_days                :integer
 #  name                                 :string
 #  storage_and_transport_condition_note :string
 #  raw_material                         :text

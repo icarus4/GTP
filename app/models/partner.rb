@@ -4,9 +4,8 @@
 #
 #  id                                          :integer          not null, primary key
 #  company_id                                  :integer          not null
-#  partner_type                                :integer          default(0), not null
-#  location_type                               :integer          default(0), not null
-#  status                                      :integer          default(0), not null
+#  partner_type                                :integer          not null
+#  status                                      :integer          not null
 #  name                                        :string(128)      not null
 #  alias_name                                  :string(128)
 #  email                                       :string(64)
@@ -15,8 +14,8 @@
 #  fax                                         :string(32)
 #  food_industry_registration_number           :string(64)
 #  factory_registration_number                 :string(64)
-#  website                                     :string(255)
 #  no_food_industry_registration_number_reason :string(255)
+#  website                                     :string(255)
 #  description                                 :text
 #  created_at                                  :datetime         not null
 #  updated_at                                  :datetime         not null
@@ -29,6 +28,8 @@
 #
 
 class Partner < ActiveRecord::Base
+  after_initialize :setup_defaults
+
   belongs_to :company
   has_many :partner_relationships
   has_many :roles, through: :partner_relationships, class_name: 'PartnerRole', foreign_key: 'partner_role_id'
@@ -42,17 +43,37 @@ class Partner < ActiveRecord::Base
     active: 0
   }
 
-  enum location_type: {
-    domestic: 0,
-    foreign:  1,
+  enum partner_type: {
+    domestic_company: 0,
+    foreign_company: 1,
+    person: 2,
   }
 
-  enum partner_type: {
-    company: 0,
-    person: 1
+  enum receipt_type: {
+    receipt_free: 0,
+    two_parts: 1,
+    three_parts: 2,
+  }
+
+  RECEIPT_TYPE_MAPPING = {
+    "receipt_free" => "不開發票",
+    "two_parts" => "二聯式",
+    "three_parts" => "三聯式",
   }
 
   def name_and_alias_name
     alias_name.present? ? "#{alias_name} (#{name})" : name
   end
+
+  def receipt_type_in_chinese
+    RECEIPT_TYPE_MAPPING.fetch(receipt_type)
+  end
+
+  private
+
+    def setup_defaults
+      self.partner_type = 'domestic_company'
+      self.receipt_type = 'receipt_free'
+      self.status = 'active'
+    end
 end
