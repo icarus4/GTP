@@ -4,6 +4,7 @@ class Api::V1::ManufacturersController < Api::V1::BaseController
   end
 
   def create
+    raise NotImplementedError, 'FIXME'
     # Reason of &.strip&.presence:
     # Convert "" or " " to nil
     # Convert "a" or "a " to "a"
