@@ -3,6 +3,7 @@ class Api::V1::PartnersController < Api::V1::BaseController
     partner = Partner.new(
       company: current_company,
       partner_type:  params[:partner_type],
+      receipt_type:  params[:receipt_type],
       name:          params[:name],
       alias_name:    params[:alias_name],
       email:         params[:email],

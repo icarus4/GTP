@@ -4,6 +4,7 @@ class CreatePartners < ActiveRecord::Migration
       t.references :company,                     null: false, index: true, foreign_key: true
       t.integer    :partner_type,                null: false
       t.integer    :status,                      null: false
+      t.integer    :receipt_type,                null: false
       t.string     :name,            limit: 128, null: false, index: true
       t.string     :alias_name,      limit: 128,              index: true
       t.string     :email,           limit: 64

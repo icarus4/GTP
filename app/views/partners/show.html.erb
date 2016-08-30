@@ -24,6 +24,12 @@
       <dt>最後修改時間</dt><dd><%= time_ago_in_words(@partner.updated_at) %> ago</dd>
     </dl>
   </div>
+
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>預設發票聯式</dt><dd><%= @partner.receipt_type_in_chinese %></dd>
+    </dl>
+  </div>
 </div>
 
 <div id="partner-data" class="tabs-container">

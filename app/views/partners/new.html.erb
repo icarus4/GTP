@@ -143,6 +143,19 @@
       <div class="hr-line-dashed"></div>
 
       <div class="form-group">
+        <label class="col-sm-3 control-label">發票聯式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.receipt_type">
+            <option value="receipt_free">不開發票</option>
+            <option value="two_parts">二聯式</option>
+            <option value="three_parts">三聯式</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hr-line-dashed"></div>
+
+      <div class="form-group">
         <label class="col-sm-3 control-label">* 地址名稱</label>
         <div class="col-sm-4">
           <input type="text" v-model="partner.location.name" class="form-control input-sm" placeholder="辦公室 / 倉庫 / 收貨地址 / 帳單地址">
@@ -195,6 +208,7 @@ new Vue({
       no_food_industry_registration_number_reason: null,
       factory_registration_number: null,
       location: {},
+      receipt_type: 'receipt_free',
     },
   },
   computed: {
