@@ -6,6 +6,7 @@
 #  company_id                                  :integer          not null
 #  partner_type                                :integer          not null
 #  status                                      :integer          not null
+#  receipt_type                                :integer          not null
 #  name                                        :string(128)      not null
 #  alias_name                                  :string(128)
 #  email                                       :string(64)

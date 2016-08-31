@@ -6,6 +6,7 @@
 #  company_id                                  :integer          not null
 #  partner_type                                :integer          not null
 #  status                                      :integer          not null
+#  receipt_type                                :integer          not null
 #  name                                        :string(128)      not null
 #  alias_name                                  :string(128)
 #  email                                       :string(64)
@@ -60,6 +61,8 @@ class Partner < ActiveRecord::Base
     "two_parts" => "二聯式",
     "three_parts" => "三聯式",
   }
+
+  validates :partner_type, presence: true
 
   def name_and_alias_name
     alias_name.present? ? "#{alias_name} (#{name})" : name
