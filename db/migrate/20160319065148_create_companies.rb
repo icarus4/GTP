@@ -11,6 +11,7 @@ class CreateCompanies < ActiveRecord::Migration
       t.string :phone
       t.string :fax
       t.string :website
+      t.jsonb  :settings, null: false, default: {}
       t.text :description
 
       t.timestamps null: false

@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20160902125729) do
     t.string   "phone"
     t.string   "fax"
     t.string   "website"
+    t.jsonb    "settings",    default: {}, null: false
     t.text     "description"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
@@ -160,11 +161,11 @@ ActiveRecord::Schema.define(version: 20160902125729) do
   end
 
   create_table "partners", force: :cascade do |t|
-    t.integer  "company_id",                                              null: false
-    t.integer  "partner_type",                                            null: false
-    t.integer  "status",                                                  null: false
-    t.integer  "receipt_type",                                            null: false
-    t.string   "name",                                        limit: 128, null: false
+    t.integer  "company_id",                                                           null: false
+    t.integer  "partner_type",                                                         null: false
+    t.integer  "status",                                                               null: false
+    t.integer  "receipt_type",                                                         null: false
+    t.string   "name",                                        limit: 128,              null: false
     t.string   "alias_name",                                  limit: 128
     t.string   "email",                                       limit: 64
     t.string   "tax_number",                                  limit: 32
@@ -174,9 +175,10 @@ ActiveRecord::Schema.define(version: 20160902125729) do
     t.string   "factory_registration_number",                 limit: 64
     t.string   "no_food_industry_registration_number_reason", limit: 255
     t.string   "website",                                     limit: 255
+    t.jsonb    "settings",                                                default: {}, null: false
     t.text     "description"
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
+    t.datetime "created_at",                                                           null: false
+    t.datetime "updated_at",                                                           null: false
     t.index ["alias_name"], name: "index_partners_on_alias_name", using: :btree
     t.index ["company_id"], name: "index_partners_on_company_id", using: :btree
     t.index ["name"], name: "index_partners_on_name", using: :btree

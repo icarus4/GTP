@@ -15,6 +15,7 @@ class CreatePartners < ActiveRecord::Migration
       t.string     :factory_registration_number,                 limit: 64
       t.string     :no_food_industry_registration_number_reason, limit: 255
       t.string     :website,                                     limit: 255
+      t.jsonb      :settings,                    null: false, default: {}
       t.text       :description
 
       t.timestamps null: false
