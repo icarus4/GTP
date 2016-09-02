@@ -5,7 +5,7 @@
 #  id          :integer          not null, primary key
 #  company_id  :integer
 #  assignee_id :integer
-#  status      :integer          default(0), not null
+#  status      :integer          default("active"), not null
 #  type        :string           default(""), not null
 #  name        :string
 #  email       :string
@@ -24,6 +24,7 @@
 #
 
 class Company < ActiveRecord::Base
+  after_create :create_default_associations
 
   enum status: {
     active: 0,
@@ -44,4 +45,10 @@ class Company < ActiveRecord::Base
   has_many :sales_orders
 
   validates :name, presence: true
+
+  private
+
+    def create_default_associations
+      %w(現金 銀行轉帳 信用卡 支票).each { |name| PaymentMethod.find_or_create_by!(company: self, name: name) }
+    end
 end

@@ -1,0 +1,21 @@
+# == Schema Information
+#
+# Table name: payment_methods
+#
+#  id         :integer          not null, primary key
+#  company_id :integer          not null
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_payment_methods_on_company_id  (company_id)
+#
+
+class PaymentMethod < ApplicationRecord
+  belongs_to :company
+
+  validates :company_id, presence: true
+  validates :name, presence: true, uniqueness: { scope: :company_id }
+end

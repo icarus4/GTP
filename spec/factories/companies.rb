@@ -5,7 +5,7 @@
 #  id          :integer          not null, primary key
 #  company_id  :integer
 #  assignee_id :integer
-#  status      :integer          default(0), not null
+#  status      :integer          default("active"), not null
 #  type        :string           default(""), not null
 #  name        :string
 #  email       :string

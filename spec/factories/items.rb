@@ -13,7 +13,7 @@
 #  wholesale_price       :integer
 #  retail_price          :integer
 #  low_stock_alert_level :integer
-#  status                :integer          default(0), not null
+#  status                :integer          default("active"), not null
 #  weight_unit           :integer
 #  weight_value          :decimal(10, 2)
 #  manufactured_by_self  :boolean          default(FALSE), not null
