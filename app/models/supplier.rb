@@ -13,6 +13,7 @@
 #  phone       :string
 #  fax         :string
 #  website     :string
+#  settings    :jsonb            not null
 #  description :text
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
