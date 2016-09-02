@@ -17,6 +17,7 @@
 #  factory_registration_number                 :string(64)
 #  no_food_industry_registration_number_reason :string(255)
 #  website                                     :string(255)
+#  settings                                    :jsonb            not null
 #  description                                 :text
 #  created_at                                  :datetime         not null
 #  updated_at                                  :datetime         not null
@@ -32,7 +33,10 @@ class Partner < ActiveRecord::Base
   after_initialize :setup_defaults
 
   store_accessor :settings,
-                 :default_payment_method_id
+                 :default_sales_payment_term_id,
+                 :default_sales_payment_method_id,
+                 :default_purchase_payment_term_id,
+                 :default_purchase_payment_method_id
 
   belongs_to :company
   has_many :partner_relationships
@@ -85,9 +89,28 @@ class Partner < ActiveRecord::Base
     PARTNER_TYPE_MAPPING.fetch(partner_type)
   end
 
-  def default_payment_method
-    return nil if default_payment_method_id.nil?
-    @default_payment_method ||= PaymentMethod.find_by(company_id: company_id, id: default_payment_method_id)
+  # 預設收款方式
+  def default_sales_payment_method
+    return nil if default_sales_payment_method_id.nil?
+    @default_sales_payment_method ||= PaymentMethod.find_by(company_id: company_id, id: default_sales_payment_method_id)
+  end
+
+  # 預設付款方式
+  def default_purchase_payment_method
+    return nil if default_purchase_payment_method_id.nil?
+    @default_purchase_payment_method ||= PaymentMethod.find_by(company_id: company_id, id: default_purchase_payment_method_id)
+  end
+
+  # 預設收款條件
+  def default_sales_payment_term
+    return nil if default_sales_payment_term_id.nil?
+    @default_sales_payment_term ||= PaymentTerm.find_by(company_id: company_id, id: default_sales_payment_term_id)
+  end
+
+  # 預設付款條件
+  def default_purchase_payment_term
+    return nil if default_purchase_payment_term_id.nil?
+    @default_purchase_payment_term ||= PaymentTerm.find_by(company_id: company_id, id: default_purchase_payment_term_id)
   end
 
   private
