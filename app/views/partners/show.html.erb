@@ -2,11 +2,12 @@
   <div class="col-md-3">
     <dl class="dl-horizontal">
       <dt>名稱</dt><dd><%= @partner.name_and_alias_name %></dd>
+      <dt>類型</dt><dd><%= @partner.partner_type_in_chinese %></dd>
       <dt>關係</dt>
                   <dd>
                     <ul class="list-unstyled">
                     <% @partner.roles.each do |role| %>
-                      <li><%= role.name %></li>
+                      <li><%= role.chinese_name %></li>
                     <% end %>
                     </ul>
                   </dd>

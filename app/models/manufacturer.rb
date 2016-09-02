@@ -30,6 +30,6 @@ class Manufacturer < ActiveRecord::Base
   private
 
     def setup_defaults
-      self.location_type = 'domestic'
+      self.location_type ||= 'domestic'
     end
 end

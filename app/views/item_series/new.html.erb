@@ -155,11 +155,18 @@ new Vue({
       low_stock_alert_level: null,
     },
     new_brand_name: "",
-    new_manufacturer: { location_type: 'domestic' },
+    new_manufacturer: {
+      partner_type: 'domestic_company',
+    },
   },
   ready: function() {
     this.getBrandList()
     this.getManufacturerList()
+  },
+  computed: {
+    show_new_manufacturer_factory_registration_number: function() {
+      return this.new_manufacturer.partner_type === 'domestic_company'
+    }
   },
   methods: {
     submitForm: function() {
@@ -218,12 +225,7 @@ new Vue({
         method: 'POST',
         dataType: 'JSON',
         beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-        data: {
-          name: that.new_manufacturer.name,
-          location_type: that.new_manufacturer.location_type,
-          registration_number: that.new_manufacturer.registration_number,
-          address: that.new_manufacturer.address
-        }
+        data: that.new_manufacturer,
       }).done(function(data) {
         that.options.manufacturers.push(data.manufacturer)
         that.series.manufacturer_id = data.manufacturer.id
