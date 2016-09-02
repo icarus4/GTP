@@ -105,6 +105,6 @@ class Item < ActiveRecord::Base
     end
 
     def setup_defaults
-      self.weight_unit = 'g'
+      self.weight_unit ||= 'g'
     end
 end

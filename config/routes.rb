@@ -66,8 +66,6 @@ Rails.application.routes.draw do
     end
   end
 
-  mount RailsAdmin::Engine => '/admin', as: 'rails_admin' if Rails.env.development?
-
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

@@ -62,6 +62,12 @@ class Partner < ActiveRecord::Base
     "three_parts" => "三聯式",
   }
 
+  PARTNER_TYPE_MAPPING = {
+    "domestic_company" => "國內公司",
+    "foreign_company" => "國外公司",
+    "person" => "散客",
+  }
+
   validates :partner_type, presence: true
 
   def name_and_alias_name
@@ -72,11 +78,15 @@ class Partner < ActiveRecord::Base
     RECEIPT_TYPE_MAPPING.fetch(receipt_type)
   end
 
+  def partner_type_in_chinese
+    PARTNER_TYPE_MAPPING.fetch(partner_type)
+  end
+
   private
 
     def setup_defaults
-      self.partner_type = 'domestic_company'
-      self.receipt_type = 'receipt_free'
-      self.status = 'active'
+      self.partner_type ||= self.class.partner_types['domestic_company']
+      self.receipt_type ||= self.class.receipt_types['receipt_free']
+      self.status ||= self.class.statuses['active']
     end
 end
