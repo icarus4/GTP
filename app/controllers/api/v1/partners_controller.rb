@@ -47,8 +47,10 @@ class Api::V1::PartnersController < Api::V1::BaseController
         :factory_registration_number,
         :website,
         :description,
-        :default_payment_method_id,
-        :default_payment_term_id,
+        :default_sales_payment_method_id,    # FIXME: will be stored as string
+        :default_purchase_payment_method_id, # FIXME: will be stored as string
+        :default_sales_payment_term_id,      # FIXME: will be stored as string
+        :default_purchase_payment_term_id,   # FIXME: will be stored as string
       )
     end
 

@@ -153,21 +153,41 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" v-show="show_default_sales_payment_method_and_payment_term">
         <label class="col-sm-3 control-label">預設收款條件</label>
         <div class="col-sm-4">
-          <select class="form-control input-sm" v-model="partner.default_payment_term_id">
+          <select class="form-control input-sm" v-model="partner.default_sales_payment_term_id">
             <option value="0">-- 選取預設收款條件 --</option>
             <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
           </select>
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" v-show="show_default_sales_payment_method_and_payment_term">
         <label class="col-sm-3 control-label">預設收款方式</label>
         <div class="col-sm-4">
-          <select class="form-control input-sm" v-model="partner.default_payment_method_id">
+          <select class="form-control input-sm" v-model="partner.default_sales_payment_method_id">
             <option value="0">-- 選取預設收款方式 --</option>
+            <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_purchase_payment_method_and_payment_term">
+        <label class="col-sm-3 control-label">預設付款條件</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_purchase_payment_term_id">
+            <option value="0">-- 選取預設付款條件 --</option>
+            <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_purchase_payment_method_and_payment_term">
+        <label class="col-sm-3 control-label">預設付款方式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_purchase_payment_method_id">
+            <option value="0">-- 選取預設付款方式 --</option>
             <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
           </select>
         </div>
@@ -233,8 +253,10 @@ new Vue({
       factory_registration_number: null,
       location: {},
       receipt_type: 'receipt_free',
-      default_payment_method_id: 0,
-      default_payment_term_id: 0,
+      default_sales_payment_term_id: 0,
+      default_sales_payment_method_id: 0,
+      default_purchase_payment_term_id: 0,
+      default_purchase_payment_method_id: 0,
     },
   },
   computed: {
@@ -264,7 +286,17 @@ new Vue({
     },
     show_no_food_industry_registration_number_reason: function() {
       return this.partner.partner_type === 'domestic_company' && _.isEmpty(this.partner.food_industry_registration_number)
-    }
+    },
+    show_default_sales_payment_method_and_payment_term: function() {
+      return _.includes(this.partner.roles, 'customer')
+    },
+    show_default_purchase_payment_method_and_payment_term: function() {
+      return _.includes(this.partner.roles, 'supplier') ||
+             _.includes(this.partner.roles, 'manufacturer') ||
+             _.includes(this.partner.roles, 'logistics') ||
+             _.includes(this.partner.roles, 'exporter') ||
+             _.includes(this.partner.roles, 'responsibility')
+    },
   },
   watch: {
     'partner.partner_type': function(val, oldVal) {
