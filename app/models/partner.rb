@@ -31,6 +31,9 @@
 class Partner < ActiveRecord::Base
   after_initialize :setup_defaults
 
+  store_accessor :settings,
+                 :default_payment_method_id
+
   belongs_to :company
   has_many :partner_relationships
   has_many :roles, through: :partner_relationships, class_name: 'PartnerRole', foreign_key: 'partner_role_id'
@@ -80,6 +83,11 @@ class Partner < ActiveRecord::Base
 
   def partner_type_in_chinese
     PARTNER_TYPE_MAPPING.fetch(partner_type)
+  end
+
+  def default_payment_method
+    return nil if default_payment_method_id.nil?
+    @default_payment_method ||= PaymentMethod.find_by(company_id: company_id, id: default_payment_method_id)
   end
 
   private

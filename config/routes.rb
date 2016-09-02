@@ -63,6 +63,7 @@ Rails.application.routes.draw do
       resources :partners, only: [:create] do
         resources :locations, only: [:index, :update], controller: 'partners/locations'
       end
+      resources :payment_methods, only: [:index]
     end
   end
 
