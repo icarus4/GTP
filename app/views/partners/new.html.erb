@@ -143,12 +143,22 @@
       <div class="hr-line-dashed"></div>
 
       <div class="form-group">
-        <label class="col-sm-3 control-label">發票聯式</label>
+        <label class="col-sm-3 control-label">預設發票聯式</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.receipt_type">
             <option value="receipt_free">不開發票</option>
             <option value="two_parts">二聯式</option>
             <option value="three_parts">三聯式</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">預設收款方式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_payment_method_id">
+            <option value="0">-- 請選取預設收款方式 --</option>
+            <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
           </select>
         </div>
       </div>
@@ -201,6 +211,9 @@
 new Vue({
   el: "#new-partner-form",
   data: {
+    options: {
+      payment_methods: [],
+    },
     partner: {
       partner_type: null,
       roles: [],
@@ -209,6 +222,7 @@ new Vue({
       factory_registration_number: null,
       location: {},
       receipt_type: 'receipt_free',
+      default_payment_method_id: 0,
     },
   },
   computed: {
@@ -268,7 +282,22 @@ new Vue({
       }
     },
   },
+  ready: function() {
+    this.getPaymentMethodList()
+  },
   methods: {
+    getPaymentMethodList: function() {
+      that = this
+      $.ajax({
+        url: "/api/v1/payment_methods",
+        method: "GET",
+        dataType: "JSON"
+      }).done(function(data) {
+        that.options.payment_methods = data.payment_methods
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
     submitForm: function() {
       that = this
       $.ajax({
