@@ -2,7 +2,7 @@ class Api::V1::PartnersController < Api::V1::BaseController
   def create
     partner = Partner.new(partner_params)
     partner.company = current_company
-    
+
     error_message = nil
     begin
       ActiveRecord::Base.transaction do
@@ -47,6 +47,7 @@ class Api::V1::PartnersController < Api::V1::BaseController
         :factory_registration_number,
         :website,
         :description,
+        :default_payment_method_id
       )
     end
 
