@@ -47,7 +47,8 @@ class Api::V1::PartnersController < Api::V1::BaseController
         :factory_registration_number,
         :website,
         :description,
-        :default_payment_method_id
+        :default_payment_method_id,
+        :default_payment_term_id,
       )
     end
 

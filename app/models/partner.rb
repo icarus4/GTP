@@ -17,6 +17,7 @@
 #  factory_registration_number                 :string(64)
 #  no_food_industry_registration_number_reason :string(255)
 #  website                                     :string(255)
+#  settings                                    :jsonb            not null
 #  description                                 :text
 #  created_at                                  :datetime         not null
 #  updated_at                                  :datetime         not null
@@ -32,7 +33,8 @@ class Partner < ActiveRecord::Base
   after_initialize :setup_defaults
 
   store_accessor :settings,
-                 :default_payment_method_id
+                 :default_payment_method_id,
+                 :default_payment_term_id
 
   belongs_to :company
   has_many :partner_relationships
@@ -88,6 +90,11 @@ class Partner < ActiveRecord::Base
   def default_payment_method
     return nil if default_payment_method_id.nil?
     @default_payment_method ||= PaymentMethod.find_by(company_id: company_id, id: default_payment_method_id)
+  end
+
+  def default_payment_term
+    return nil if default_payment_term_id.nil?
+    @default_payment_term ||= PaymentTerm.find_by(company_id: company_id, id: default_payment_term_id)
   end
 
   private

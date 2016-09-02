@@ -17,6 +17,7 @@
 #  factory_registration_number                 :string(64)
 #  no_food_industry_registration_number_reason :string(255)
 #  website                                     :string(255)
+#  settings                                    :jsonb            not null
 #  description                                 :text
 #  created_at                                  :datetime         not null
 #  updated_at                                  :datetime         not null

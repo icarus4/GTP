@@ -154,10 +154,20 @@
       </div>
 
       <div class="form-group">
+        <label class="col-sm-3 control-label">預設收款條件</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_payment_term_id">
+            <option value="0">-- 選取預設收款條件 --</option>
+            <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="col-sm-3 control-label">預設收款方式</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_payment_method_id">
-            <option value="0">-- 請選取預設收款方式 --</option>
+            <option value="0">-- 選取預設收款方式 --</option>
             <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
           </select>
         </div>
@@ -213,6 +223,7 @@ new Vue({
   data: {
     options: {
       payment_methods: [],
+      payment_terms: [],
     },
     partner: {
       partner_type: null,
@@ -223,6 +234,7 @@ new Vue({
       location: {},
       receipt_type: 'receipt_free',
       default_payment_method_id: 0,
+      default_payment_term_id: 0,
     },
   },
   computed: {
@@ -284,6 +296,7 @@ new Vue({
   },
   ready: function() {
     this.getPaymentMethodList()
+    this.getPaymentTermList()
   },
   methods: {
     getPaymentMethodList: function() {
@@ -294,6 +307,18 @@ new Vue({
         dataType: "JSON"
       }).done(function(data) {
         that.options.payment_methods = data.payment_methods
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
+    getPaymentTermList: function() {
+      that = this
+      $.ajax({
+        url: "/api/v1/payment_terms",
+        method: "GET",
+        dataType: "JSON"
+      }).done(function(data) {
+        that.options.payment_terms = data.payment_terms
       }).fail(function(err) {
         console.log(err.responseJSON.errors)
       })
