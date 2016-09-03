@@ -10,4 +10,19 @@ class Api::V1::PaymentMethodsController < Api::V1::BaseController
     end
     render json: { payment_methods: @payment_methods }
   end
+
+  def update
+    payment_method = PaymentMethod.find_by(company: current_company, id: params[:id])
+    if payment_method.blank?
+      render json: { errors: 'Payment method not found' }, status: :bad_request
+    end
+
+    payment_method.name = params[:name]&.strip&.presence
+    if payment_method.save
+      current_company.update(default_payment_method_id: payment_method.id)
+      render json: { payment_method: payment_method }
+    else
+      render json: { errors: payment_method.errors.full_messages }, status: :bad_request
+    end
+  end
 end
