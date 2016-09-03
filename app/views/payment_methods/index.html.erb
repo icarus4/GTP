@@ -7,7 +7,7 @@
     <thead>
       <tr>
         <th>名稱</th>
-        <!-- <th>預設</th> -->
+        <th>預設</th>
       </tr>
     </thead>
     <tbody>
@@ -17,7 +17,7 @@
           data-target="#edit-payment_methods-modal"
           @click="setupEditPaymentMethod($index)">
         <td>{{ payment_method.name }}</td>
-        <!-- <td>{{ payment_method. }} </td> -->
+        <td><i class="fa fa-check" v-show="payment_method.default"></i></td>
       </tr>
     </tbody>
   </table>

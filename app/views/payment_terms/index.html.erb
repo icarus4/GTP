@@ -8,6 +8,7 @@
       <tr>
         <th>名稱</th>
         <th>條件</th>
+        <th>預設</th>
       </tr>
     </thead>
     <tbody>
@@ -18,6 +19,7 @@
           @click="setupEditPaymentTerm($index)">
         <td>{{ payment_term.name }}</td>
         <td>{{ payment_term.full_name_in_chinese }} </td>
+        <td><i class="fa fa-check" v-show="payment_term.default"></i></td>
       </tr>
     </tbody>
   </table>
