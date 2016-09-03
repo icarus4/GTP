@@ -79,7 +79,7 @@
     },
     methods: {
       getPaymentMethodList: function() {
-        that = this
+        var that = this
         $.ajax({
           url: '/api/v1/payment_methods',
           dataType: 'JSON',
@@ -94,7 +94,7 @@
         this.editing_payment_method.default_was = this.editing_payment_method.default
       },
       updatePaymentMethod: function() {
-        that = this;
+        var that = this
         $.ajax({
           url: "/api/v1/payment_methods/" + that.editing_payment_method.id,
           method: "PATCH",

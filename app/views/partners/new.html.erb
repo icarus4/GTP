@@ -332,7 +332,7 @@ new Vue({
   },
   methods: {
     getPaymentMethodList: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/payment_methods",
         method: "GET",
@@ -344,7 +344,7 @@ new Vue({
       })
     },
     getPaymentTermList: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/payment_terms",
         method: "GET",
@@ -356,7 +356,7 @@ new Vue({
       })
     },
     submitForm: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/partners",
         method: "POST",

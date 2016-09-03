@@ -95,7 +95,7 @@
     },
     methods: {
       getPaymentTermList: function() {
-        that = this
+        var that = this
         $.ajax({
           url: '/api/v1/payment_terms',
           dataType: 'JSON',
@@ -110,7 +110,7 @@
         this.editing_payment_term.default_was = this.editing_payment_term.default
       },
       updatePaymentTerm: function() {
-        that = this;
+        var that = this
         $.ajax({
           url: "/api/v1/payment_terms/" + that.editing_payment_term.id,
           method: "PATCH",

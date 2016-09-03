@@ -148,7 +148,7 @@
     },
     methods: {
       getLocationList: function() {
-        that = this
+        var that = this
         $.ajax({
           url: '/api/v1/locations',
           dataType: 'JSON',
@@ -159,7 +159,7 @@
         })
       },
       getCityList: function() {
-        that = this
+        var that = this
         $.ajax({
           url: '/api/v1/cities',
           dataType: 'JSON',
@@ -173,7 +173,7 @@
         this.editing_location = _.cloneDeep(this.locations[location_index])
       },
       updateLocation: function() {
-        that = this;
+        var that = this
         $.ajax({
           url: "/api/v1/locations/" + that.editing_location.id,
           method: "PATCH",
@@ -195,7 +195,7 @@
         this.show_new_bin_location_form = true
       },
       createBinLocation: function() {
-        that = this;
+        var that = this
         $.ajax({
           url: "/api/v1/locations/" + that.editing_location.id + "/bin_locations",
           method: "POST",
