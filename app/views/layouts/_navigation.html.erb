@@ -50,7 +50,9 @@
             <li class="<%= is_active_controller('locations') %>">
                 <a href=""><i class="fa fa-th-large"></i> <span class="nav-label" data-i18n="nav.dashboard">其他設定</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse <%= is_active_controller('locations') %>">
-                    <li class="<%= is_active_controller('locations') %>"><%= link_to "據點設定", locations_path %></li>
+                    <li class="<%= is_active_controller('locations') %>"><%= link_to "據點", locations_path %></li>
+                    <li class="<%= is_active_controller('payment_terms') %>"><%= link_to "付款條件", payment_terms_path %></li>
+                    <li class="<%= is_active_controller('payment_methods') %>"><%= link_to "付款方式", payment_methods_path %></li>
                 </ul>
             </li>
         </ul>

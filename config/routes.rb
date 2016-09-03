@@ -39,6 +39,8 @@ Rails.application.routes.draw do
 
   scope :settings do
     resources :locations, only: [:index, :new, :create]
+    resources :payment_terms, only: [:index]
+    resources :payment_methods, only: [:index]
   end
 
   namespace :api do
