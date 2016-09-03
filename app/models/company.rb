@@ -25,9 +25,11 @@
 #
 
 class Company < ActiveRecord::Base
-  after_create :create_default_associations
+  after_create :create_default_associations!
 
-  store_accessor :settings
+  store_accessor :settings,
+                 :default_payment_term_id,
+                 :default_payment_method_id
 
   has_many :suppliers
   has_many :customers
@@ -51,18 +53,45 @@ class Company < ActiveRecord::Base
     disabled: 1
   }
 
+  def default_payment_term
+    return nil if default_payment_term_id.nil?
+    @default_payment_term ||= PaymentTerm.find_by(company: self, id: default_payment_term_id)
+  end
+
+  def default_payment_method
+    return nil if default_payment_method_id.nil?
+    @default_payment_method ||= PaymentMethod.find_by(company: self, id: default_payment_method_id)
+  end
 
   private
 
-    def create_default_associations
-      # PaymentMethod
-      %w(現金 銀行轉帳 信用卡 支票).each { |name| PaymentMethod.create!(company: self, name: name) }
+    def create_default_associations!
+      create_default_payment_methods!
+      create_default_payment_terms!
+    end
 
-      # PaymentTerm
-      [
-        { name: '現結', start_from: 'invoice_date', due_in_days: 0 },
-        { name: 'NET10', start_from: 'end_of_month', due_in_days: 10 },
-        { name: 'NET30', start_from: 'end_of_month', due_in_days: 30 },
-      ].each { |term| PaymentTerm.create!(company: self, name: term[:name], start_from: term[:start_from], due_in_days: term[:due_in_days]) }
+    DEFAULT_PAYMENT_METHODS = [
+      { name: '現金', default: true },
+      { name: '銀行轉帳', },
+      { name: '信用卡', },
+      { name: '支票', },
+    ]
+    def create_default_payment_methods!
+      DEFAULT_PAYMENT_METHODS.each do |method|
+        pm = PaymentMethod.create!(company: self, name: method[:name])
+        update(default_payment_method_id: pm.id) if method[:default]
+      end
+    end
+
+    DEFAULT_PAYMENT_TERMS = [
+      { name: '現結', start_from: 'invoice_date', due_in_days: 0, default: true },
+      { name: 'NET10', start_from: 'end_of_month', due_in_days: 10 },
+      { name: 'NET30', start_from: 'end_of_month', due_in_days: 30 },
+    ]
+    def create_default_payment_terms!
+      DEFAULT_PAYMENT_TERMS.each do |term|
+        pt = PaymentTerm.create!(company: self, name: term[:name], start_from: term[:start_from], due_in_days: term[:due_in_days])
+        update(default_payment_term_id: pt.id) if term[:default]
+      end
     end
 end
