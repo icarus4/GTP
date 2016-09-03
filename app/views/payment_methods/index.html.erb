@@ -2,7 +2,7 @@
   <%= link_to "新增付款方式(施工中)", '#', class: 'btn btn-default btn-md' %>
 </div>
 
-<div class="row table-container" id="location-table">
+<div class="row table-container" id="payment_methods-table">
   <table class="table table-hover">
     <thead>
       <tr>
@@ -43,7 +43,9 @@
               <div class="col-md-7 col-md-offset-3">
                 <div class="checkbox">
                   <label class="control-label">
-                    <input type="checkbox" class="" v-model="editing_payment_method.default">預設付款方式
+                    <i v-if="editing_payment_method.default_was" class="fa fa-check"></i>
+                    <input v-else type="checkbox" v-model="editing_payment_method.default">
+                    預設付款方式
                   </label>
                 </div>
               </div>
@@ -67,11 +69,8 @@
 <% content_for :js do %>
 <script type="text/javascript">
   new Vue({
-    el: "#location-table",
+    el: "#payment_methods-table",
     data: {
-      options: {
-        cities: [],
-      },
       payment_methods: [],
       editing_payment_method: {},
     },
@@ -92,6 +91,7 @@
       },
       setupEditPaymentMethod: function(payment_method_index) {
         this.editing_payment_method = _.cloneDeep(this.payment_methods[payment_method_index])
+        this.editing_payment_method.default_was = this.editing_payment_method.default
       },
       updatePaymentMethod: function() {
         that = this;

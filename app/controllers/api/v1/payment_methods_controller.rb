@@ -17,12 +17,17 @@ class Api::V1::PaymentMethodsController < Api::V1::BaseController
       render json: { errors: 'Payment method not found' }, status: :bad_request
     end
 
-    payment_method.name = params[:name]&.strip&.presence
-    if payment_method.save
+    if payment_method.update(payment_method_params)
       current_company.update(default_payment_method_id: payment_method.id)
       render json: { payment_method: payment_method }
     else
       render json: { errors: payment_method.errors.full_messages }, status: :bad_request
     end
   end
+
+  private
+
+    def payment_method_params
+      params.permit(:name)
+    end
 end
