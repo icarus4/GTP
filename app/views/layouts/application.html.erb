@@ -36,7 +36,8 @@
   </div>
   <!-- End wrapper-->
 
-  <%= javascript_include_tag 'application' %>
+  <%#= javascript_include_tag 'application' %>
+  <%= webpack_javascript_include_tag 'main' %>
   <%= content_for :js %>
 </body>
 </html>

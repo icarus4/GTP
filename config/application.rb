@@ -33,5 +33,10 @@ module Gtp
     config.active_record.raise_in_transactional_callbacks = true
 
     Dir[File.join("lib", "monky_patches", "**/*.rb")].each  { |path| require(path.split('lib/').last) }
+
+    # See https://ruby-china.org/topics/29630
+    config.webpack = {
+      asset_manifest: {}
+    }
   end
 end
