@@ -57,3 +57,7 @@ public/assets
 
 # Atom
 .tags
+.tags_swap
+
+# Node
+node_modules
