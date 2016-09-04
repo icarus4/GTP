@@ -32,6 +32,11 @@ class TaxType < ApplicationRecord
     id == _company.default_tax_type_id
   end
 
+  def full_name
+    _percentage = percentage == percentage.round ? percentage.to_i : percentage
+    "#{name} (#{_percentage}%)"
+  end
+
   private
 
     def calculate_rate

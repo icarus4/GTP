@@ -33,10 +33,11 @@ class Partner < ActiveRecord::Base
   after_initialize :setup_defaults
 
   store_accessor :settings,
-                 :default_sales_payment_term_id,
-                 :default_sales_payment_method_id,
-                 :default_purchase_payment_term_id,
-                 :default_purchase_payment_method_id
+                 :default_sales_payment_term_id,      # 預設收款條件
+                 :default_sales_payment_method_id,    # 預設收款方式
+                 :default_purchase_payment_term_id,   # 預設付款條件
+                 :default_purchase_payment_method_id, # 預設付款方式
+                 :default_tax_type_id                 # 預設稅別
 
   belongs_to :company
   has_many :partner_relationships
@@ -123,6 +124,12 @@ class Partner < ActiveRecord::Base
   def default_purchase_payment_term
     return nil if default_purchase_payment_term_id.nil?
     @default_purchase_payment_term ||= PaymentTerm.find_by(company_id: company_id, id: default_purchase_payment_term_id)
+  end
+
+  # 預設稅別
+  def default_tax_type
+    return nil if default_tax_type_id.nil?
+    @default_tax_type ||= TaxType.find_by(company_id: company_id, id: default_tax_type_id)
   end
 
   private

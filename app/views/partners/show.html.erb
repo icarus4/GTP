@@ -33,6 +33,7 @@
       <dt>預設收款方式</dt><dd><%= @partner.default_sales_payment_method.try(:name) %></dd>
       <dt>預設付款條件</dt><dd><%= @partner.default_purchase_payment_term.try(:full_name_in_chinese) %></dd>
       <dt>預設付款方式</dt><dd><%= @partner.default_purchase_payment_method.try(:name) %></dd>
+      <dt>預設稅別</dt><dd><%= "#{@partner.default_tax_type.try(:full_name)}"  %></dd>
     </dl>
   </div>
 </div>
