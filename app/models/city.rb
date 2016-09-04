@@ -13,4 +13,6 @@
 
 class City < ActiveRecord::Base
   has_many :locations
+
+  auto_strip_attributes :name
 end

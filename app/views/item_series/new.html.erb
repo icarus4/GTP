@@ -170,7 +170,7 @@ new Vue({
   },
   methods: {
     submitForm: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/item_series",
         method: 'POST',
@@ -186,7 +186,7 @@ new Vue({
       })
     },
     getBrandList: function() {
-      that = this;
+      var that = this
       $.ajax({
         url: "/api/v1/brands"
       }).done(function(data) {
@@ -194,7 +194,7 @@ new Vue({
       })
     },
     getManufacturerList: function() {
-      that = this;
+      var that = this
       $.ajax({
         url: "/api/v1/manufacturers"
       }).done(function(data) {
@@ -202,7 +202,7 @@ new Vue({
       })
     },
     createBrand: function() {
-      that = this;
+      var that = this
       $.ajax({
         url: "/api/v1/brands",
         method: 'POST',
@@ -219,7 +219,7 @@ new Vue({
       })
     },
     createManufacturer: function() {
-      that = this;
+      var that = this
       $.ajax({
         url: "/api/v1/manufacturers",
         method: 'POST',

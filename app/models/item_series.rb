@@ -35,6 +35,8 @@ class ItemSeries < ActiveRecord::Base
   validates :name, presence: true, uniqueness: { scope: :company_id }
   validates :expiration_alert_days, numericality: { greater_than_or_equal_to: 0, only_integer: true}, allow_nil: true
 
+  auto_strip_attributes :name, :raw_material, :main_and_auxiliary_material, :food_additives, :warnings
+
   enum storage_and_transport_condition: {
     freezing:         1, # 冷凍 (<= -18 degree)
     refrigeration:    2, # 冷藏 (0~7 degree)

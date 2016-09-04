@@ -119,7 +119,7 @@ new Vue({
       this.item_series_id = $("input#item-series-id").val()
     },
     getItemList: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/item_series/" + that.item_series_id + "/items"
       }).done(function(data) {
@@ -127,7 +127,7 @@ new Vue({
       })
     },
     getLocationOptions: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/locations/holds_stock"
       }).done(function(data) {
@@ -169,7 +169,7 @@ new Vue({
       }
     },
     getPackagingTypeOptions: function() {
-      that = this
+      var that = this
       $.ajax({
         url: "/api/v1/packaging_types"
       }).done(function(data) {
@@ -177,7 +177,7 @@ new Vue({
       })
     },
     submitItemForm: function() {
-      that = this;
+      var that = this
       $.ajax({
         url: "/api/v1/item_series/" + that.item_series_id + "/items",
         method: "POST",

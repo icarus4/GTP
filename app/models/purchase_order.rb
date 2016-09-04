@@ -46,6 +46,8 @@ class PurchaseOrder < ActiveRecord::Base
 
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
 
+  auto_strip_attributes :contact_email, :notes
+
   VALID_STATUSES = %w(draft active received)
   validates :status, inclusion: { in: VALID_STATUSES }
 

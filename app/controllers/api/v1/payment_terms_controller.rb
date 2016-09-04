@@ -1,6 +1,6 @@
 class Api::V1::PaymentTermsController < Api::V1::BaseController
   def index
-    payment_terms = current_company.payment_terms.select(:id, :company_id, :name, :start_from, :due_in_days)
+    payment_terms = current_company.payment_terms.select(:id, :company_id, :name, :start_from, :due_in_days).order(:id)
     @payment_terms = payment_terms.map do |pt|
       {
         id:                   pt.id,
@@ -21,7 +21,19 @@ class Api::V1::PaymentTermsController < Api::V1::BaseController
     end
 
     if payment_term.update(payment_term_params)
-      current_company.update(default_payment_term_id: payment_term.id)
+      current_company.update(default_payment_term_id: payment_term.id) if params[:default].try(:to_bool)
+      render json: { payment_term: payment_term }
+    else
+      render json: { errors: payment_term.errors.full_messages }, status: :bad_request
+    end
+  end
+
+  def create
+    payment_term = PaymentTerm.new(payment_term_params)
+    payment_term.company = current_company
+
+    if payment_term.save
+      current_company.update(default_payment_term_id: payment_term.id) if params[:default].try(:to_bool)
       render json: { payment_term: payment_term }
     else
       render json: { errors: payment_term.errors.full_messages }, status: :bad_request

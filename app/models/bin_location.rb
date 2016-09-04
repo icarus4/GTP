@@ -18,4 +18,6 @@ class BinLocation < ActiveRecord::Base
 
   validates :location_id, presence: true
   validates :name, uniqueness: { scope: :location_id }
+
+  auto_strip_attributes :name
 end

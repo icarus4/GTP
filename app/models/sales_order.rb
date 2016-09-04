@@ -48,6 +48,8 @@ class SalesOrder < ActiveRecord::Base
   validates :status, inclusion: { in: VALID_STATUSES }
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
 
+  auto_strip_attributes :contact_email, :notes
+
 
   def draft?
     status == 'draft'

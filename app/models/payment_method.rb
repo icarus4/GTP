@@ -18,6 +18,8 @@ class PaymentMethod < ApplicationRecord
 
   validates :company_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :company_id }
+  
+  auto_strip_attributes :name
 
   def default?(_company = nil)
     _company = _company || company

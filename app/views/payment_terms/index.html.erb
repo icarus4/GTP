@@ -1,101 +1,115 @@
-<div class="row">
-  <%= link_to "新增付款條件(施工中)", '#', class: 'btn btn-default btn-md' %>
-</div>
+<div id="payment_terms-page">
+  <div>
+    <button class="btn btn-default btn-md"
+            data-toggle="modal"
+            data-target="#payment-terms-form-modal"
+            @click="setupNewPaymentTerm">新增付款條件</button>
+  </div>
 
-<div class="row table-container" id="payment_terms-table">
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>名稱</th>
-        <th>條件</th>
-        <th>預設</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="payment_term in payment_terms"
-          class="cursor-pointer"
-          data-toggle="modal"
-          data-target="#edit-payment_terms-modal"
-          @click="setupEditPaymentTerm($index)">
-        <td>{{ payment_term.name }}</td>
-        <td>{{ payment_term.full_name_in_chinese }} </td>
-        <td><i class="fa fa-check" v-show="payment_term.default"></i></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-container">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>名稱</th>
+          <th>條件</th>
+          <th>預設</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="payment_term in payment_terms"
+            class="cursor-pointer"
+            data-toggle="modal"
+            data-target="#payment-terms-form-modal"
+            @click="setupEditPaymentTerm($index)">
+          <td>{{ payment_term.name }}</td>
+          <td>{{ payment_term.full_name_in_chinese }} </td>
+          <td><i class="fa fa-check" v-show="payment_term.default"></i></td>
+        </tr>
+      </tbody>
+    </table>
 
-  <!-- Edit payment_terms modal -->
-  <div class="modal inmodal" id="edit-payment_terms-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content animated fadeIn">
+    <!-- Edit payment_terms modal -->
+    <div class="modal inmodal" id="payment-terms-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
 
-        <div class="modal-header">
-          <h4 class="modal-title">編輯付款條件</h4>
-        </div>
-
-        <div class="modal-body">
-          <div class="form-horizontal">
-            <div class="form-group">
-              <label class="col-md-3 control-label">* 名稱</label>
-              <div class="col-md-7">
-                <input type="text" class="form-control input-sm" v-model="editing_payment_term.name">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-md-3 control-label">* 條件</label>
-              <div class="col-md-7 row">
-                <div class="col-md-6">
-                  <select class="form-control input-sm" v-model="editing_payment_term.start_from">
-                    <option value="invoice_date"><%= PaymentTerm::START_FROM_MAPPING['invoice_date'] %></option>
-                    <option value="end_of_month"><%= PaymentTerm::START_FROM_MAPPING['end_of_month'] %></option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <div class="col-md-9 row"><input type="number" min="0" class="form-control input-sm" v-model="editing_payment_term.due_in_days"></div>
-                  <div class="col-md-3"><label class="control-label">天</label></div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-md-7 col-md-offset-3">
-                <div class="checkbox">
-                  <label class="control-label">
-                    <i v-if="editing_payment_term.default_was" class="fa fa-check"></i>
-                    <input v-else type="checkbox" v-model="editing_payment_term.default">
-                    預設付款條件
-                  </label>
-                </div>
-              </div>
-            </div>
+          <div class="modal-header">
+            <h4 class="modal-title">{{ form_title }}</h4>
           </div>
 
-        </div> <!-- modal body -->
+          <div class="modal-body">
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="col-md-3 control-label">* 名稱</label>
+                <div class="col-md-7">
+                  <input type="text" class="form-control input-sm" v-model="editing_payment_term.name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label">* 條件</label>
+                <div class="col-md-7 row">
+                  <div class="col-md-6">
+                    <select class="form-control input-sm" v-model="editing_payment_term.start_from">
+                      <option value="invoice_date"><%= PaymentTerm::START_FROM_MAPPING['invoice_date'] %></option>
+                      <option value="end_of_month"><%= PaymentTerm::START_FROM_MAPPING['end_of_month'] %></option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="col-md-9 row"><input type="number" min="0" class="form-control input-sm" v-model="editing_payment_term.due_in_days"></div>
+                    <div class="col-md-3"><label class="control-label">天</label></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-7 col-md-offset-3">
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <i v-if="editing_payment_term.default_was" class="fa fa-check"></i>
+                      <input v-else type="checkbox" v-model="editing_payment_term.default">
+                      預設付款條件
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-          <button type="button" class="btn btn-primary" @click="updatePaymentTerm" data-dismiss="modal">儲存</button>
+          </div> <!-- modal body -->
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updatePaymentTerm" data-dismiss="modal">儲存</button>
+            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createPaymentTerm" data-dismiss="modal">儲存</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <%= render 'common/vue_data' %>
 
+    <%= render 'common/vue_data' %>
+
+  </div>
 </div>
 
 <% content_for :js do %>
 <script type="text/javascript">
   new Vue({
-    el: "#payment_terms-table",
+    el: "#payment_terms-page",
     data: {
       payment_terms: [],
       editing_payment_term: {},
+      mode: null,
     },
     ready: function() {
       this.getPaymentTermList()
     },
+    computed: {
+      form_title: function() {
+        if (this.mode === 'new') { return '建立付款條件' }
+        else if (this.mode === 'edit') { return '編輯付款條件' }
+      }
+    },
     methods: {
       getPaymentTermList: function() {
-        that = this
+        var that = this
         $.ajax({
           url: '/api/v1/payment_terms',
           dataType: 'JSON',
@@ -108,9 +122,16 @@
       setupEditPaymentTerm: function(payment_term_index) {
         this.editing_payment_term = _.cloneDeep(this.payment_terms[payment_term_index])
         this.editing_payment_term.default_was = this.editing_payment_term.default
+        this.mode = 'edit'
+      },
+      setupNewPaymentTerm: function(qq) {
+        console.log('qq')
+        this.editing_payment_term = {}
+        this.editing_payment_term.default_was = false
+        this.mode = 'new'
       },
       updatePaymentTerm: function() {
-        that = this;
+        var that = this
         $.ajax({
           url: "/api/v1/payment_terms/" + that.editing_payment_term.id,
           method: "PATCH",
@@ -119,6 +140,23 @@
           data: that.editing_payment_term,
         }).done(function(data) {
           that.getPaymentTermList()
+          that.editing_payment_term = {}
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON.errors)
+        })
+      },
+      createPaymentTerm: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/payment_terms",
+          method: "POST",
+          dataType: 'JSON',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.editing_payment_term,
+        }).done(function(data) {
+          that.getPaymentTermList()
+          that.editing_payment_term = {}
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON.errors)

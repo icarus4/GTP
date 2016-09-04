@@ -29,4 +29,6 @@ class Supplier < Company
   has_many :locations, as: :locationable
 
   validates :name, :company_id, presence: true
+
+  auto_strip_attributes :name, :email, :vat_number, :phone, :fax, :website, :description
 end

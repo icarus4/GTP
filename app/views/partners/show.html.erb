@@ -155,7 +155,7 @@
         this.partner_id = $("input#partner-id").val()
       },
       getLocationList: function() {
-        that = this
+        var that = this
         $.ajax({
           url: "/api/v1/partners/" + that.partner_id + "/locations",
           method: "GET",
@@ -170,7 +170,7 @@
         this.editing_location = _.cloneDeep(this.locations[location_index])
       },
       updateLocation: function() {
-        that = this
+        var that = this
         $.ajax({
           url: "/api/v1/partners/" + that.partner_id + "/locations/" + that.editing_location.id,
           method: "PATCH",

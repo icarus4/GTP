@@ -19,6 +19,8 @@ class PackagingType < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: { scope: :company_id }
 
+  auto_strip_attributes :name, :code
+
   CODE_NAME_MAPPING = {
     '01' => '袋',
     '02' => '瓶',

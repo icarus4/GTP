@@ -30,6 +30,8 @@ class Location < ActiveRecord::Base
   validates :address, presence: true
   validates :name,    presence: true
 
+  auto_strip_attributes :name, :email, :address, :phone
+
   scope :holds_stock, -> { where(holds_stock: true) }
 
   def holds_stock?
