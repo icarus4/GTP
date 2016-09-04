@@ -1,10 +1,10 @@
-<div id="payment-methods-page">
+<div id="tax-types-page">
   <div>
     <button
       class="btn btn-default btn-md"
       data-toggle="modal"
-      data-target="#payment-methods-form-modal"
-      @click="setupNewPaymentMethod">新增付款方式</button>
+      data-target="#tax-types-form-modal"
+      @click="setupNewTaxType">新增稅別</button>
 
     </button>
   </div>
@@ -14,23 +14,25 @@
       <thead>
         <tr>
           <th>名稱</th>
+          <th>稅率</th>
           <th>預設</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="payment_method in payment_methods"
+        <tr v-for="tax_type in tax_types"
             class="cursor-pointer"
             data-toggle="modal"
-            data-target="#payment-methods-form-modal"
-            @click="setupEditPaymentMethod($index)">
-          <td>{{ payment_method.name }}</td>
-          <td><i class="fa fa-check" v-show="payment_method.default"></i></td>
+            data-target="#tax-types-form-modal"
+            @click="setupEditTaxType($index)">
+          <td>{{ tax_type.name }}</td>
+          <td>{{ tax_type.percentage }} %</td>
+          <td><i class="fa fa-check" v-show="tax_type.default"></i></td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Edit payment_methods modal -->
-    <div class="modal inmodal" id="payment-methods-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Edit tax_types modal -->
+    <div class="modal inmodal" id="tax-types-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content animated fadeIn">
 
@@ -43,28 +45,36 @@
               <div class="form-group">
                 <label class="col-md-3 control-label">* 名稱</label>
                 <div class="col-md-7">
-                  <input type="text" class="form-control input-sm" v-model="editing_payment_method.name">
+                  <input type="text" class="form-control input-sm" v-model="editing_tax_type.name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label">* 稅率</label>
+                <div class="col-md-7">
+                  <div class="col-md-4 row"><input type="number" min="0" max="100" step="1" class="form-control input-sm" v-model="editing_tax_type.percentage"></div>
+                  <div class="col-md-4"><label class="control-label">%</label></div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-md-7 col-md-offset-3">
                   <div class="checkbox">
                     <label class="control-label">
-                      <i v-if="editing_payment_method.default_was" class="fa fa-check"></i>
-                      <input v-else type="checkbox" v-model="editing_payment_method.default">
-                      預設付款方式
+                      <i v-if="editing_tax_type.default_was" class="fa fa-check"></i>
+                      <input v-else type="checkbox" v-model="editing_tax_type.default">
+                      預設稅別
                     </label>
                   </div>
                 </div>
               </div>
+
             </div>
 
           </div> <!-- modal body -->
 
           <div class="modal-footer">
             <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-            <button v-if="mode ==='edit'" type="button" class="btn btn-primary" @click="updatePaymentMethod" data-dismiss="modal">儲存</button>
-            <button v-if="mode ==='new'" type="button" class="btn btn-primary" @click="createPaymentMethod" data-dismiss="modal">建立</button>
+            <button v-if="mode ==='edit'" type="button" class="btn btn-primary" @click="updateTaxType" data-dismiss="modal">儲存</button>
+            <button v-if="mode ==='new'" type="button" class="btn btn-primary" @click="createTaxType" data-dismiss="modal">建立</button>
           </div>
         </div>
       </div>
@@ -78,69 +88,69 @@
 <% content_for :js do %>
 <script type="text/javascript">
   new Vue({
-    el: "#payment-methods-page",
+    el: "#tax-types-page",
     data: {
-      payment_methods: [],
-      editing_payment_method: {},
+      tax_types: [],
+      editing_tax_type: {},
       mode: null,
     },
     ready: function() {
-      this.getPaymentMethodList()
+      this.getTaxTypeList()
     },
     computed: {
       form_title: function() {
-        if (this.mode === 'new') { return '建立付款方式' }
-        else if (this.mode === 'edit') { return '編輯付款方式' }      }
+        if (this.mode === 'new') { return '建立稅別' }
+        else if (this.mode === 'edit') { return '編輯稅別' }      }
     },
     methods: {
-      getPaymentMethodList: function() {
+      getTaxTypeList: function() {
         var that = this
         $.ajax({
-          url: '/api/v1/payment_methods',
+          url: '/api/v1/tax_types',
           dataType: 'JSON',
         }).done(function(data) {
-          that.payment_methods = data.payment_methods
+          that.tax_types = data.tax_types
         }).fail(function(err) {
           console.log(err)
         })
       },
-      setupEditPaymentMethod: function(payment_method_index) {
-        this.editing_payment_method = _.cloneDeep(this.payment_methods[payment_method_index])
-        this.editing_payment_method.default_was = this.editing_payment_method.default
+      setupEditTaxType: function(tax_type_index) {
+        this.editing_tax_type = _.cloneDeep(this.tax_types[tax_type_index])
+        this.editing_tax_type.default_was = this.editing_tax_type.default
         this.mode = 'edit'
       },
-      setupNewPaymentMethod: function() {
-        this.editing_payment_method = {}
-        this.editing_payment_method.default_was = false
+      setupNewTaxType: function() {
+        this.editing_tax_type = {}
+        this.editing_tax_type.default_was = false
         this.mode = 'new'
       },
-      updatePaymentMethod: function() {
+      updateTaxType: function() {
         var that = this
         $.ajax({
-          url: "/api/v1/payment_methods/" + that.editing_payment_method.id,
+          url: "/api/v1/tax_types/" + that.editing_tax_type.id,
           method: "PATCH",
           dataType: 'JSON',
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-          data: that.editing_payment_method,
+          data: that.editing_tax_type,
         }).done(function(data) {
-          that.getPaymentMethodList();
-          that.editing_payment_method = {}
+          that.getTaxTypeList();
+          that.editing_tax_type = {}
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON.errors)
         })
       },
-      createPaymentMethod: function() {
+      createTaxType: function() {
         var that = this
         $.ajax({
-          url: "/api/v1/payment_methods",
+          url: "/api/v1/tax_types",
           method: "POST",
           dataType: 'JSON',
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-          data: that.editing_payment_method,
+          data: that.editing_tax_type,
         }).done(function(data) {
-          that.getPaymentMethodList();
-          that.editing_payment_method = {}
+          that.getTaxTypeList();
+          that.editing_tax_type = {}
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON.errors)
