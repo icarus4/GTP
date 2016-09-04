@@ -35,6 +35,7 @@ class User < ActiveRecord::Base
   has_secure_password
 
   belongs_to :company
+  before_validation :setup_default_name
 
   validates :email,
             presence: true,
@@ -56,4 +57,10 @@ class User < ActiveRecord::Base
   def customers
     Customers.where(company_id: company_id)
   end
+
+  private
+
+    def setup_default_name
+      self.name = email.split('@').first if name.blank?
+    end
 end

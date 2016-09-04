@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160902144526) do
+ActiveRecord::Schema.define(version: 20160904140758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -287,6 +287,16 @@ ActiveRecord::Schema.define(version: 20160902144526) do
     t.index ["status"], name: "index_stock_transfers_on_status", using: :btree
   end
 
+  create_table "tax_types", force: :cascade do |t|
+    t.integer  "company_id",                         null: false
+    t.decimal  "percentage", precision: 4, scale: 1, null: false
+    t.decimal  "rate",       precision: 4, scale: 3, null: false
+    t.string   "name",                               null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.index ["company_id"], name: "index_tax_types_on_company_id", using: :btree
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
     t.string   "password_digest",        default: "", null: false
@@ -367,5 +377,6 @@ ActiveRecord::Schema.define(version: 20160902144526) do
   add_foreign_key "stock_transfers", "companies"
   add_foreign_key "stock_transfers", "locations", column: "destination_location_id"
   add_foreign_key "stock_transfers", "locations", column: "source_location_id"
+  add_foreign_key "tax_types", "companies"
   add_foreign_key "variants", "items"
 end
