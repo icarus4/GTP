@@ -3,8 +3,8 @@
 # Table name: locations
 #
 #  id                :integer          not null, primary key
-#  locationable_id   :integer
 #  locationable_type :string
+#  locationable_id   :integer
 #  city_id           :integer
 #  zip               :string(8)
 #  phone             :string(32)

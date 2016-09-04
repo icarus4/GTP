@@ -29,7 +29,8 @@ class Company < ActiveRecord::Base
 
   store_accessor :settings,
                  :default_payment_term_id,
-                 :default_payment_method_id
+                 :default_payment_method_id,
+                 :default_tax_type_id
 
   has_many :suppliers
   has_many :customers
@@ -45,6 +46,7 @@ class Company < ActiveRecord::Base
   has_many :sales_orders
   has_many :payment_methods
   has_many :payment_terms
+  has_many :tax_types
 
   validates :name, presence: true
 
@@ -65,11 +67,17 @@ class Company < ActiveRecord::Base
     @default_payment_method ||= PaymentMethod.find_by(company: self, id: default_payment_method_id)
   end
 
+  def default_tax_type
+    return nil if default_tax_type_id.nil?
+    @default_tax_type ||= TaxType.find_by(company: self, id: default_tax_type_id)
+  end
+
   private
 
     def create_default_associations!
       create_default_payment_methods!
       create_default_payment_terms!
+      create_default_tax_types!
     end
 
     DEFAULT_PAYMENT_METHODS = [
@@ -94,6 +102,17 @@ class Company < ActiveRecord::Base
       DEFAULT_PAYMENT_TERMS.each do |term|
         pt = PaymentTerm.create!(company: self, name: term[:name], start_from: term[:start_from], due_in_days: term[:due_in_days])
         update(default_payment_term_id: pt.id) if term[:default]
+      end
+    end
+
+    DEFAULT_TAX_TYPES = [
+      { name: '免稅', percentage: 0, default: true },
+      { name: '營業稅', percentage: 5 },
+    ]
+    def create_default_tax_types!
+      DEFAULT_TAX_TYPES.each do |term|
+        tt = TaxType.create!(company: self, name: term[:name], percentage: term[:percentage])
+        update(default_tax_type_id: tt.id) if term[:default]
       end
     end
 end
