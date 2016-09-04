@@ -23,6 +23,8 @@ class PaymentTerm < ApplicationRecord
   validates :due_in_days, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :start_from, presence: true
 
+  auto_strip_attributes :name
+
   enum start_from: {
     invoice_date: 0,
     end_of_month: 1,

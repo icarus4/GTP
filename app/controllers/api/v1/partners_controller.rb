@@ -33,7 +33,7 @@ class Api::V1::PartnersController < Api::V1::BaseController
   private
 
     def partner_params
-      params.presence_all.permit(
+      params.permit(
         :partner_type,
         :receipt_type,
         :name,
@@ -55,6 +55,6 @@ class Api::V1::PartnersController < Api::V1::BaseController
     end
 
     def location_params
-      params.presence_all.require(:location).permit(:name, :email, :phone, :address)
+      params.require(:location).permit(:name, :email, :phone, :address)
     end
 end

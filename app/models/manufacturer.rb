@@ -22,6 +22,8 @@ class Manufacturer < ActiveRecord::Base
   validates :name, :company_id, :location_type, presence: true
   validates :registration_number, uniqueness: { scope: :company_id }, allow_nil: true
 
+  auto_strip_attributes :name, :registration_number, :address
+
   enum location_type: {
     domestic: 0,
     foreign:  1,

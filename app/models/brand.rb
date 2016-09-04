@@ -18,4 +18,6 @@ class Brand < ActiveRecord::Base
 
   validates :company_id, presence: true
   validates :name,       presence: true, uniqueness: { scope: :company_id }
+
+  auto_strip_attributes :name
 end

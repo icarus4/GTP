@@ -48,6 +48,8 @@ class Company < ActiveRecord::Base
 
   validates :name, presence: true
 
+  auto_strip_attributes :name, :email, :vat_number, :phone, :fax, :website, :description
+
   enum status: {
     active: 0,
     disabled: 1

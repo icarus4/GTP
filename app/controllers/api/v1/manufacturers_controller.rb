@@ -19,6 +19,6 @@ class Api::V1::ManufacturersController < Api::V1::BaseController
   private
 
     def manufacturer_params
-      params.presence_all.permit(:name, :alias_name, :partner_type, :factory_registration_number)
+      params.permit(:name, :alias_name, :partner_type, :factory_registration_number)
     end
 end

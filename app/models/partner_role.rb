@@ -15,4 +15,6 @@ class PartnerRole < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
   validates :chinese_name, presence: true, uniqueness: true
+
+  auto_strip_attributes :name, :chinese_name
 end

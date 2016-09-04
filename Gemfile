@@ -80,3 +80,4 @@ gem 'lodash-rails', '4.14.1'
 gem 'vuejs-rails', '1.0.26'
 gem 'exception_notification', '4.2.1'
 gem 'slack-notifier', '1.5.1'
+gem "auto_strip_attributes", "~> 2.1"

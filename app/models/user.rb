@@ -43,6 +43,8 @@ class User < ActiveRecord::Base
             format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
   validates :password_confirmation, presence: true
 
+  auto_strip_attributes :name, :email, :phone_number
+
   def relationships
     Company.where(company_id: company_id)
   end

@@ -47,6 +47,18 @@ class Partner < ActiveRecord::Base
   validates :name, presence: true
   validates :tax_number, uniqueness: { scope: :company_id }, allow_blank: true
 
+  auto_strip_attributes :name,
+                        :alias_name,
+                        :email,
+                        :tax_number,
+                        :phone,
+                        :fax,
+                        :food_industry_registration_number,
+                        :factory_registration_number,
+                        :no_food_industry_registration_number_reason,
+                        :website,
+                        :description
+
   enum status: {
     active: 0
   }
