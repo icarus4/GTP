@@ -2,8 +2,8 @@
   <div>
     <button class="btn btn-default btn-md"
             data-toggle="modal"
-            data-target="#payment_terms-form-modal"
-            @click="setupNewPaymentTerm()">新增付款條件</button>
+            data-target="#payment-terms-form-modal"
+            @click="setupNewPaymentTerm">新增付款條件</button>
   </div>
 
   <div class="table-container">
@@ -19,7 +19,7 @@
         <tr v-for="payment_term in payment_terms"
             class="cursor-pointer"
             data-toggle="modal"
-            data-target="#payment_terms-form-modal"
+            data-target="#payment-terms-form-modal"
             @click="setupEditPaymentTerm($index)">
           <td>{{ payment_term.name }}</td>
           <td>{{ payment_term.full_name_in_chinese }} </td>
@@ -29,7 +29,7 @@
     </table>
 
     <!-- Edit payment_terms modal -->
-    <div class="modal inmodal" id="payment_terms-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal inmodal" id="payment-terms-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content animated fadeIn">
 
@@ -96,17 +96,15 @@
     data: {
       payment_terms: [],
       editing_payment_term: {},
-      mode: 'new',
+      mode: null,
     },
     ready: function() {
       this.getPaymentTermList()
     },
     computed: {
       form_title: function() {
-        if (this.mode === 'new')
-          return '建立付款條件'
-        else if (this.mode === 'edit')
-          return '編輯付款條件'
+        if (this.mode === 'new') { return '建立付款條件' }
+        else if (this.mode === 'edit') { return '編輯付款條件' }
       }
     },
     methods: {
@@ -142,6 +140,7 @@
           data: that.editing_payment_term,
         }).done(function(data) {
           that.getPaymentTermList()
+          that.editing_payment_term = {}
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON.errors)
@@ -157,6 +156,7 @@
           data: that.editing_payment_term,
         }).done(function(data) {
           that.getPaymentTermList()
+          that.editing_payment_term = {}
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON.errors)
