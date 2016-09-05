@@ -38,7 +38,13 @@ class Location < ActiveRecord::Base
     holds_stock
   end
 
-  def create_default_bin_location
-    bin_locations.create(name: '預設') if holds_stock
+  def full_name
+    "#{name} (#{address})"
   end
+
+  private
+
+    def create_default_bin_location
+      bin_locations.create(name: '預設') if holds_stock
+    end
 end
