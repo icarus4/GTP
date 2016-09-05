@@ -20,7 +20,7 @@
           data-target="#edit-location-modal"
           @click="setupEditLocation($index)">
         <td>{{ location.name }}</td>
-        <td>{{ location.city.name }}</td>
+        <td>{{ location.city && location.city.name }}</td>
         <td>{{ location.address }}</td>
         <td>
           <span class="glyphicon glyphicon-ok" aria-hidden="true" v-show="location.holds_stock"></span>

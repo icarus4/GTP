@@ -52,6 +52,7 @@ class Api::V1::PartnersController < Api::V1::BaseController
         :default_sales_payment_term_id,      # FIXME: will be stored as string
         :default_purchase_payment_term_id,   # FIXME: will be stored as string
         :default_tax_type_id,                # FIXME: will be stored as string
+        :default_receiving_location_id,      # FIXME: will be stored as string
       )
     end
 

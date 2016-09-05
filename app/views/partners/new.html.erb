@@ -203,6 +203,16 @@
         </div>
       </div>
 
+      <div class="form-group" v-show="show_default_receiving_location">
+        <label class="col-sm-3 control-label">預設收貨倉庫</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_receiving_location_id">
+            <option value="0">-- 選取預設收貨倉庫 --</option>
+            <option v-for="location in options.hold_stock_locations" v-bind:value="location.id">{{ location.name }} ({{ location.address }})</option>
+          </select>
+        </div>
+      </div>
+
       <div class="hr-line-dashed"></div>
 
       <div class="form-group">
@@ -254,6 +264,7 @@ new Vue({
     options: {
       payment_methods: [],
       payment_terms: [],
+      hold_stock_locations: [],
       tax_types: [],
     },
     partner: {
@@ -269,6 +280,7 @@ new Vue({
       default_purchase_payment_term_id: 0,
       default_purchase_payment_method_id: 0,
       default_tax_type_id: 0,
+      default_receiving_location_id: 0,
     },
   },
   computed: {
@@ -309,6 +321,13 @@ new Vue({
              _.includes(this.partner.roles, 'exporter') ||
              _.includes(this.partner.roles, 'responsibility')
     },
+    show_default_receiving_location: function() {
+      return _.includes(this.partner.roles, 'supplier') ||
+             _.includes(this.partner.roles, 'manufacturer') ||
+             _.includes(this.partner.roles, 'logistics') ||
+             _.includes(this.partner.roles, 'exporter') ||
+             _.includes(this.partner.roles, 'responsibility')
+    },
   },
   watch: {
     'partner.partner_type': function(val, oldVal) {
@@ -342,6 +361,7 @@ new Vue({
     this.getPaymentMethodList()
     this.getPaymentTermList()
     this.getTaxTypeList()
+    this.getHoldStockLocationList()
   },
   methods: {
     getPaymentMethodList: function() {
@@ -376,6 +396,18 @@ new Vue({
         dataType: "JSON"
       }).done(function(data) {
         that.options.tax_types = data.tax_types
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
+    getHoldStockLocationList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/locations/holds_stock",
+        method: "GET",
+        dataType: "JSON"
+      }).done(function(data) {
+        that.options.hold_stock_locations = data.locations
       }).fail(function(err) {
         console.log(err.responseJSON.errors)
       })
