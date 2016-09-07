@@ -47,6 +47,7 @@ class Company < ActiveRecord::Base
   has_many :payment_methods
   has_many :payment_terms
   has_many :tax_types
+  has_many :price_lists
 
   validates :name, presence: true
 
