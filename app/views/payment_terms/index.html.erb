@@ -112,7 +112,7 @@
         var that = this
         $.ajax({
           url: '/api/v1/payment_terms',
-          dataType: 'JSON',
+          dataType: "json",
         }).done(function(data) {
           that.payment_terms = data.payment_terms
         }).fail(function(err) {
@@ -135,7 +135,7 @@
         $.ajax({
           url: "/api/v1/payment_terms/" + that.editing_payment_term.id,
           method: "PATCH",
-          dataType: 'JSON',
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.editing_payment_term,
         }).done(function(data) {
@@ -151,7 +151,7 @@
         $.ajax({
           url: "/api/v1/payment_terms",
           method: "POST",
-          dataType: 'JSON',
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.editing_payment_term,
         }).done(function(data) {

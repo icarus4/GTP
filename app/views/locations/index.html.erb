@@ -151,7 +151,7 @@
         var that = this
         $.ajax({
           url: '/api/v1/locations',
-          dataType: 'JSON',
+          dataType: "json",
         }).done(function(data) {
           that.locations = data.locations
         }).fail(function(err) {
@@ -162,7 +162,7 @@
         var that = this
         $.ajax({
           url: '/api/v1/cities',
-          dataType: 'JSON',
+          dataType: "json",
         }).done(function(data) {
           that.options.cities = data.cities
         }).fail(function(err) {
@@ -177,7 +177,7 @@
         $.ajax({
           url: "/api/v1/locations/" + that.editing_location.id,
           method: "PATCH",
-          dataType: 'JSON',
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.editing_location,
         }).done(function(data) {
@@ -199,7 +199,7 @@
         $.ajax({
           url: "/api/v1/locations/" + that.editing_location.id + "/bin_locations",
           method: "POST",
-          dataType: 'JSON',
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.new_bin_location,
         }).done(function(data) {

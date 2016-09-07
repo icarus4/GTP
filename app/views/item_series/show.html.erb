@@ -171,7 +171,9 @@ new Vue({
     getPackagingTypeOptions: function() {
       var that = this
       $.ajax({
-        url: "/api/v1/packaging_types"
+        url: "/api/v1/packaging_types",
+        method: "GET",
+        dataType: "json"
       }).done(function(data) {
         that.options.packaging_types = data.packaging_types
       })
@@ -181,7 +183,7 @@ new Vue({
       $.ajax({
         url: "/api/v1/item_series/" + that.item_series_id + "/items",
         method: "POST",
-        dataType: 'JSON',
+        dataType: "json",
         beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: that.new_item
       }).done(function(data) {

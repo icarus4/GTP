@@ -107,7 +107,7 @@
         var that = this
         $.ajax({
           url: '/api/v1/tax_types',
-          dataType: 'JSON',
+          dataType: "json",
         }).done(function(data) {
           that.tax_types = data.tax_types
         }).fail(function(err) {
@@ -129,7 +129,7 @@
         $.ajax({
           url: "/api/v1/tax_types/" + that.editing_tax_type.id,
           method: "PATCH",
-          dataType: 'JSON',
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.editing_tax_type,
         }).done(function(data) {
@@ -145,7 +145,7 @@
         $.ajax({
           url: "/api/v1/tax_types",
           method: "POST",
-          dataType: 'JSON',
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.editing_tax_type,
         }).done(function(data) {

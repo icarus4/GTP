@@ -161,7 +161,7 @@
         $.ajax({
           url: "/api/v1/partners/" + that.partner_id + "/locations",
           method: "GET",
-          dataType: "JSON"
+          dataType: "json"
         }).done(function(data) {
           that.locations = data.locations
         }).fail(function(err) {
@@ -176,7 +176,7 @@
         $.ajax({
           url: "/api/v1/partners/" + that.partner_id + "/locations/" + that.editing_location.id,
           method: "PATCH",
-          dataType: "JSON",
+          dataType: "json",
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: that.editing_location,
         }).done(function(data) {
