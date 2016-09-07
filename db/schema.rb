@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160904140758) do
+ActiveRecord::Schema.define(version: 20160906130150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,16 @@ ActiveRecord::Schema.define(version: 20160904140758) do
     t.datetime "updated_at",               null: false
     t.index ["company_id"], name: "index_companies_on_company_id", using: :btree
     t.index ["type"], name: "index_companies_on_type", using: :btree
+  end
+
+  create_table "item_price_lists", force: :cascade do |t|
+    t.integer  "item_id",                                null: false
+    t.integer  "price_list_id",                          null: false
+    t.decimal  "price",         precision: 12, scale: 2, null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.index ["item_id"], name: "index_item_price_lists_on_item_id", using: :btree
+    t.index ["price_list_id"], name: "index_item_price_lists_on_price_list_id", using: :btree
   end
 
   create_table "item_series", force: :cascade do |t|
@@ -202,6 +212,15 @@ ActiveRecord::Schema.define(version: 20160904140758) do
     t.index ["company_id"], name: "index_payment_terms_on_company_id", using: :btree
   end
 
+  create_table "price_lists", force: :cascade do |t|
+    t.integer  "company_id",      null: false
+    t.string   "name",            null: false
+    t.integer  "price_list_type"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["company_id"], name: "index_price_lists_on_company_id", using: :btree
+  end
+
   create_table "purchase_order_details", force: :cascade do |t|
     t.integer  "purchase_order_id"
     t.integer  "item_id"
@@ -342,6 +361,8 @@ ActiveRecord::Schema.define(version: 20160904140758) do
 
   add_foreign_key "bin_locations", "locations"
   add_foreign_key "brands", "companies"
+  add_foreign_key "item_price_lists", "items"
+  add_foreign_key "item_price_lists", "price_lists"
   add_foreign_key "item_series", "brands"
   add_foreign_key "item_series", "companies"
   add_foreign_key "item_series", "partners", column: "manufacturer_id"
@@ -359,6 +380,7 @@ ActiveRecord::Schema.define(version: 20160904140758) do
   add_foreign_key "partners", "companies"
   add_foreign_key "payment_methods", "companies"
   add_foreign_key "payment_terms", "companies"
+  add_foreign_key "price_lists", "companies"
   add_foreign_key "purchase_order_details", "items"
   add_foreign_key "purchase_order_details", "purchase_orders"
   add_foreign_key "purchase_orders", "companies"

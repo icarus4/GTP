@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     resources :payment_terms, only: [:index]
     resources :payment_methods, only: [:index]
     resources :tax_types, only: [:index]
+    resources :price_lists, only: [:index]
   end
 
   namespace :api do
@@ -69,6 +70,7 @@ Rails.application.routes.draw do
       resources :payment_methods, only: [:index, :update, :create]
       resources :payment_terms, only: [:index, :update, :create]
       resources :tax_types, only: [:index, :update, :create]
+      resources :price_lists, only: [:index, :update, :create]
     end
   end
 end
