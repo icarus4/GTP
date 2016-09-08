@@ -6,10 +6,10 @@ class CreateItems < ActiveRecord::Migration
       t.references :packaging_type,       foreign_key: true
       t.integer    :available_count,      null: false, default: 0
       t.integer    :on_hand_count,        null: false, default: 0
-      t.integer    :cost_per_unit
-      t.integer    :purchase_price
-      t.integer    :wholesale_price
-      t.integer    :retail_price
+      t.decimal    :cost_per_unit,        precision: 10, scale: 2
+      t.decimal    :purchase_price,       precision: 10, scale: 2
+      t.decimal    :wholesale_price,      precision: 10, scale: 2
+      t.decimal    :retail_price,         precision: 10, scale: 2
       t.integer    :low_stock_alert_level
       t.integer    :status,               null: false, default: 0, limit: 1
       t.integer    :weight_unit,          limit: 1

@@ -1,4 +1,4 @@
-<div class="row">
+<div class="">
   <div class="col-md-1">
     <%= image_tag @item.image.small.url, size: '80x80' if @item.image.present? %>
     <%= form_for @item, url: upload_image_item_path(@item), method: :post do |f| %>
@@ -14,26 +14,32 @@
       <dt>品牌</dt><dd><%= @item.brand.name %></dd>
       <dt>SKU</dt><dd><%= @item.sku %></dd>
       <dt>儲運條件</dt><dd><%= @item.storage_and_transport_condition_in_chinese %><%= "(#{@item.storage_and_transport_condition_note})" if @item.storage_and_transport_condition == 'other' %></dd>
-      <dt>原料</dt><dd><%= @item.raw_material %></dd>
-      <dt>食品添加物</dt><dd><%= @item.food_additives %></dd>
-      <dt>警語</dt><dd><%= @item.warnings %></dd>
     </dl>
   </div>
 
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@item.updated_at) %> ago</dd>
+      <dt>原料</dt><dd><%= @item.raw_material %></dd>
+      <dt>食品添加物</dt><dd><%= @item.food_additives %></dd>
+      <dt>警語</dt><dd><%= @item.warnings %></dd>
+      <dt>買進價</dt><dd><%= @item.purchase_price && "#{@item.purchase_price} 元" %></dd>
+      <dt>批發價</dt><dd><%= @item.wholesale_price && "#{@item.wholesale_price} 元" %></dd>
+      <dt>零售價</dt><dd><%= @item.retail_price && "#{@item.retail_price} 元" %></dd>
+    <% @item.item_price_lists.each do |item_price_list| %>
+      <dt><%= item_price_list.price_list.name %></dt><dd><%= item_price_list.price %> 元</dd>
+    <% end %>
     </dl>
   </div>
 
   <div class="col-md-3">
     <dl class="dl-horizontal">
       <dt>其他資訊</dt><dd><%= @item.description %></dd>
+      <dt>最後修改時間</dt><dd><%= time_ago_in_words(@item.updated_at) %> ago</dd>
     </dl>
   </div>
 </div>
 
-<div class="row table-container">
+<div class="table-container">
   <table class="table">
     <thead>
       <tr>

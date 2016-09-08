@@ -41,6 +41,11 @@ class Variant < ActiveRecord::Base
   validates :import_admitted_notice_number, uniqueness: { scope: [:item_id, :expiry_date] }
   validates :goods_declaration_number,      uniqueness: { scope: [:item_id, :expiry_date] }
 
+  auto_strip_attributes :import_admitted_notice_number,
+                        :goods_declaration_number,
+                        :item_number,
+                        :lot_number
+
   def update_cache_columns!
     update!(quantity: location_variants.sum(:quantity))
   end
