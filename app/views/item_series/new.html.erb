@@ -174,7 +174,7 @@ new Vue({
       $.ajax({
         url: "/api/v1/item_series",
         method: 'POST',
-        dataType: 'JSON',
+        dataType: "json",
         beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: {item_series: that.series}
       }).done(function(data) {
@@ -206,7 +206,7 @@ new Vue({
       $.ajax({
         url: "/api/v1/brands",
         method: 'POST',
-        dataType: 'JSON',
+        dataType: "json",
         beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: {brand: {name: that.new_brand_name}}
       }).done(function(data) {
@@ -223,7 +223,7 @@ new Vue({
       $.ajax({
         url: "/api/v1/manufacturers",
         method: 'POST',
-        dataType: 'JSON',
+        dataType: "json",
         beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: that.new_manufacturer,
       }).done(function(data) {

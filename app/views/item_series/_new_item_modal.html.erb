@@ -42,6 +42,22 @@
           </div>
 
           <div class="form-group">
+            <label class="col-md-4 control-label">* 現有庫存單位成本</label>
+            <div class="col-md-2">
+              <input type="text" class="form-control input-sm" v-model="new_item.cost_per_unit">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">* 低庫存警示數量</label>
+            <div class="col-md-2">
+              <input type="text" class="form-control input-sm" v-model="new_item.low_stock_alert_level">
+            </div>
+          </div>
+
+          <div class="hr-line-dashed"></div>
+
+          <div class="form-group">
             <label class="col-md-4 control-label">買進價</label>
             <div class="col-md-2">
               <input type="text" class="form-control input-sm" v-model="new_item.purchase_price">
@@ -62,17 +78,10 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-md-4 control-label">* 現有庫存單位成本</label>
+          <div class="form-group" v-for="price_list in new_item.price_lists">
+            <label class="col-md-4 control-label">{{ price_list.name }}</label>
             <div class="col-md-2">
-              <input type="text" class="form-control input-sm" v-model="new_item.cost_per_unit">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-md-4 control-label">* 低庫存警示數量</label>
-            <div class="col-md-2">
-              <input type="text" class="form-control input-sm" v-model="new_item.low_stock_alert_level">
+              <input type="text" class="form-control input-sm" v-model="new_item.price_lists[$index].price">
             </div>
           </div>
 

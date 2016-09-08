@@ -16,4 +16,10 @@
 #
 
 class ItemPriceList < ApplicationRecord
+  belongs_to :item
+  belongs_to :price_list
+
+  validates :item_id, presence: true
+  validates :price_list_id, presence: true
+  validates :price, presence: true
 end

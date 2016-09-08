@@ -8,10 +8,10 @@
 #  packaging_type_id     :integer
 #  available_count       :integer          default(0), not null
 #  on_hand_count         :integer          default(0), not null
-#  cost_per_unit         :integer
-#  purchase_price        :integer
-#  wholesale_price       :integer
-#  retail_price          :integer
+#  cost_per_unit         :decimal(10, 2)
+#  purchase_price        :decimal(10, 2)
+#  wholesale_price       :decimal(10, 2)
+#  retail_price          :decimal(10, 2)
 #  low_stock_alert_level :integer
 #  status                :integer          default("active"), not null
 #  weight_unit           :integer

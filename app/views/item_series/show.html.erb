@@ -94,6 +94,7 @@ new Vue({
       packaging_type_id: 0,
       weight_value: null,
       weight_unit: 'g',
+      price_lists: [],
     },
     itemDetailTemplate: {
       on_hand_count: null,
@@ -104,6 +105,7 @@ new Vue({
     options: {
       locations: [],
       packaging_types: [],
+      // price_lists: [],
     },
     items: [],
     new_item: {},
@@ -113,6 +115,7 @@ new Vue({
   },
   ready: function() {
     this.getItemList()
+    this.getPriceList()
   },
   methods: {
     setupItemSeriesId: function() {
@@ -171,9 +174,24 @@ new Vue({
     getPackagingTypeOptions: function() {
       var that = this
       $.ajax({
-        url: "/api/v1/packaging_types"
+        url: "/api/v1/packaging_types",
+        method: "GET",
+        dataType: "json"
       }).done(function(data) {
         that.options.packaging_types = data.packaging_types
+      })
+    },
+    getPriceList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/price_lists",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        // that.options.price_lists = data.price_lists
+        that.itemTemplate.price_lists = data.price_lists
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
       })
     },
     submitItemForm: function() {
@@ -181,7 +199,7 @@ new Vue({
       $.ajax({
         url: "/api/v1/item_series/" + that.item_series_id + "/items",
         method: "POST",
-        dataType: 'JSON',
+        dataType: "json",
         beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: that.new_item
       }).done(function(data) {

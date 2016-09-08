@@ -37,7 +37,7 @@ class ItemsController < ApplicationController
   end
 
   def show
-    @item = Item.includes(:variants).find_by(id: params[:id])
+    @item = Item.includes(:variants, item_price_lists: :price_list).find_by(id: params[:id])
     redirect_to items_path unless @item
   end
 

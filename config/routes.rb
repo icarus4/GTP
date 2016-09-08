@@ -58,7 +58,7 @@ Rails.application.routes.draw do
         resources :bin_locations, only: [:create]
       end
       resources :item_series, only: [:create] do
-        resources :items, only: [:index, :create]
+        resources :items, only: [:index, :create], controller: 'item_series/items'
       end
       resources :brands, only: [:index, :create]
       resources :manufacturers, only: [:index, :create]
