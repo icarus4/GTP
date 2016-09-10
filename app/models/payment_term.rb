@@ -40,7 +40,7 @@ class PaymentTerm < ApplicationRecord
   end
 
   def full_name_in_chinese
-    "#{start_from_in_chinese} #{due_in_days} 天內"
+    "#{start_from_in_chinese} #{due_in_days} 天"
   end
 
   def default?(_company = nil)
