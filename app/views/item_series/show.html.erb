@@ -1,4 +1,4 @@
-<div class="row">
+<div>
   <div class="col-md-4">
     <dl class="dl-horizontal">
       <dt>商品系列名稱</dt><dd><%= @item_series.name %></dd>
@@ -26,7 +26,7 @@
 </div>
 
 <div id="item-table">
-  <div class="row table-container">
+  <div class="table-container">
     <table class="table table-hover">
       <thead>
         <tr>
@@ -65,7 +65,7 @@
     </table>
   </div>
 
-  <div class="row">
+  <div>
     <input id="item-series-id" type="hidden" value="<%= @item_series.id %>">
     <button class="btn btn-default btn-md" @click="setupNewItemForm" data-toggle="modal" data-target="#new-item-modal">新增商品</button>
   </div>
