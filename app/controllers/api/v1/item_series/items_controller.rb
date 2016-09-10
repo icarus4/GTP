@@ -34,7 +34,7 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
           next if pl.nil?
 
           ipl = ItemPriceList.find_or_initialize_by(price_list: pl, item: item)
-          ipl.price = price_list[:price].to_d
+          ipl.price = price_list[:price]&.to_d
           ipl.save!
         end
 
