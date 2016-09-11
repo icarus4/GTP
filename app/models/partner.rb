@@ -44,6 +44,7 @@ class Partner < ActiveRecord::Base
   has_many :partner_relationships
   has_many :roles, through: :partner_relationships, class_name: 'PartnerRole', foreign_key: 'partner_role_id'
   has_many :locations, as: :locationable
+  has_many :contacts, as: :contactable
 
   validates :company_id, presence: true
   validates :name, presence: true

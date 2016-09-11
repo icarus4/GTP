@@ -42,11 +42,49 @@
 <div id="partner-info" class="tabs-container">
   <input type="hidden" id="partner-id" value="<%= @partner.id %>">
   <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#tab-1">地點</a></li>
-    <li class=""><a data-toggle="tab" href="#tab-2">聯絡人 (施工中)</a></li>
+    <li class="active"><a data-toggle="tab" href="#tab-1">聯絡人</a></li>
+    <li class=""><a data-toggle="tab" href="#tab-2">地點</a></li>
   </ul>
   <div class="tab-content">
     <div id="tab-1" class="tab-pane active">
+      <div class="panel-body">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>名字</th>
+              <th>電話</th>
+              <th>傳真</th>
+              <th>Email</th>
+              <th>職稱</th>
+              <th>部門</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="contact in contacts"
+              class="cursor-pointer"
+              data-toggle="modal"
+              data-target="#contact-form-modal"
+              @click="setupEditContact($index)">
+              <td>{{ contact.name }}</td>
+              <td>{{ contact.phone }}</td>
+              <td>{{ contact.fax }}</td>
+              <td>{{ contact.email }}</td>
+              <td>{{ contact.title }}</td>
+              <td>{{ contact.department }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="text-center">
+          <button
+            class="btn btn-default btn-circle"
+            @click="setupNewContact"
+            data-toggle="modal"
+            data-target="#contact-form-modal"><i class="fa fa-plus"></i></button>
+        </div>
+      </div>
+    </div>
+    <div id="tab-2" class="tab-pane">
       <div class="panel-body">
         <table class="table table-hover">
           <thead>
@@ -80,15 +118,91 @@
         </div>
       </div>
     </div>
-    <div id="tab-2" class="tab-pane">
-      <div class="panel-body">
-        <p>施工中...</p>
+  </div>
+
+
+  <!-- contact form modal -->
+  <div class="modal inmodal" id="contact-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content animated fadeIn">
+
+        <div class="modal-header">
+          <h4 class="modal-title">{{ contact_form_title }}</h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-3 control-label">* 名稱</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.name">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">Email</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.email">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">電話</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.phone">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">傳真</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.fax">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">手機</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.mobile">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">職稱</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.title">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">部門</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.department">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-3 control-label">備註</label>
+              <div class="col-md-7">
+                <input type="text" class="form-control input-sm" v-model="editing_contact.notes">
+              </div>
+            </div>
+
+          </div>
+        </div> <!-- modal body -->>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+          <button v-if="contact_form_mode === 'edit'" type="button" class="btn btn-primary" @click="updateContact" data-dismiss="modal">儲存</button>
+          <button v-if="contact_form_mode === 'new'" type="button" class="btn btn-primary" @click="createContact" data-dismiss="modal">建立</button>
+        </div>
+
       </div>
     </div>
   </div>
 
-
-  <!-- Edit location modal -->
+  <!-- location form modal -->
   <div class="modal inmodal" id="location-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content animated fadeIn">
@@ -154,17 +268,25 @@
       locations: [],
       editing_location: {},
       location_form_mode: null,
+      contacts: [],
+      editing_contact: {},
+      contact_form_mode: null,
     },
     created: function() {
       this.setupPartnerId()
     },
     ready: function() {
+      this.getContactList()
       this.getLocationList()
     },
     computed: {
       location_form_title: function() {
         if (this.location_form_mode === 'edit') { return '編輯地點' }
         else if (this.location_form_mode === 'new') { return '新增地點' }
+      },
+      contact_form_title: function() {
+        if (this.contact_form_mode === 'edit') { return '編輯聯絡人' }
+        else if (this.contact_form_mode === 'new') { return '新增聯絡人' }
       }
     },
     methods: {
@@ -183,6 +305,18 @@
           console.log(err)
         })
       },
+      getContactList: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/partners/" + that.partner_id + "/contacts",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          that.contacts = data.contacts
+        }).fail(function(err) {
+          console.log(err)
+        })
+      },
       setupEditLocation: function(location_index) {
         this.editing_location = _.cloneDeep(this.locations[location_index])
         this.location_form_mode = 'edit'
@@ -190,6 +324,14 @@
       setupNewLocation: function() {
         this.editing_location = {}
         this.location_form_mode = 'new'
+      },
+      setupEditContact: function(contact_index) {
+        this.editing_contact = _.cloneDeep(this.contacts[contact_index])
+        this.contact_form_mode = 'edit'
+      },
+      setupNewContact: function() {
+        this.editing_contact = {}
+        this.contact_form_mode = 'new'
       },
       updateLocation: function() {
         var that = this
@@ -219,6 +361,38 @@
           data: that.editing_location
         }).done(function(data) {
           that.getLocationList()
+        }).fail(function(err) {
+          alert(err.responseJSON.errors)
+        })
+      },
+      updateContact: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/partners/" + that.partner_id + "/contacts/" + that.editing_contact.id,
+          method: "PATCH",
+          dataType: "json",
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.editing_contact,
+        }).done(function(data) {
+          for (var i = 0; i < that.contacts.length; i++) {
+            if (that.contacts[i].id == data.contact.id) {
+              that.contacts.$set(i, data.contact) // Here "$set" is necessary. Please refer to http://vuejs.org/guide/list.html#Caveats
+            }
+          }
+        }).fail(function(err) {
+          alert(err.responseJSON.errors)
+        })
+      },
+      createContact: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/partners/" + that.partner_id + "/contacts",
+          method: "POST",
+          dataType: "json",
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.editing_contact
+        }).done(function(data) {
+          that.contacts.push(data.contact)
         }).fail(function(err) {
           alert(err.responseJSON.errors)
         })
