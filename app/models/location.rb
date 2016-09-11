@@ -28,7 +28,7 @@ class Location < ActiveRecord::Base
   after_create :create_default_bin_location
 
   validates :address, presence: true
-  validates :name,    presence: true
+  validates :name,    presence: true, uniqueness: { scope: [:locationable_type, :locationable_id] } 
 
   auto_strip_attributes :name, :email, :address, :phone
 
