@@ -39,7 +39,7 @@
   </div>
 </div>
 
-<div id="partner-data" class="tabs-container">
+<div id="partner-info" class="tabs-container">
   <input type="hidden" id="partner-id" value="<%= @partner.id %>">
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#tab-1">地點</a></li>
@@ -62,7 +62,7 @@
               v-for="location in locations"
               class="cursor-pointer"
               data-toggle="modal"
-              data-target="#edit-location-modal"
+              data-target="#location-form-modal"
               @click="setupEditLocation($index)">
               <td>{{ location.name }}</td>
               <td>{{ location.address }}</td>
@@ -71,6 +71,13 @@
             </tr>
           </tbody>
         </table>
+        <div class="text-center">
+          <button
+            class="btn btn-default btn-circle"
+            @click="setupNewLocation"
+            data-toggle="modal"
+            data-target="#location-form-modal"><i class="fa fa-plus"></i></button>
+        </div>
       </div>
     </div>
     <div id="tab-2" class="tab-pane">
@@ -82,12 +89,12 @@
 
 
   <!-- Edit location modal -->
-  <div class="modal inmodal" id="edit-location-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal inmodal" id="location-form-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content animated fadeIn">
 
         <div class="modal-header">
-          <h4 class="modal-title">編輯地點</h4>
+          <h4 class="modal-title">{{ location_form_title }}</h4>
         </div>
 
         <div class="modal-body">
@@ -126,7 +133,8 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-          <button type="button" class="btn btn-primary" @click="updateLocation" data-dismiss="modal">儲存</button>
+          <button v-if="location_form_mode === 'edit'" type="button" class="btn btn-primary" @click="updateLocation" data-dismiss="modal">儲存</button>
+          <button v-if="location_form_mode === 'new'" type="button" class="btn btn-primary" @click="createLocation" data-dismiss="modal">建立</button>
         </div>
 
       </div>
@@ -140,17 +148,24 @@
 <% content_for :js do %>
 <script type="text/javascript">
   new Vue({
-    el: "#partner-data",
+    el: "#partner-info",
     data: {
       partner_id: null,
       locations: [],
       editing_location: {},
+      location_form_mode: null,
     },
     created: function() {
       this.setupPartnerId()
     },
     ready: function() {
       this.getLocationList()
+    },
+    computed: {
+      location_form_title: function() {
+        if (this.location_form_mode === 'edit') { return '編輯地點' }
+        else if (this.location_form_mode === 'new') { return '新增地點' }
+      }
     },
     methods: {
       setupPartnerId: function() {
@@ -170,6 +185,11 @@
       },
       setupEditLocation: function(location_index) {
         this.editing_location = _.cloneDeep(this.locations[location_index])
+        this.location_form_mode = 'edit'
+      },
+      setupNewLocation: function() {
+        this.editing_location = {}
+        this.location_form_mode = 'new'
       },
       updateLocation: function() {
         var that = this
@@ -185,6 +205,20 @@
               that.locations.$set(i, data.location) // Here "$set" is necessary. Please refer to http://vuejs.org/guide/list.html#Caveats
             }
           }
+        }).fail(function(err) {
+          alert(err.responseJSON.errors)
+        })
+      },
+      createLocation: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/partners/" + that.partner_id + "/locations",
+          method: "POST",
+          dataType: "json",
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: that.editing_location
+        }).done(function(data) {
+          that.getLocationList()
         }).fail(function(err) {
           alert(err.responseJSON.errors)
         })

@@ -65,7 +65,7 @@ Rails.application.routes.draw do
       resources :cities, only: [:index]
       resources :packaging_types, only: [:index]
       resources :partners, only: [:create] do
-        resources :locations, only: [:index, :update], controller: 'partners/locations'
+        resources :locations, only: [:index, :update, :create], controller: 'partners/locations'
       end
       resources :payment_methods, only: [:index, :update, :create]
       resources :payment_terms, only: [:index, :update, :create]
