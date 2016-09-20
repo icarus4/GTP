@@ -25,7 +25,7 @@
           </div>
 
           <div class="form-group">
-            <label class="col-md-4 control-label">* 包裝規格</label>
+            <label class="col-md-4 control-label">* 最小不可分割包裝規格</label>
             <div class="col-md-6">
               <input type="text" class="form-control input-sm" v-model="new_item.weight_value" style="width: 140px; display: inline-block" placeholder="ex: 100">
               <select v-model="new_item.weight_unit" class="form-control input-sm" style="width: 50px; display: inline-block">
@@ -34,7 +34,7 @@
               </select>
               <strong><samp>&frasl;</samp></strong>
               <select v-model="new_item.packaging_type_id" class="form-control input-sm" style="width: 70px; display: inline-block">
-                <option value="0">請選取</option>
+                <option disabled selected value>請選取</option>
                 <option v-for="packaging_type in options.packaging_types" v-bind:value="packaging_type.id">{{ packaging_type.name }}</option>
               </select>
               <!-- <p style="display: inline-block; margin-left: 10px">每? {{ new_item.weight_value }} {{ new_item.weight_unit}}</p></div> -->
@@ -85,6 +85,30 @@
             </div>
           </div>
 
+          <hr>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">此商品可包裹進貨/出貨?</label>
+            <div class="col-md-2">
+              <input type="checkbox" class="form-control input-sm" v-model="new_item.packable">
+            </div>
+          </div>
+
+          <div v-if="new_item.packable">
+            <div class="form-group" v-for="pack in new_item.packs">
+              <div class="col-md-offset-4 col-md-8">
+                每 <input type="text" class="form-control input-sm" style="display: inline-block; width: 100px" v-model="pack.name" placeholder="打, 箱, ...">
+                <input type="number" min="2" class="form-control input-sm" style="display: inline-block; width: 100px" v-model="pack.size" placeholder=""> 個
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center" v-if="new_item.packable">
+            <button class="btn btn-default btn-circle" @click="addNewPackToNewItem">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+
         </div>
 
         <hr>
@@ -110,13 +134,13 @@
               <td><input v-model="item_detail.on_hand_count" type="text" style="width: 70px"></td>
               <td>
                 <select v-model="item_detail.location_id" v-on:change="resetBinLocation(item_detail)">
-                  <option value="0">選取倉庫</option>
+                  <option selected disabled>選取倉庫</option>
                   <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
                 </select>
               </td>
               <td>
                 <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == 0">
-                  <option value="0">選取倉位</option>
+                  <option selected disabled>選取倉位</option>
                   <option v-for="bin_location in findBinLocationsByLocationId(item_detail.location_id)" :value="bin_location.id">{{ bin_location.name }}</option>
                 </select>
               </td>
