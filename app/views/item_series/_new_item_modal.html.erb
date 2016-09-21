@@ -88,7 +88,7 @@
           <hr>
 
           <div class="form-group">
-            <label class="col-md-4 control-label">此商品可包裹進貨/出貨?</label>
+            <label class="col-md-5 control-label">可使用不同批量包裝單位進出貨? (ex: 打、箱)</label>
             <div class="col-md-2">
               <input type="checkbox" class="form-control input-sm" v-model="new_item.packable">
             </div>
@@ -134,13 +134,13 @@
               <td><input v-model="item_detail.on_hand_count" type="text" style="width: 70px"></td>
               <td>
                 <select v-model="item_detail.location_id" v-on:change="resetBinLocation(item_detail)">
-                  <option selected disabled>選取倉庫</option>
+                  <option selected disabled value="">選取倉庫</option>
                   <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
                 </select>
               </td>
               <td>
-                <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == 0">
-                  <option selected disabled>選取倉位</option>
+                <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == ''">
+                  <option selected disabled value="">選取倉位</option>
                   <option v-for="bin_location in findBinLocationsByLocationId(item_detail.location_id)" :value="bin_location.id">{{ bin_location.name }}</option>
                 </select>
               </td>

@@ -58,6 +58,7 @@ class Item < ActiveRecord::Base
   has_many :sales_orders, through: :sales_order_details
   has_many :item_price_lists
   has_many :price_lists, through: :item_price_lists
+  has_many :packs, class_name: "Item::Pack"
 
   enum status: {
     active: 0,
