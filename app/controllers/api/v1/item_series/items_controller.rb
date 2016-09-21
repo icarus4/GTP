@@ -29,20 +29,24 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
       ActiveRecord::Base.transaction do
         item.save!
 
-        params[:price_lists].each do |_, price_list|
+        # Create price lists
+        params[:price_lists]&.each do |_, price_list|
+          next if price_list[:price].blank?
           pl = PriceList.find_by(company: current_company, id: price_list[:id])
           next if pl.nil?
 
           ipl = ItemPriceList.find_or_initialize_by(price_list: pl, item: item)
-          ipl.price = price_list[:price]&.to_d
+          ipl.price = price_list[:price].to_d
           ipl.save!
         end
 
-        params[:item_details].each do |_, item_detail|
+        # Create item initial stocks
+        params[:item_details]&.each do |_, item_detail|
           next if item_detail[:on_hand_count].blank? || item_detail[:bin_location_id].blank?
+
           variant = Variant.find_or_create_by!(
             item: item,
-            expiry_date:                   item_detail[:expiry_date],
+            expiry_date:                   item_detail[:expiry_date].presence, # If expiry_date is not specified, convert empty string to nil
             import_admitted_notice_number: item_detail[:import_admitted_notice_number],
             goods_declaration_number:      item_detail[:goods_declaration_number],
             item_number:                   item_detail[:item_number],
@@ -58,6 +62,15 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
           )
           lv.save!
         end
+
+        # Create packs
+        params[:packs]&.each do |_, input_pack|
+          pack = item.packs.build
+          pack.name = input_pack[:name]
+          pack.size = input_pack[:size].to_i
+          pack.save!
+        end
+
         item.update_available_count!
       end
     rescue => e

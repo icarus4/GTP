@@ -91,21 +91,21 @@ new Vue({
       on_hand_count: null,
       item_details: [],
       low_stock_alert_level: null,
-      packaging_type_id: 0,
+      packaging_type_id: null,
       weight_value: null,
       weight_unit: 'g',
       price_lists: [],
+      packs: [{}],
     },
     itemDetailTemplate: {
       on_hand_count: null,
       expiry_date: null,
-      location_id: 0,
-      bin_location_id: 0,
+      location_id: null,
+      bin_location_id: null,
     },
     options: {
       locations: [],
       packaging_types: [],
-      // price_lists: [],
     },
     items: [],
     new_item: {},
@@ -116,6 +116,13 @@ new Vue({
   ready: function() {
     this.getItemList()
     this.getPriceList()
+  },
+  watch: {
+    'new_item.packable': function(val, oldVal) {
+      if (val === false && oldVal === true) {
+        this.new_item.packs = [] // Empty array
+      }
+    }
   },
   methods: {
     setupItemSeriesId: function() {
@@ -149,7 +156,7 @@ new Vue({
         this.getLocationOptions()
       }
       // Setup default value of the new item
-      if ($.isEmptyObject(this.new_item)) {
+      if (typeof this.new_item.name === "undefined") {
         this.new_item = _.cloneDeep(this.itemTemplate)
         // If any item exists within current item series, copy the last item's value to the new item
         if (this.items.length > 0) {
@@ -211,7 +218,7 @@ new Vue({
       })
     },
     findBinLocationsByLocationId: function(location_id) {
-      if (location_id == 0) {
+      if (location_id == "") {
         return []
       }
       else {
@@ -225,13 +232,16 @@ new Vue({
       this.new_item.item_details.push(_.cloneDeep(this.itemDetailTemplate))
     },
     resetBinLocation: function(item_detail) {
-      item_detail.bin_location_id = 0
+      item_detail.bin_location_id = ""
     },
     removeItemDetail: function(item_detail) {
       this.new_item.item_details.$remove(item_detail)
     },
     redirectToItemPage: function(item_id) {
       window.location.href = "/items/" + item_id
+    },
+    addNewPackToNewItem: function() {
+      this.new_item.packs.push({})
     }
   }
 })
