@@ -18,7 +18,7 @@
       <label class="col-sm-2 control-label">品牌</label>
       <div class="col-sm-4">
         <select class="form-control input-sm" v-model="series.brand_id">
-          <option value="0">-- 選取品牌 --</option>
+          <option selected disabled value="">-- 選取品牌 --</option>
           <option v-for="brand in options.brands" v-bind:value="brand.id">
             {{ brand.name }}
           </option>
@@ -37,7 +37,7 @@
       <label class="col-sm-2 control-label">* 製造商</label>
       <div class="col-sm-4">
         <select class="form-control input-sm" v-model="series.manufacturer_id">
-          <option value="0">-- 選取製造商 --</option>
+          <option selected disabled value="">-- 選取製造商 --</option>
           <option v-for="manufacturer in options.manufacturers" v-bind:value="manufacturer.id">
             {{ manufacturer.name }}
           </option>
@@ -56,7 +56,7 @@
       <label class="col-sm-2 control-label">* 儲運條件</label>
       <div class="col-sm-4">
         <select class="form-control input-sm" v-model="series.storage_and_transport_condition">
-          <option value="0">-- 選取儲運條件 --</option>
+          <option selected disabled value="">-- 選取儲運條件 --</option>
           <option v-for="storage_and_transport_condition in options.storage_and_transport_conditions" v-bind:value="storage_and_transport_condition.id">
             {{ storage_and_transport_condition.name }}
           </option>
@@ -132,10 +132,10 @@ new Vue({
       ],
     },
     series: {
-      brand_id: 0,
+      brand_id: null,
       name: null,
-      manufacturer_id: 0,
-      storage_and_transport_condition: 0,
+      manufacturer_id: null,
+      storage_and_transport_condition: null,
       storage_and_transport_condition_note: null,
       raw_material: null,
       main_and_auxiliary_material: null,

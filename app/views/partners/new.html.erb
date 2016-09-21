@@ -157,7 +157,7 @@
         <label class="col-sm-3 control-label">預設收款條件</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_sales_payment_term_id">
-            <option value="0">-- 選取預設收款條件 --</option>
+            <option selected disabled value="">-- 選取預設收款條件 --</option>
             <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
           </select>
         </div>
@@ -167,7 +167,7 @@
         <label class="col-sm-3 control-label">預設收款方式</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_sales_payment_method_id">
-            <option value="0">-- 選取預設收款方式 --</option>
+            <option selected disabled value="">-- 選取預設收款方式 --</option>
             <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
           </select>
         </div>
@@ -177,7 +177,7 @@
         <label class="col-sm-3 control-label">預設付款條件</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_purchase_payment_term_id">
-            <option value="0">-- 選取預設付款條件 --</option>
+            <option selected disabled value="">-- 選取預設付款條件 --</option>
             <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
           </select>
         </div>
@@ -187,7 +187,7 @@
         <label class="col-sm-3 control-label">預設付款方式</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_purchase_payment_method_id">
-            <option value="0">-- 選取預設付款方式 --</option>
+            <option selected disabled value="">-- 選取預設付款方式 --</option>
             <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
           </select>
         </div>
@@ -197,7 +197,7 @@
         <label class="col-sm-3 control-label">預設稅別</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_tax_type_id">
-            <option value="0">-- 選取預設稅別 --</option>
+            <option selected disabled value="">-- 選取預設稅別 --</option>
             <option v-for="tax_type in options.tax_types" v-bind:value="tax_type.id">{{ tax_type.name }} ({{ tax_type.percentage }}%)</option>
           </select>
         </div>
@@ -207,7 +207,7 @@
         <label class="col-sm-3 control-label">預設收貨倉庫</label>
         <div class="col-sm-4">
           <select class="form-control input-sm" v-model="partner.default_receiving_location_id">
-            <option value="0">-- 選取預設收貨倉庫 --</option>
+            <option selected disabled value="">-- 選取預設收貨倉庫 --</option>
             <option v-for="location in options.hold_stock_locations" v-bind:value="location.id">{{ location.name }} ({{ location.address }})</option>
           </select>
         </div>
@@ -275,12 +275,12 @@ new Vue({
       factory_registration_number: null,
       location: {},
       receipt_type: 'receipt_free',
-      default_sales_payment_term_id: 0,
-      default_sales_payment_method_id: 0,
-      default_purchase_payment_term_id: 0,
-      default_purchase_payment_method_id: 0,
-      default_tax_type_id: 0,
-      default_receiving_location_id: 0,
+      default_sales_payment_term_id: null,
+      default_sales_payment_method_id: null,
+      default_purchase_payment_term_id: null,
+      default_purchase_payment_method_id: null,
+      default_tax_type_id: null,
+      default_receiving_location_id: null,
     },
   },
   computed: {
