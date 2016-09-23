@@ -21,6 +21,7 @@ class PriceList < ApplicationRecord
 
   validates :company_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :company_id }
+  validates :price_list_type, presence: true
 
   enum price_list_type: {
     purchase: 0,
