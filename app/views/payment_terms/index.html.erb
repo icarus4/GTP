@@ -39,29 +39,34 @@
 
           <div class="modal-body">
             <div class="form-horizontal">
-              <div class="form-group">
-                <label class="col-md-3 control-label">* 名稱</label>
-                <div class="col-md-7">
+              <div class="form-group" v-bind:class="{ 'has-error': errors.name }">
+                <label class="col-md-2 control-label">* 名稱</label>
+                <div class="col-md-8">
                   <input type="text" class="form-control input-sm" v-model="editing_payment_term.name">
+                  <span class="text-danger">{{ errors.name }}</span>
                 </div>
               </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label">* 條件</label>
-                <div class="col-md-7 row">
+              <div class="form-group" v-bind:class="{ 'has-error': errors.start_from }">
+                <label class="col-md-2 control-label">* 條件</label>
+                <div class="col-md-8 row">
                   <div class="col-md-6">
                     <select class="form-control input-sm" v-model="editing_payment_term.start_from">
                       <option value="invoice_date"><%= PaymentTerm::START_FROM_MAPPING['invoice_date'] %></option>
                       <option value="end_of_month"><%= PaymentTerm::START_FROM_MAPPING['end_of_month'] %></option>
                     </select>
+                    <span class="text-danger">{{ errors.start_from }}</span>
                   </div>
                   <div class="col-md-6">
-                    <div class="col-md-9 row"><input type="number" min="0" class="form-control input-sm" v-model="editing_payment_term.due_in_days"></div>
-                    <div class="col-md-3"><label class="control-label">天</label></div>
+                    <div class="col-md-8 row"><input type="number" min="0" class="form-control input-sm" v-model="editing_payment_term.due_in_days"></div>
+                    <div class="col-md-4"><label class="control-label" v-bind:class="{ 'text-danger': errors.due_in_days }">天</label></div>
+                    <br>
+                    <br>
+                    <span class="text-danger">{{ errors.due_in_days }}</span>
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <div class="col-md-7 col-md-offset-3">
+                <div class="col-md-8 col-md-offset-2">
                   <div class="checkbox">
                     <label class="control-label">
                       <i v-if="editing_payment_term.default_was" class="fa fa-check"></i>
@@ -77,8 +82,8 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updatePaymentTerm" data-dismiss="modal">儲存</button>
-            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createPaymentTerm" data-dismiss="modal">建立</button>
+            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updatePaymentTerm">儲存</button>
+            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createPaymentTerm">建立</button>
           </div>
         </div>
       </div>
@@ -97,6 +102,7 @@
       payment_terms: [],
       editing_payment_term: {},
       mode: null,
+      errors: {}
     },
     ready: function() {
       this.getPaymentTermList()
@@ -140,9 +146,11 @@
         }).done(function(data) {
           that.getPaymentTermList()
           that.editing_payment_term = {}
+          that.errors = {}
+          $('#payment-terms-form-modal').modal('hide')
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors = err.responseJSON.errors
         })
       },
       createPaymentTerm: function() {
@@ -156,9 +164,11 @@
         }).done(function(data) {
           that.getPaymentTermList()
           that.editing_payment_term = {}
+          that.errors = {}
+          $('#payment-terms-form-modal').modal('hide')
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors = err.responseJSON.errors
         })
       },
     }
