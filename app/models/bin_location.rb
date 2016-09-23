@@ -17,7 +17,7 @@ class BinLocation < ActiveRecord::Base
   belongs_to :location
 
   validates :location_id, presence: true
-  validates :name, uniqueness: { scope: :location_id }
+  validates :name, presence: true, uniqueness: { scope: :location_id }
 
   auto_strip_attributes :name
 end

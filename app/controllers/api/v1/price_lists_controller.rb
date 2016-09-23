@@ -22,7 +22,7 @@ class Api::V1::PriceListsController < Api::V1::BaseController
     if price_list.update(price_list_params)
       render json: { price_list: price_list }
     else
-      render json: { errors: price_list.errors.full_messages }, status: :bad_request
+      render json: { errors: price_list.errors }, status: :bad_request
     end
   end
 
@@ -33,7 +33,7 @@ class Api::V1::PriceListsController < Api::V1::BaseController
     if price_list.save
       render json: { price_list: price_list }
     else
-      render json: { errors: price_list.errors.full_messages }, status: :bad_request
+      render json: { errors: price_list.errors }, status: :bad_request
     end
   end
 

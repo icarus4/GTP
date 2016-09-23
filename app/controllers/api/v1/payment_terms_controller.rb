@@ -24,7 +24,7 @@ class Api::V1::PaymentTermsController < Api::V1::BaseController
       current_company.update(default_payment_term_id: payment_term.id) if params[:default].try(:to_bool)
       render json: { payment_term: payment_term }
     else
-      render json: { errors: payment_term.errors.full_messages }, status: :bad_request
+      render json: { errors: payment_term.errors }, status: :bad_request
     end
   end
 
@@ -36,7 +36,7 @@ class Api::V1::PaymentTermsController < Api::V1::BaseController
       current_company.update(default_payment_term_id: payment_term.id) if params[:default].try(:to_bool)
       render json: { payment_term: payment_term }
     else
-      render json: { errors: payment_term.errors.full_messages }, status: :bad_request
+      render json: { errors: payment_term.errors }, status: :bad_request
     end
   end
 
