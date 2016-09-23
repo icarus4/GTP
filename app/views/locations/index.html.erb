@@ -54,15 +54,6 @@
             </div>
 
             <div class="form-group">
-              <label class="col-md-3 control-label">* 城市</label>
-              <div class="col-md-7">
-                <select v-model="editing_location.city_id" class="form-control input-sm">
-                  <option v-for="city in options.cities" :value="city.id">{{ city.name }}</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
               <label class="col-md-3 control-label">郵遞區號</label>
               <div class="col-md-7">
                 <input type="text" class="form-control input-sm" v-model="editing_location.zip">
@@ -134,9 +125,6 @@
   new Vue({
     el: "#location-table",
     data: {
-      options: {
-        cities: [],
-      },
       locations: [],
       editing_location: {},
       new_bin_location: {},
@@ -144,7 +132,6 @@
     },
     ready: function() {
       this.getLocationList()
-      this.getCityList()
     },
     methods: {
       getLocationList: function() {
@@ -154,17 +141,6 @@
           dataType: "json",
         }).done(function(data) {
           that.locations = data.locations
-        }).fail(function(err) {
-          console.log(err)
-        })
-      },
-      getCityList: function() {
-        var that = this
-        $.ajax({
-          url: '/api/v1/cities',
-          dataType: "json",
-        }).done(function(data) {
-          that.options.cities = data.cities
         }).fail(function(err) {
           console.log(err)
         })

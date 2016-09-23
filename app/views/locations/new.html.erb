@@ -1,7 +1,6 @@
 <%= simple_form_for @location, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
   <%= f.input :name,        label: '據點名稱', placeholder: '例: 辦公室、倉庫' %>
   <%= f.input :zip,         label: '郵遞區號' %>
-  <%= f.association :city,  label: '城市', collection: City.all %>
   <%= f.input :address,     label: '地址' %>
 
   <div class="col-sm-offset-2 col-sm-10">
