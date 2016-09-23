@@ -139,8 +139,16 @@
     },
     ready: function() {
       this.getLocationList()
+      this.registerClearErrorsWhenClickModalOutside()
     },
     methods: {
+      registerClearErrorsWhenClickModalOutside: function() {
+        var that = this
+        $('#edit-location-modal').on('hide.bs.modal', function() {
+          that.errors.editing_location = {}
+          that.errors.new_bin_location = {}
+        })
+      },
       getLocationList: function() {
         var that = this
         $.ajax({

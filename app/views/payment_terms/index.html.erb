@@ -106,6 +106,7 @@
     },
     ready: function() {
       this.getPaymentTermList()
+      this.registerClearErrorsWhenClickModalOutside()
     },
     computed: {
       form_title: function() {
@@ -114,6 +115,12 @@
       }
     },
     methods: {
+      registerClearErrorsWhenClickModalOutside: function() {
+        var that = this
+        $('#payment-terms-form-modal').on('hide.bs.modal', function() {
+          that.errors = {}
+        })
+      },
       getPaymentTermList: function() {
         var that = this
         $.ajax({
