@@ -5,11 +5,11 @@ class Api::V1::BinLocationsController < Api::V1::BaseController
       render json: { errors: "Location not found" }, status: :bad_request and return
     end
 
-    bin_location = location.bin_locations.build(name: params[:name].strip)
+    bin_location = location.bin_locations.build(name: params[:name])
     if bin_location.save
       render json: { bin_location: bin_location }
     else
-      render json: { errors: bin_location.errors.full_messages }, status: :bad_request
+      render json: { errors: bin_location.errors }, status: :bad_request
     end
   end
 end

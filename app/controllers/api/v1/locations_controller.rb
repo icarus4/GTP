@@ -32,7 +32,7 @@ class Api::V1::LocationsController < Api::V1::BaseController
     if location.save
       render json: { location: location.as_json(include: [:bin_locations, :city]) }
     else
-      render json: { errors: location.errors.full_messages }
+      render json: { errors: location.errors }, status: :bad_request
     end
   end
 end
