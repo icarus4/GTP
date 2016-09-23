@@ -62,13 +62,14 @@
 
           <div class="modal-body">
             <div class="form-horizontal">
-              <div class="form-group">
+              <div class="form-group" v-bind:class="{ 'has-error': errors.name }">
                 <label class="col-md-3 control-label">* 名稱</label>
                 <div class="col-md-7">
                   <input type="text" class="form-control input-sm" v-model="editing_price_list.name">
+                  <span class="text-danger">{{ errors.name }}</span>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-bind:class="{ 'has-error': errors.price_list_type }">
                 <label class="col-md-3 control-label">* 類型</label>
                 <div class="col-md-7">
                   <div>
@@ -81,6 +82,7 @@
                       <input name="price-list-type" type="radio" v-model="editing_price_list.price_list_type" value="sales"> 銷售
                     </label>
                   </div>
+                  <span class="text-danger">{{ errors.price_list_type }}</span>
                 </div>
               </div>
             </div>
@@ -89,8 +91,8 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updatePriceList" data-dismiss="modal">儲存</button>
-            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createPriceList" data-dismiss="modal">建立</button>
+            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updatePriceList">儲存</button>
+            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createPriceList">建立</button>
           </div>
         </div>
       </div>
@@ -109,9 +111,11 @@
       price_lists: [],
       editing_price_list: {},
       mode: null,
+      errors: {}
     },
     ready: function() {
       this.getPriceList()
+      this.registerClearErrorsWhenClickModalOutside()
     },
     computed: {
       form_title: function() {
@@ -119,6 +123,12 @@
         else if (this.mode === 'edit') { return '編輯 Price List' }      }
     },
     methods: {
+      registerClearErrorsWhenClickModalOutside: function() {
+        var that = this
+        $('#price-lists-form-modal').on('hide.bs.modal', function() {
+          that.errors = {}
+        })
+      },
       getPriceList: function() {
         var that = this
         $.ajax({
@@ -149,9 +159,11 @@
         }).done(function(data) {
           that.getPriceList();
           that.editing_price_list = {}
+          that.errors = {}
+          $('#price-lists-form-modal').modal('hide')
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors = err.responseJSON.errors
         })
       },
       createPriceList: function() {
@@ -165,9 +177,11 @@
         }).done(function(data) {
           that.getPriceList();
           that.editing_price_list = {}
+          that.errors = {}
+          $('#price-lists-form-modal').modal('hide')
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors = err.responseJSON.errors
         })
       },
     }

@@ -21,7 +21,7 @@ class Api::V1::PaymentMethodsController < Api::V1::BaseController
       current_company.update(default_payment_method_id: payment_method.id) if params[:default].to_bool
       render json: { payment_method: payment_method }
     else
-      render json: { errors: payment_method.errors.full_messages }, status: :bad_request
+      render json: { errors: payment_method.errors }, status: :bad_request
     end
   end
 
@@ -33,7 +33,7 @@ class Api::V1::PaymentMethodsController < Api::V1::BaseController
       current_company.update(default_payment_method_id: payment_method.id) if params[:default].to_bool
       render json: { payment_method: payment_method }
     else
-      render json: { errors: payment_method.errors.full_messages }, status: :bad_request
+      render json: { errors: payment_method.errors }, status: :bad_request
     end
   end
 

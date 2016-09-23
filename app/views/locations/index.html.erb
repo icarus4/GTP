@@ -46,19 +46,11 @@
         <div class="modal-body">
 
           <div class="form-horizontal">
-            <div class="form-group">
+            <div class="form-group" v-bind:class="{ 'has-error': errors.editing_location.name }">
               <label class="col-md-3 control-label">* 名稱</label>
               <div class="col-md-7">
                 <input type="text" class="form-control input-sm" v-model="editing_location.name">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="col-md-3 control-label">* 城市</label>
-              <div class="col-md-7">
-                <select v-model="editing_location.city_id" class="form-control input-sm">
-                  <option v-for="city in options.cities" :value="city.id">{{ city.name }}</option>
-                </select>
+                <span class="text-danger">{{ errors.editing_location.name }}</span>
               </div>
             </div>
 
@@ -69,10 +61,11 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" v-bind:class="{ 'has-error': errors.editing_location.address }">
               <label class="col-md-3 control-label">* 地址</label>
               <div class="col-md-7">
                 <input type="text" class="form-control input-sm" v-model="editing_location.address">
+                <span class="text-danger">{{ errors.editing_location.address }}</span>
               </div>
             </div>
 
@@ -96,12 +89,13 @@
               </div>
 
               <!-- New bin location form -->
-              <div class="form-group" v-if="show_new_bin_location_form">
+              <div class="form-group" v-if="show_new_bin_location_form" v-bind:class="{ 'has-error': errors.new_bin_location.name }">
                 <div class="col-md-7 col-md-offset-3" >
                   <input type="text" class="form-control input-sm" v-model="new_bin_location.name">
+                  <span class="text-danger">{{ errors.new_bin_location.name }}</span>
                 </div>
                 <div class="col-md-1">
-                  <button @click="createBinLocation()" class="btn btn-default btn-sm">建立</button>
+                  <button @click="createBinLocation" class="btn btn-default btn-sm">建立</button>
                 </div>
               </div>
 
@@ -119,7 +113,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-          <button type="button" class="btn btn-primary" @click="updateLocation" data-dismiss="modal">儲存</button>
+          <button type="button" class="btn btn-primary" @click="updateLocation">儲存</button>
         </div>
       </div>
     </div>
@@ -134,19 +128,27 @@
   new Vue({
     el: "#location-table",
     data: {
-      options: {
-        cities: [],
-      },
       locations: [],
       editing_location: {},
       new_bin_location: {},
       show_new_bin_location_form: false,
+      errors: {
+        editing_location: {},
+        new_bin_location: {}
+      }
     },
     ready: function() {
       this.getLocationList()
-      this.getCityList()
+      this.registerClearErrorsWhenClickModalOutside()
     },
     methods: {
+      registerClearErrorsWhenClickModalOutside: function() {
+        var that = this
+        $('#edit-location-modal').on('hide.bs.modal', function() {
+          that.errors.editing_location = {}
+          that.errors.new_bin_location = {}
+        })
+      },
       getLocationList: function() {
         var that = this
         $.ajax({
@@ -154,17 +156,6 @@
           dataType: "json",
         }).done(function(data) {
           that.locations = data.locations
-        }).fail(function(err) {
-          console.log(err)
-        })
-      },
-      getCityList: function() {
-        var that = this
-        $.ajax({
-          url: '/api/v1/cities',
-          dataType: "json",
-        }).done(function(data) {
-          that.options.cities = data.cities
         }).fail(function(err) {
           console.log(err)
         })
@@ -186,9 +177,11 @@
               that.locations.$set(i, data.location) // Here "$set" is necessary. Please refer to http://vuejs.org/guide/list.html#Caveats
             }
           }
+          that.errors.editing_location = {}
+          $('#edit-location-modal').modal('hide') // Dismiss modal
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors.editing_location = err.responseJSON.errors
         })
       },
       showNewBinLocationForm: function() {
@@ -206,9 +199,10 @@
           that.editing_location.bin_locations.push(data.bin_location)
           that.show_new_bin_location_form = false
           that.new_bin_location = {}
+          that.errors.new_bin_location = {}
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors.new_bin_location = err.responseJSON.errors
         })
       },
     }

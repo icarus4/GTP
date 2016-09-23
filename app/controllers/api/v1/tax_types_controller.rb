@@ -24,7 +24,7 @@ class Api::V1::TaxTypesController < Api::V1::BaseController
       current_company.update(default_tax_type_id: tax_type.id) if params[:default].to_bool
       render json: { tax_type: tax_type }
     else
-      render json: { errors: tax_type.errors.full_messages }, status: :bad_request
+      render json: { errors: tax_type.errors }, status: :bad_request
     end
   end
 
@@ -38,7 +38,7 @@ class Api::V1::TaxTypesController < Api::V1::BaseController
       current_company.update(default_tax_type_id: tax_type.id) if params[:default].to_bool
       render json: { tax_type: tax_type }
     else
-      render json: { errors: tax_type.errors.full_messages }, status: :bad_request
+      render json: { errors: tax_type.errors }, status: :bad_request
     end
   end
 end

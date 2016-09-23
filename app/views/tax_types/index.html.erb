@@ -42,17 +42,20 @@
 
           <div class="modal-body">
             <div class="form-horizontal">
-              <div class="form-group">
+              <div class="form-group" v-bind:class="{ 'has-error': errors.name }">
                 <label class="col-md-3 control-label">* 名稱</label>
                 <div class="col-md-7">
                   <input type="text" class="form-control input-sm" v-model="editing_tax_type.name">
+                  <span class="text-danger">{{ errors.name }}</span>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-bind:class="{ 'has-error': errors.percentage }">
                 <label class="col-md-3 control-label">* 稅率</label>
                 <div class="col-md-7">
                   <div class="col-md-4 row"><input type="number" min="0" max="100" step="1" class="form-control input-sm" v-model="editing_tax_type.percentage"></div>
                   <div class="col-md-4"><label class="control-label">%</label></div>
+                  <!-- FIXME: Layout need to be refined -->
+                  <span class="text-danger">{{ errors.percentage }}</span>
                 </div>
               </div>
               <div class="form-group">
@@ -73,8 +76,8 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updateTaxType" data-dismiss="modal">儲存</button>
-            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createTaxType" data-dismiss="modal">建立</button>
+            <button v-if="mode === 'edit'" type="button" class="btn btn-primary" @click="updateTaxType">儲存</button>
+            <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="createTaxType">建立</button>
           </div>
         </div>
       </div>
@@ -93,16 +96,25 @@
       tax_types: [],
       editing_tax_type: {},
       mode: null,
+      errors: {}
     },
     ready: function() {
       this.getTaxTypeList()
+      this.registerClearErrorsWhenClickModalOutside()
     },
     computed: {
       form_title: function() {
         if (this.mode === 'new') { return '建立稅別' }
-        else if (this.mode === 'edit') { return '編輯稅別' }      }
+        else if (this.mode === 'edit') { return '編輯稅別' }
+      }
     },
     methods: {
+      registerClearErrorsWhenClickModalOutside: function() {
+        var that = this
+        $('#tax-types-form-modal').on('hide.bs.modal', function() {
+          that.errors = {}
+        })
+      },
       getTaxTypeList: function() {
         var that = this
         $.ajax({
@@ -135,9 +147,11 @@
         }).done(function(data) {
           that.getTaxTypeList();
           that.editing_tax_type = {}
+          that.errors = {}
+          $('#tax-types-form-modal').modal('hide')
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors = err.responseJSON.errors
         })
       },
       createTaxType: function() {
@@ -151,9 +165,11 @@
         }).done(function(data) {
           that.getTaxTypeList();
           that.editing_tax_type = {}
+          that.errors = {}
+          $('#tax-types-form-modal').modal('hide')
         }).fail(function(err) {
           console.log(err)
-          alert(err.responseJSON.errors)
+          that.errors = err.responseJSON.errors
         })
       },
     }

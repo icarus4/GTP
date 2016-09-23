@@ -40,6 +40,6 @@ class TaxType < ApplicationRecord
   private
 
     def calculate_rate
-      self.rate = percentage.to_d / 100
+      self.rate = percentage.nil? ? nil : percentage.to_d / 100
     end
 end
