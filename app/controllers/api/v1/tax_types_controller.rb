@@ -21,7 +21,7 @@ class Api::V1::TaxTypesController < Api::V1::BaseController
     tax_type.name = params[:name]
     tax_type.percentage = params[:percentage]&.to_d
     if tax_type.save
-      current_company.update(default_tax_type_id: tax_type.id) if params[:default].to_bool
+      current_company.update(default_tax_type_id: tax_type.id) if params[:default]&.to_bool
       render json: { tax_type: tax_type }
     else
       render json: { errors: tax_type.errors }, status: :bad_request
@@ -35,7 +35,7 @@ class Api::V1::TaxTypesController < Api::V1::BaseController
     tax_type.name = params[:name]
     tax_type.percentage = params[:percentage]&.to_d
     if tax_type.save
-      current_company.update(default_tax_type_id: tax_type.id) if params[:default].to_bool
+      current_company.update(default_tax_type_id: tax_type.id) if params[:default]&.to_bool
       render json: { tax_type: tax_type }
     else
       render json: { errors: tax_type.errors }, status: :bad_request
