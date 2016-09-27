@@ -79,7 +79,7 @@ class Item < ActiveRecord::Base
 
   auto_strip_attributes :name, :sku, :description
 
-  scope :includes_for_api, -> { includes(:variants, :packaging_type)  }
+  scope :includes_for_api, -> { includes(:variants, :packaging_type, :packs)  }
 
   def sku_name
     "#{sku} #{name}"

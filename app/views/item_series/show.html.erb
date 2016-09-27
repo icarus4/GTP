@@ -38,7 +38,7 @@
           <th class="col-sm-1">零售價</th>
           <th class="col-sm-1">單位庫存成本</th>
           <th class="col-sm-1">可用數量</th>
-          <th class="col-sm-1">在庫數量</th>
+          <th class="col-sm-2">在庫數量</th>
           <th class="col-sm-1">低庫存警示量</th>
           <th class="col-sm-1">狀態</th>
         </tr>
@@ -51,13 +51,22 @@
           @click="redirectToItemPage(item.id)">
           <td class="col-sm-1">{{ item.name }}</td>
           <td class="col-sm-1">{{ item.sku }}</td>
-          <td class="col-sm-1">{{ item.weight_value }} {{ item.weight_unit }} / {{ item.packaging_type.name }}</td>
+          <td class="col-sm-1">
+            {{ item.weight_value }} {{ item.weight_unit }} / {{ item.packaging_type.name }}
+          </td>
           <td class="col-sm-1">{{ item.purchase_price }}</td>
           <td class="col-sm-1">{{ item.wholesale_price }}</td>
           <td class="col-sm-1">{{ item.retail_price }}</td>
           <td class="col-sm-1">{{ item.cost_per_unit }}</td>
           <td class="col-sm-1">{{ item.available_count }}</td>
-          <td class="col-sm-1">{{ item.on_hand_count }}</td>
+          <td class="col-sm-2">
+            {{ item.on_hand_count }}
+            <ul class="list-unstyled">
+              <li v-for="pack in item.packs">
+                <small class="text-muted"><i class="fa fa-arrow-right"></i> {{ (item.on_hand_count / pack.size).toFixed(2) }} {{ pack.name }} (每{{pack.name + pack.size}}個)</small>
+              </li>
+            </ul>
+          </td>
           <td class="col-sm-1">{{ item.low_stock_alert_level }}</td>
           <td class="col-sm-1">{{ item.status }}</td>
         </tr>

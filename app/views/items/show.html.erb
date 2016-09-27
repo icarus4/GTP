@@ -45,7 +45,6 @@
       <tr>
         <th>期效</th>
         <th>數量</th>
-        <th>批量包裝數換算</th>
         <th>輸入許可證號碼</th>
         <th>報單號碼</th>
         <th>項次</th>
@@ -62,12 +61,6 @@
           <% variant.location_variants.each do |lv| %>
             <small class="text-muted" style="margin-left: 0px"><i class="fa fa-arrow-right"></i> <%= lv.quantity %> in <%= "#{lv.bin_location.location.name} #{lv.bin_location.name}" %></small>
             <br>
-          <% end %>
-        </td>
-        <td>
-          <% @item.packs.each do |pack| %>
-          <small class=""> <%= (variant.quantity.to_f / pack.size).round(1) %> <%= pack.name %>（每<%= pack.name %> <%= pack.size %> 個）</small>
-          <br>
           <% end %>
         </td>
         <td><%= variant.import_admitted_notice_number || '無' %></td>
