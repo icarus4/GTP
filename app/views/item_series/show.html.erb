@@ -48,7 +48,9 @@
         <tr
           v-for="item in items"
           class="cursor-pointer"
-          @click="redirectToItemPage(item.id)">
+          data-toggle="modal"
+          data-target="#edit-item-modal"
+          @click="setupItemModal($index)">
           <td class="col-sm-1">{{ item.name }}</td>
           <td class="col-sm-1">{{ item.sku }}</td>
           <td class="col-sm-1">
@@ -80,6 +82,7 @@
   </div>
 
   <%= render 'new_item_modal' %>
+  <%= render 'edit_item_modal' %>
   <%= render 'common/vue_data' %>
 
 </div>
@@ -118,6 +121,7 @@ new Vue({
     },
     items: [],
     new_item: {},
+    editing_item: {}
   },
   created: function() {
     this.setupItemSeriesId()
@@ -251,6 +255,9 @@ new Vue({
     },
     addNewPackToNewItem: function() {
       this.new_item.packs.push({})
+    },
+    setupItemModal: function(index) {
+      this.editing_item = _.cloneDeep(this.items[index])
     }
   }
 })
