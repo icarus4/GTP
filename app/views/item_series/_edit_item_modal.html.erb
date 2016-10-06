@@ -29,11 +29,13 @@
                     <div class="row">
                       <div class="col-md-4 form-group">
                         <span>品名</span>
-                        <input type="text" class="form-control input-sm">
+                        <input type="text" class="form-control input-sm" v-model="editing_item.name">
                       </div>
                       <div class="col-md-4 form-group">
                         <span>包裝規格</span>
-                        <input type="text" class="form-control input-sm">
+                        <div style="padding-top: 6px">
+                          {{ editing_item.weight_value + editing_item.weight_unit + ' / ' + editing_item.packaging_type.name }}
+                        </div>
                       </div>
                       <div class="col-md-4"></div>
                     </div>
@@ -41,7 +43,7 @@
                     <div class="row">
                       <div class="col-md-4 form-group">
                         <span>SKU</span>
-                        <input type="text" class="form-control input-sm">
+                        <input type="text" class="form-control input-sm" v-model="editing_item.sku">
                       </div>
                       <div class="col-md-4 form-group">
                         <span>供應商商品碼</span>
@@ -73,15 +75,19 @@
                     <div class="row">
                       <div class="col-md-4 form-group">
                         <span>批發價</span>
-                        <input type="text" class="form-control input-sm">
+                        <input type="text" class="form-control input-sm" v-model="editing_item.wholesale_price">
                       </div>
                       <div class="col-md-4 form-group">
                         <span>買進價</span>
-                        <input type="text" class="form-control input-sm">
+                        <input type="text" class="form-control input-sm" v-model="editing_item.purchase_price">
                       </div>
                       <div class="col-md-4 form-group">
                         <span>零售價</span>
-                        <input type="text" class="form-control input-sm">
+                        <input type="text" class="form-control input-sm" v-model="editing_item.retail_price">
+                      </div>
+                      <div class="col-md-4 form-group" v-for="price_list in editing_item.price_lists">
+                        <span>{{ price_list.name }} ({{ price_list.price_list_type_in_chinese }}用)</span>
+                        <input type="text" class="form-control input-sm" v-model="price_list.price">
                       </div>
                     </div>
 
@@ -89,7 +95,7 @@
                       <div class="col-md-6">
                         <span>商品描述 / 註記</span>
                         <div class="form-group">
-                          <textarea rows="3" class="form-control"></textarea>
+                          <textarea rows="3" class="form-control" v-model="editing_item.description"></textarea>
                         </div>
                       </div>
                     </div>

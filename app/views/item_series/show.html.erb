@@ -1,4 +1,4 @@
-<div>
+<div class="row">
   <div class="col-md-4">
     <dl class="dl-horizontal">
       <dt>商品系列名稱</dt><dd><%= @item_series.name %></dd>
@@ -50,7 +50,7 @@
           class="cursor-pointer"
           data-toggle="modal"
           data-target="#edit-item-modal"
-          @click="setupItemModal($index)">
+          @click="setupEditItemModal($index)">
           <td class="col-sm-1">{{ item.name }}</td>
           <td class="col-sm-1">{{ item.sku }}</td>
           <td class="col-sm-1">
@@ -118,6 +118,7 @@ new Vue({
     options: {
       locations: [],
       packaging_types: [],
+      price_lists: []
     },
     items: [],
     new_item: {},
@@ -208,8 +209,8 @@ new Vue({
         method: "GET",
         dataType: "json"
       }).done(function(data) {
-        // that.options.price_lists = data.price_lists
-        that.itemTemplate.price_lists = data.price_lists
+        that.itemTemplate.price_lists = _.cloneDeep(data.price_lists) // For create new item
+        that.options.price_lists = _.cloneDeep(data.price_lists) // For editing item
       }).fail(function(err) {
         console.log(err.responseJSON.errors)
       })
@@ -256,8 +257,9 @@ new Vue({
     addNewPackToNewItem: function() {
       this.new_item.packs.push({})
     },
-    setupItemModal: function(index) {
+    setupEditItemModal: function(index) {
       this.editing_item = _.cloneDeep(this.items[index])
+      this.editing_item.price_lists = _.cloneDeep(this.options.price_lists)
     }
   }
 })
