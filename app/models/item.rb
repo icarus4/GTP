@@ -79,6 +79,8 @@ class Item < ActiveRecord::Base
   validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :sku, uniqueness: { scope: :company_id }, allow_blank: true
   validates :packaging_type_id, presence: true
+  validates :wholesale_price, :retail_price, :purchase_price, numericality: { greater_than_or_equal_to: 0 }
+  validates :description, length: { maximum: 5000 }
 
   auto_strip_attributes :name, :sku, :sku_from_supplier, :description
 

@@ -302,6 +302,7 @@ new Vue({
       }).done(function(data) {
         that.getItemList()
         that.editing_item = data.item
+        that.errors.editing_item = {}
       }).fail(function(err) {
         that.errors.editing_item = err.responseJSON.errors
       })
