@@ -24,6 +24,9 @@
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  sellable              :boolean
+#  purchasable           :boolean
+#  sku_from_supplier     :string
 #
 # Indexes
 #

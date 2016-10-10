@@ -1,0 +1,165 @@
+<div class="modal inmodal" id="edit-item-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" style="width: 1024px">
+    <div class="modal-content animated fadeIn">
+
+      <div class="modal-header">
+        <h4 class="modal-title">{{ editing_item.sku + ' &#8213; ' + editing_item.name }}</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="tabs-container">
+          <div class="tabs-left">
+            <ul class="nav nav-tabs" style="width: 12%">
+              <li class="active"><a data-toggle="tab" href="#tab-info">商品資訊</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-photo">商品圖片</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-stock-info">庫存資訊</a></li>
+            </ul>
+            <div class="tab-content">
+              <div id="tab-info" class="tab-pane active">
+                <div class="panel-body" style="width: 88%; margin-left: 12%">
+                  <div class="col-md-9">
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4>商品細節</h4>
+                        <hr style="margin-top: 10px">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <span>品名</span><span class="text-danger"> {{ errors.editing_item.name }}</span>
+                        <input type="text" class="form-control input-sm" v-model="editing_item.name">
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <span>包裝規格</span>
+                        <div style="padding-top: 6px">
+                          {{ editing_item.weight_value + editing_item.weight_unit + ' / ' + editing_item.packaging_type.name }}
+                        </div>
+                      </div>
+                      <div class="col-md-4"></div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <span>SKU</span><span class="text-danger"> {{ errors.editing_item.sku }}</span>
+                        <input type="text" class="form-control input-sm" v-model="editing_item.sku">
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <span>供應商商品碼</span><span class="text-danger"> {{ errors.editing_item.sku_from_supplier }}</span>
+                        <input type="text" class="form-control input-sm" v-model="editing_item.sku_from_supplier">
+                      </div>
+                      <div class="col-md-4"></div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <span><input type="checkbox" v-model="editing_item.sellable"> 商品可販售</span>
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <span><input type="checkbox" v-model="editing_item.purchasable"> 商品可採購</span>
+                      </div>
+                      <div class="col-md-4"></div>
+                    </div>
+
+                    <div class="row" style="margin-top: 30px">
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4>牌價</h4>
+                        <hr style="margin-top: 10px">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 form-group" v-bind:class="{ 'has-error': errors.editing_item.wholesale_price }">
+                        <span>批發價</span><span class="text-danger"> {{ errors.editing_item.wholesale_price }}</span>
+                        <input type="text" class="form-control input-sm" v-model="editing_item.wholesale_price">
+                      </div>
+                      <div class="col-md-4 form-group" v-bind:class="{ 'has-error': errors.editing_item.purchase_price }">
+                        <span>買進價</span><span class="text-danger"> {{ errors.editing_item.purchase_price }}</span>
+                        <input type="text" class="form-control input-sm" v-model="editing_item.purchase_price">
+                      </div>
+                      <div class="col-md-4 form-group" v-bind:class="{ 'has-error': errors.editing_item.retail_price }">
+                        <span>零售價</span><span class="text-danger"> {{ errors.editing_item.retail_price }}</span>
+                        <input type="text" class="form-control input-sm" v-model="editing_item.retail_price">
+                      </div>
+                      <div class="col-md-4 form-group" v-for="price_list in editing_item_price_lists">
+                        <span>{{ price_list.name }} ({{ price_list.price_list_type_in_chinese }}用)</span>
+                        <input type="text" class="form-control input-sm" v-model="price_list.price">
+                      </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px">
+                      <div class="col-md-6" v-bind:class="{ 'has-error': errors.editing_item.description }">
+                        <span>商品描述 / 註記</span>
+                        <div class="form-group">
+                          <span class="text-danger">{{ errors.editing_item.description }}</span>
+                          <textarea rows="3" class="form-control" v-model="editing_item.description"></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <!-- Picture & stock info -->
+                  <div class="col-md-3">
+                    <img class="img-responsive" alt="產品圖片" src="http://www.asia.ru/images/target/photo/51451072/Sports_Item_Basketball.jpg">
+                    <h4 style="margin-top: 30px">管理庫存</h4>
+                    <hr>
+                    <ul class="unstyled" style="padding-left: 0">
+                      <li>在庫量 {{ editing_item.on_hand_count }}</li>
+                      <li>預定量 施工中...</li>
+                      <li>可售量 {{ editing_item.available_count }}</li>
+                      <li>採購量 施工中...</li>
+                      <li>警示量 {{ editing_item.low_stock_alert_level }}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div id="tab-photo" class="tab-pane">
+                <div class="panel-body" style="width: 88%; margin-left: 12%">
+                  施工中...
+                </div>
+              </div>
+              <div id="tab-stock-info" class="tab-pane">
+                <div class="panel-body" style="width: 88%; margin-left: 12%">
+                  <table class="table table-condensed">
+                    <thead>
+                      <tr>
+                        <th>倉庫位置 - 過期日</th>
+                        <th>在庫量</th>
+                      </tr>
+                    </thead>
+                    <tbody v-for="location_stock_info in editing_item_stock_info_by_location">
+                      <tr v-for="bin_location_stock_info in location_stock_info.bin_location_stocks">
+                        <td>{{ bin_location_stock_info.name }} - {{ bin_location_stock_info.expiry_date || '無' }}</td>
+                        <td>{{ bin_location_stock_info.on_hand_count }}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>總計</strong></td>
+                        <td><strong>{{ location_stock_info.on_hand_count }}</strong></td>
+                      </tr>
+                    </tbody>
+                    <tbody v-if="editing_item_stock_info_by_location.length === 0">
+                      <tr>
+                        <td>無庫存</td>
+                        <td>無庫存</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- modal body -->
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" @click="submitEditItemForm">儲存</button>
+      </div>
+    </div>
+  </div>
+</div>

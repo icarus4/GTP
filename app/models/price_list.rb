@@ -32,6 +32,7 @@ class PriceList < ApplicationRecord
     'purchase' => '進貨',
     'sales'    => '銷售',
   }
+  
   def price_list_type_in_chinese
     PRICE_LIST_TYPE_CHINESE_MAPPING.fetch(price_list_type)
   end
