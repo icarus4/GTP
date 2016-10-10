@@ -61,7 +61,7 @@ Rails.application.routes.draw do
         resources :items, only: [:index, :create], controller: 'item_series/items'
       end
       resources :items, only: [:update] do
-        resources :bin_locations, only: [:index], controller: 'items/bin_locations'
+        get :stock_info_by_location, on: :member
         resources :price_lists, only: [:index], controller: 'items/price_lists'
       end
       resources :brands, only: [:index, :create]

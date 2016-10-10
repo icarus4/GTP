@@ -125,7 +125,7 @@ new Vue({
     editing_item: {
       packaging_type: {}, // Avoid error occurs at initial stage
     },
-    editing_item_bin_locations: [],
+    editing_item_stock_info_by_location: [],
     editing_item_price_lists: [],
     errors: {
       new_item: {},
@@ -281,11 +281,11 @@ new Vue({
       })
 
       $.ajax({
-        url: "/api/v1/items/" + that.editing_item.id + "/bin_locations",
+        url: "/api/v1/items/" + that.editing_item.id + "/stock_info_by_location",
         method: "GET",
         dataType: "json",
       }).done(function(data) {
-        that.editing_item_bin_locations = data.bin_locations
+        that.editing_item_stock_info_by_location = data.stock_info_by_location
       }).fail(function(err) {
         console.log(err)
       })
