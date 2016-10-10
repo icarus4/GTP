@@ -50,7 +50,7 @@
           class="cursor-pointer"
           data-toggle="modal"
           data-target="#edit-item-modal"
-          @click="setupEditItemModal($index)">
+          @click="setupEditItemForm($index)">
           <td class="col-sm-1">{{ item.name }}</td>
           <td class="col-sm-1">{{ item.sku }}</td>
           <td class="col-sm-1">
@@ -122,7 +122,15 @@ new Vue({
     },
     items: [],
     new_item: {},
-    editing_item: {}
+    editing_item: {
+      packaging_type: {}, // Avoid error occurs at initial stage
+    },
+    editing_item_bin_locations: [],
+    editing_item_price_lists: [],
+    errors: {
+      new_item: {},
+      editing_item: {},
+    }
   },
   created: function() {
     this.setupItemSeriesId()
@@ -257,9 +265,46 @@ new Vue({
     addNewPackToNewItem: function() {
       this.new_item.packs.push({})
     },
-    setupEditItemModal: function(index) {
-      this.editing_item = _.cloneDeep(this.items[index])
+    setupEditItemForm: function(item_index) {
+      this.editing_item = _.cloneDeep(this.items[item_index])
       this.editing_item.price_lists = _.cloneDeep(this.options.price_lists)
+      // Get bin locations related to current item
+      var that = this
+      $.ajax({
+        url: "/api/v1/items/" + that.editing_item.id + "/price_lists",
+        method: "GET",
+        dataType: "json",
+      }).done(function(data) {
+        that.editing_item_price_lists = data.price_lists
+      }).fail(function(err) {
+        console.log(err)
+      })
+
+      $.ajax({
+        url: "/api/v1/items/" + that.editing_item.id + "/bin_locations",
+        method: "GET",
+        dataType: "json",
+      }).done(function(data) {
+        that.editing_item_bin_locations = data.bin_locations
+      }).fail(function(err) {
+        console.log(err)
+      })
+    },
+    submitEditItemForm: function() {
+      this.editing_item['price_lists'] = this.editing_item_price_lists
+      var that = this
+      $.ajax({
+        url: "/api/v1/items/" + that.editing_item.id,
+        method: "PATCH",
+        dataType: "json",
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: that.editing_item,
+      }).done(function(data) {
+        that.getItemList()
+        that.editing_item = data.item
+      }).fail(function(err) {
+        that.errors.editing_item = err.responseJSON.errors
+      })
     }
   }
 })

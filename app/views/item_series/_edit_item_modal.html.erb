@@ -17,7 +17,7 @@
             <div class="tab-content">
               <div id="tab-info" class="tab-pane active">
                 <div class="panel-body" style="width: 88%; margin-left: 12%">
-                  <div class="col-md-9 b-r">
+                  <div class="col-md-9">
 
                     <div class="row">
                       <div class="col-md-12">
@@ -28,7 +28,7 @@
 
                     <div class="row">
                       <div class="col-md-4 form-group">
-                        <span>品名</span>
+                        <span>品名</span><span class="text-danger"> {{ errors.editing_item.name }}</span>
                         <input type="text" class="form-control input-sm" v-model="editing_item.name">
                       </div>
                       <div class="col-md-4 form-group">
@@ -42,22 +42,22 @@
 
                     <div class="row">
                       <div class="col-md-4 form-group">
-                        <span>SKU</span>
+                        <span>SKU</span><span class="text-danger"> {{ errors.editing_item.sku }}</span>
                         <input type="text" class="form-control input-sm" v-model="editing_item.sku">
                       </div>
                       <div class="col-md-4 form-group">
                         <span>供應商商品碼</span>
-                        <input type="text" class="form-control input-sm">
+                        <input type="text" class="form-control input-sm" v-model="editing_item.sku_from_supplier">
                       </div>
                       <div class="col-md-4"></div>
                     </div>
 
                     <div class="row">
                       <div class="col-md-4 form-group">
-                        <span><input type="checkbox"> 商品可販售</span>
+                        <span><input type="checkbox" v-model="editing_item.sellable"> 商品可販售</span>
                       </div>
                       <div class="col-md-4 form-group">
-                        <span><input type="checkbox"> 商品可採購</span>
+                        <span><input type="checkbox" v-model="editing_item.purchasable"> 商品可採購</span>
                       </div>
                       <div class="col-md-4"></div>
                     </div>
@@ -85,7 +85,7 @@
                         <span>零售價</span>
                         <input type="text" class="form-control input-sm" v-model="editing_item.retail_price">
                       </div>
-                      <div class="col-md-4 form-group" v-for="price_list in editing_item.price_lists">
+                      <div class="col-md-4 form-group" v-for="price_list in editing_item_price_lists">
                         <span>{{ price_list.name }} ({{ price_list.price_list_type_in_chinese }}用)</span>
                         <input type="text" class="form-control input-sm" v-model="price_list.price">
                       </div>
@@ -108,11 +108,11 @@
                     <h4 style="margin-top: 30px">管理庫存</h4>
                     <hr>
                     <ul class="unstyled" style="padding-left: 0">
-                      <li>在庫量 1</li>
-                      <li>預定量 2</li>
-                      <li>可售量 3</li>
-                      <li>採購量 4</li>
-                      <li>警示量 5</li>
+                      <li>在庫量 {{ editing_item.on_hand_count }}</li>
+                      <li>預定量 施工中...</li>
+                      <li>可售量 {{ editing_item.available_count }}</li>
+                      <li>採購量 施工中...</li>
+                      <li>警示量 {{ editing_item.low_stock_alert_level }}</li>
                     </ul>
                   </div>
                 </div>
@@ -124,7 +124,20 @@
               </div>
               <div id="tab-stock-info" class="tab-pane">
                 <div class="panel-body" style="width: 88%; margin-left: 12%">
-                  施工中...
+                  <table class="table table-condensed">
+                    <thead>
+                      <tr>
+                        <th>倉庫位置-過期日</th>
+                        <th>在庫量</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>施工中</td>
+                        <td>施工中</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -134,7 +147,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary">儲存</button>
+        <button type="button" class="btn btn-primary" @click="submitEditItemForm">儲存</button>
       </div>
     </div>
   </div>

@@ -16,10 +16,11 @@
 #
 
 class ItemPriceList < ApplicationRecord
+  delegate :name, :price_list_type_in_chinese, to: :price_list
   belongs_to :item
   belongs_to :price_list
 
   validates :item_id, presence: true
-  validates :price_list_id, presence: true
+  validates :price_list_id, presence: true, uniqueness: { scope: :item_id }
   validates :price, presence: true
 end

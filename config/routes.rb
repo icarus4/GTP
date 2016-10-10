@@ -60,6 +60,10 @@ Rails.application.routes.draw do
       resources :item_series, only: [:create] do
         resources :items, only: [:index, :create], controller: 'item_series/items'
       end
+      resources :items, only: [:update] do
+        resources :bin_locations, only: [:index], controller: 'items/bin_locations'
+        resources :price_lists, only: [:index], controller: 'items/price_lists'
+      end
       resources :brands, only: [:index, :create]
       resources :manufacturers, only: [:index, :create]
       resources :cities, only: [:index]

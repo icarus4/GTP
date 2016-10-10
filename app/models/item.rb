@@ -24,6 +24,9 @@
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  sellable              :boolean
+#  purchasable           :boolean
+#  sku_from_supplier     :string
 #
 # Indexes
 #
@@ -77,9 +80,9 @@ class Item < ActiveRecord::Base
   validates :sku, uniqueness: { scope: :company_id }, allow_blank: true
   validates :packaging_type_id, presence: true
 
-  auto_strip_attributes :name, :sku, :description
+  auto_strip_attributes :name, :sku, :sku_from_supplier, :description
 
-  scope :includes_for_api, -> { includes(:variants, :packaging_type, :packs)  }
+  scope :includes_for_api, -> { includes(:variants, :packaging_type, :packs, item_price_lists: :price_list)  }
 
   def sku_name
     "#{sku} #{name}"
@@ -111,5 +114,7 @@ class Item < ActiveRecord::Base
 
     def setup_defaults
       self.weight_unit ||= 'g'
+      self.sellable    = true if sellable.nil?    # Don't use ||= for boolean
+      self.purchasable = true if purchasable.nil? # Don't use ||= for boolean
     end
 end
