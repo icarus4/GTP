@@ -4,8 +4,8 @@
 #
 #  id         :integer          not null, primary key
 #  item_id    :integer
-#  name       :string
-#  size       :integer
+#  name       :string           not null
+#  size       :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

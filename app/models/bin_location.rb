@@ -16,6 +16,9 @@
 class BinLocation < ActiveRecord::Base
   belongs_to :location
 
+  has_many :location_variants, foreign_key: :bin_location_id
+  has_many :variants, through: :location_variants
+
   validates :location_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :location_id }
 

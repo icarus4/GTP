@@ -1,4 +1,4 @@
-<div>
+<div class="row">
   <div class="col-md-4">
     <dl class="dl-horizontal">
       <dt>商品系列名稱</dt><dd><%= @item_series.name %></dd>
@@ -48,7 +48,9 @@
         <tr
           v-for="item in items"
           class="cursor-pointer"
-          @click="redirectToItemPage(item.id)">
+          data-toggle="modal"
+          data-target="#edit-item-modal"
+          @click="setupEditItemForm($index)">
           <td class="col-sm-1">{{ item.name }}</td>
           <td class="col-sm-1">{{ item.sku }}</td>
           <td class="col-sm-1">
@@ -80,6 +82,7 @@
   </div>
 
   <%= render 'new_item_modal' %>
+  <%= render 'edit_item_modal' %>
   <%= render 'common/vue_data' %>
 
 </div>
@@ -115,9 +118,19 @@ new Vue({
     options: {
       locations: [],
       packaging_types: [],
+      price_lists: []
     },
     items: [],
     new_item: {},
+    editing_item: {
+      packaging_type: {}, // Avoid error occurs at initial stage
+    },
+    editing_item_stock_info_by_location: [],
+    editing_item_price_lists: [],
+    errors: {
+      new_item: {},
+      editing_item: {},
+    }
   },
   created: function() {
     this.setupItemSeriesId()
@@ -204,8 +217,8 @@ new Vue({
         method: "GET",
         dataType: "json"
       }).done(function(data) {
-        // that.options.price_lists = data.price_lists
-        that.itemTemplate.price_lists = data.price_lists
+        that.itemTemplate.price_lists = _.cloneDeep(data.price_lists) // For create new item
+        that.options.price_lists = _.cloneDeep(data.price_lists) // For editing item
       }).fail(function(err) {
         console.log(err.responseJSON.errors)
       })
@@ -251,6 +264,48 @@ new Vue({
     },
     addNewPackToNewItem: function() {
       this.new_item.packs.push({})
+    },
+    setupEditItemForm: function(item_index) {
+      this.editing_item = _.cloneDeep(this.items[item_index])
+      this.editing_item.price_lists = _.cloneDeep(this.options.price_lists)
+      // Get bin locations related to current item
+      var that = this
+      $.ajax({
+        url: "/api/v1/items/" + that.editing_item.id + "/price_lists",
+        method: "GET",
+        dataType: "json",
+      }).done(function(data) {
+        that.editing_item_price_lists = data.price_lists
+      }).fail(function(err) {
+        console.log(err)
+      })
+
+      $.ajax({
+        url: "/api/v1/items/" + that.editing_item.id + "/stock_info_by_location",
+        method: "GET",
+        dataType: "json",
+      }).done(function(data) {
+        that.editing_item_stock_info_by_location = data.stock_info_by_location
+      }).fail(function(err) {
+        console.log(err)
+      })
+    },
+    submitEditItemForm: function() {
+      this.editing_item['price_lists'] = this.editing_item_price_lists
+      var that = this
+      $.ajax({
+        url: "/api/v1/items/" + that.editing_item.id,
+        method: "PATCH",
+        dataType: "json",
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: that.editing_item,
+      }).done(function(data) {
+        that.getItemList()
+        that.editing_item = data.item
+        that.errors.editing_item = {}
+      }).fail(function(err) {
+        that.errors.editing_item = err.responseJSON.errors
+      })
     }
   }
 })
