@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161006072809) do
+ActiveRecord::Schema.define(version: 20160921134440) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,6 +87,7 @@ ActiveRecord::Schema.define(version: 20161006072809) do
     t.decimal  "price",         precision: 12, scale: 2, null: false
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.index ["item_id", "price_list_id"], name: "index_item_price_lists_on_item_id_and_price_list_id", unique: true, using: :btree
     t.index ["item_id"], name: "index_item_price_lists_on_item_id", using: :btree
     t.index ["price_list_id"], name: "index_item_price_lists_on_price_list_id", using: :btree
   end
@@ -125,17 +126,18 @@ ActiveRecord::Schema.define(version: 20161006072809) do
     t.decimal  "weight_value",                    precision: 10, scale: 2
     t.boolean  "manufactured_by_self",                                     default: false, null: false
     t.boolean  "expirable",                                                default: true,  null: false
+    t.boolean  "sellable",                                                 default: true,  null: false
+    t.boolean  "purchasable",                                              default: true,  null: false
     t.string   "image"
     t.string   "sku"
+    t.string   "sku_from_supplier"
     t.string   "name",                                                     default: "",    null: false
     t.text     "description"
     t.datetime "created_at",                                                               null: false
     t.datetime "updated_at",                                                               null: false
-    t.boolean  "sellable"
-    t.boolean  "purchasable"
-    t.string   "sku_from_supplier"
     t.index ["company_id"], name: "index_items_on_company_id", using: :btree
     t.index ["name"], name: "index_items_on_name", using: :btree
+    t.index ["sku"], name: "index_items_on_sku", using: :btree
   end
 
   create_table "location_variants", force: :cascade do |t|
@@ -163,15 +165,6 @@ ActiveRecord::Schema.define(version: 20161006072809) do
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.index ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
-  end
-
-  create_table "manufacturers", force: :cascade do |t|
-    t.integer "company_id"
-    t.integer "location_type",       limit: 2
-    t.string  "name"
-    t.string  "registration_number"
-    t.string  "address"
-    t.index ["company_id"], name: "index_manufacturers_on_company_id", using: :btree
   end
 
   create_table "packaging_types", force: :cascade do |t|
@@ -387,46 +380,4 @@ ActiveRecord::Schema.define(version: 20161006072809) do
     t.index ["item_id"], name: "index_variants_on_item_id", using: :btree
   end
 
-  add_foreign_key "bin_locations", "locations"
-  add_foreign_key "brands", "companies"
-  add_foreign_key "item_price_lists", "items"
-  add_foreign_key "item_price_lists", "price_lists"
-  add_foreign_key "item_series", "brands"
-  add_foreign_key "item_series", "companies"
-  add_foreign_key "item_series", "partners", column: "manufacturer_id"
-  add_foreign_key "items", "companies"
-  add_foreign_key "items", "item_series"
-  add_foreign_key "items", "packaging_types"
-  add_foreign_key "location_variants", "bin_locations"
-  add_foreign_key "location_variants", "companies"
-  add_foreign_key "location_variants", "variants"
-  add_foreign_key "locations", "cities"
-  add_foreign_key "manufacturers", "companies"
-  add_foreign_key "packaging_types", "companies"
-  add_foreign_key "partner_relationships", "partner_roles"
-  add_foreign_key "partner_relationships", "partners"
-  add_foreign_key "partners", "companies"
-  add_foreign_key "payment_methods", "companies"
-  add_foreign_key "payment_terms", "companies"
-  add_foreign_key "price_lists", "companies"
-  add_foreign_key "purchase_order_details", "items"
-  add_foreign_key "purchase_order_details", "purchase_orders"
-  add_foreign_key "purchase_orders", "companies"
-  add_foreign_key "purchase_orders", "companies", column: "supplier_id"
-  add_foreign_key "purchase_orders", "locations", column: "bill_to_location_id"
-  add_foreign_key "purchase_orders", "locations", column: "ship_to_location_id"
-  add_foreign_key "sales_order_details", "sales_orders"
-  add_foreign_key "sales_order_details", "variants"
-  add_foreign_key "sales_orders", "companies"
-  add_foreign_key "sales_orders", "companies", column: "customer_id"
-  add_foreign_key "sales_orders", "locations", column: "bill_to_location_id"
-  add_foreign_key "sales_orders", "locations", column: "ship_from_location_id"
-  add_foreign_key "sales_orders", "locations", column: "ship_to_location_id"
-  add_foreign_key "stock_transfer_details", "stock_transfers"
-  add_foreign_key "stock_transfer_details", "variants"
-  add_foreign_key "stock_transfers", "companies"
-  add_foreign_key "stock_transfers", "locations", column: "destination_location_id"
-  add_foreign_key "stock_transfers", "locations", column: "source_location_id"
-  add_foreign_key "tax_types", "companies"
-  add_foreign_key "variants", "items"
 end

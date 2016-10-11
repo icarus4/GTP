@@ -1,7 +1,7 @@
 class CreatePackagingTypes < ActiveRecord::Migration
   def change
     create_table :packaging_types do |t|
-      t.references :company, index: true, null: true, foreign_key: true
+      t.references :company, index: true, null: true
       t.string     :name
       t.string     :code
 

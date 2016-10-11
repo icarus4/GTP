@@ -50,14 +50,6 @@ class User < ActiveRecord::Base
     Company.where(company_id: company_id)
   end
 
-  def suppliers
-    Supplier.where(company_id: company_id)
-  end
-
-  def customers
-    Customers.where(company_id: company_id)
-  end
-
   private
 
     def setup_default_name

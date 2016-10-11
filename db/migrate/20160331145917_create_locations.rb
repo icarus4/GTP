@@ -2,7 +2,7 @@ class CreateLocations < ActiveRecord::Migration
   def change
     create_table :locations do |t|
       t.references :locationable, polymorphic: true, index: true
-      t.references :city, foreign_key: true
+      t.references :city
       t.string     :zip,     limit: 8
       t.string     :phone,   limit: 32
       t.string     :email,   limit: 64

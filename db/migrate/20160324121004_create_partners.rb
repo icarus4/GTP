@@ -1,7 +1,7 @@
 class CreatePartners < ActiveRecord::Migration
   def change
     create_table :partners do |t|
-      t.references :company,                     null: false, index: true, foreign_key: true
+      t.references :company,                     null: false, index: true
       t.integer    :partner_type,                null: false
       t.integer    :status,                      null: false
       t.integer    :receipt_type,                null: false

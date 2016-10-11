@@ -1,8 +1,8 @@
 class CreateItemSeries < ActiveRecord::Migration
   def change
     create_table :item_series do |t|
-      t.references :company, null: false, index: true, foreign_key: true
-      t.references :brand,                             foreign_key: true
+      t.references :company, null: false, index: true
+      t.references :brand
       t.references :manufacturer
       t.integer    :storage_and_transport_condition
       t.integer    :expiration_alert_days
@@ -15,7 +15,5 @@ class CreateItemSeries < ActiveRecord::Migration
 
       t.timestamps null: false
     end
-
-    add_foreign_key :item_series, :partners, column: :manufacturer_id
   end
 end

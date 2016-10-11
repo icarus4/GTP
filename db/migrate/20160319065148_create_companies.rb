@@ -1,7 +1,7 @@
 class CreateCompanies < ActiveRecord::Migration
   def change
     create_table :companies do |t|
-      t.integer :company_id, foreign_key: true
+      t.integer :company_id
       t.integer :assignee_id
       t.integer :status, null: false, default: 0
       t.string :type, null: false, default: ''

@@ -16,8 +16,6 @@ Rails.application.routes.draw do
   # Company
   resources :companies, only: [:index]
   resources :partners, only: [:new, :index, :show]
-  resources :suppliers, only: [:index, :new, :create]
-  resources :customers, only: [:index, :new, :create]
   resources :item_series, only: [:new, :index, :show] do
     resources :items, shallow: true do
       post :upload_image, on: :member

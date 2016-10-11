@@ -1,7 +1,7 @@
 class CreateBrands < ActiveRecord::Migration
   def change
     create_table :brands do |t|
-      t.references :company,  null: false, foreign_key: true
+      t.references :company,  null: false
       t.string     :name,     null: false, limit: 255
 
       t.timestamps null: false

@@ -32,7 +32,6 @@ class Company < ActiveRecord::Base
                  :default_payment_method_id,
                  :default_tax_type_id
 
-  has_many :suppliers
   has_many :customers
   has_many :partners
   has_many :items

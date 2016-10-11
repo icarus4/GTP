@@ -61,7 +61,8 @@ class Api::V1::ItemsController < Api::V1::BaseController
     #       { name: 'xxx', location_id: 123, expiry_date: 'xxxx-xx-xx', on_hand_count: 100 },
     #       { name: 'yyy', location_id: 456, expiry_date: 'xxxx-xx-xx', on_hand_count: 200 },
     #     ]
-    #   }
+    #   },
+    #   '2' => { ... }
     # }
     location_variants.each do |lv|
       h = {
@@ -69,7 +70,7 @@ class Api::V1::ItemsController < Api::V1::BaseController
         expiry_date: lv.variant.expiry_date,
         on_hand_count: lv.quantity
       }
-      location_id = h[:location_id]
+      location_id = lv.bin_location.location_id
       stock_info_by_location[location_id.to_s] ||= {}
       stock_info_by_location[location_id.to_s][:location_id] = lv.bin_location.location_id
       stock_info_by_location[location_id.to_s][:location_name] = lv.bin_location.location.name
