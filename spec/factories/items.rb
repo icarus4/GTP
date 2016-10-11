@@ -18,20 +18,21 @@
 #  weight_value          :decimal(10, 2)
 #  manufactured_by_self  :boolean          default(FALSE), not null
 #  expirable             :boolean          default(TRUE), not null
+#  sellable              :boolean          default(TRUE), not null
+#  purchasable           :boolean          default(TRUE), not null
 #  image                 :string
 #  sku                   :string
+#  sku_from_supplier     :string
 #  name                  :string           default(""), not null
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  sellable              :boolean
-#  purchasable           :boolean
-#  sku_from_supplier     :string
 #
 # Indexes
 #
 #  index_items_on_company_id  (company_id)
 #  index_items_on_name        (name)
+#  index_items_on_sku         (sku)
 #
 
 FactoryGirl.define do

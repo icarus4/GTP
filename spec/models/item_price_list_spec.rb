@@ -11,8 +11,9 @@
 #
 # Indexes
 #
-#  index_item_price_lists_on_item_id        (item_id)
-#  index_item_price_lists_on_price_list_id  (price_list_id)
+#  index_item_price_lists_on_item_id                    (item_id)
+#  index_item_price_lists_on_item_id_and_price_list_id  (item_id,price_list_id) UNIQUE
+#  index_item_price_lists_on_price_list_id              (price_list_id)
 #
 
 require 'rails_helper'
