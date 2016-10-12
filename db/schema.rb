@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921134440) do
+ActiveRecord::Schema.define(version: 20161012040704) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,52 @@ ActiveRecord::Schema.define(version: 20160921134440) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.index ["location_id"], name: "index_bin_locations_on_location_id", using: :btree
+  end
+
+  create_table "blazer_audits", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "query_id"
+    t.text     "statement"
+    t.string   "data_source"
+    t.datetime "created_at"
+  end
+
+  create_table "blazer_checks", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.integer  "query_id"
+    t.string   "state"
+    t.string   "schedule"
+    t.text     "emails"
+    t.string   "check_type"
+    t.text     "message"
+    t.datetime "last_run_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "blazer_dashboard_queries", force: :cascade do |t|
+    t.integer  "dashboard_id"
+    t.integer  "query_id"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "blazer_dashboards", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.text     "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "blazer_queries", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.string   "name"
+    t.text     "description"
+    t.text     "statement"
+    t.string   "data_source"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "brands", force: :cascade do |t|

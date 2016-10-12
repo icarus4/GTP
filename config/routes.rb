@@ -76,4 +76,8 @@ Rails.application.routes.draw do
       resources :price_lists, only: [:index, :update, :create]
     end
   end
+
+  namespace :admin do
+    mount Blazer::Engine, at: "blazer"
+  end
 end
