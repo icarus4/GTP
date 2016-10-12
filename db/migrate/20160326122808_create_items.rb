@@ -2,7 +2,7 @@ class CreateItems < ActiveRecord::Migration
   def change
     create_table :items do |t|
       t.references :company, null: false, index: true
-      t.references :item_series
+      t.references :item_series, index: true
       t.references :packaging_type
       t.integer    :available_count,      null: false, default: 0
       t.integer    :on_hand_count,        null: false, default: 0

@@ -51,7 +51,7 @@ class Api::V1::ItemsController < Api::V1::BaseController
       render json: { errors: "Item not found" }, status: :bad_request and return
     end
 
-    location_variants = LocationVariant.includes({ bin_location: :location }, :variant).where(variants: { item_id: item.id }).order("locations.id")
+    location_variants = LocationVariant.includes({ bin_location: :location }, :variant).where('location_variants.quantity > 0 AND variants.item_id = ?', item.id).order("locations.id")
 
     stock_info_by_location = {}
     # {

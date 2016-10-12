@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(version: 20160921134440) do
     t.datetime "created_at",                                                               null: false
     t.datetime "updated_at",                                                               null: false
     t.index ["company_id"], name: "index_items_on_company_id", using: :btree
+    t.index ["item_series_id"], name: "index_items_on_item_series_id", using: :btree
     t.index ["name"], name: "index_items_on_name", using: :btree
     t.index ["sku"], name: "index_items_on_sku", using: :btree
   end
@@ -149,6 +150,7 @@ ActiveRecord::Schema.define(version: 20160921134440) do
     t.datetime "updated_at",                  null: false
     t.index ["bin_location_id"], name: "index_location_variants_on_bin_location_id", using: :btree
     t.index ["company_id"], name: "index_location_variants_on_company_id", using: :btree
+    t.index ["quantity"], name: "index_location_variants_on_quantity", where: "(quantity > 0)", using: :btree
     t.index ["variant_id"], name: "index_location_variants_on_variant_id", using: :btree
   end
 
