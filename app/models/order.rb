@@ -35,11 +35,12 @@
 #  index_orders_on_type          (type)
 #
 
-require 'rails_helper'
-
-RSpec.describe PurchaseOrder do
-  describe '#receive!' do
-    xit 'updates available_count of items belongs to it' do
-    end
-  end
+class Order < ApplicationRecord
+  belongs_to :company
+  belongs_to :partner
+  belongs_to :bill_to_location, class_name: 'Location', foreign_key: :bill_to_location_id
+  belongs_to :ship_to_location, class_name: 'Location', foreign_key: :ship_to_location_id
+  belongs_to :currency
+  belongs_to :payment_method
+  belongs_to :assignee, class_name: 'User'
 end

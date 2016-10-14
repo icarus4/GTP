@@ -73,7 +73,11 @@ Rails.application.routes.draw do
       resources :payment_methods, only: [:index, :update, :create]
       resources :payment_terms, only: [:index, :update, :create]
       resources :tax_types, only: [:index, :update, :create]
-      resources :price_lists, only: [:index, :update, :create]
+      resources :price_lists, only: [:index, :update, :create] do
+        get :purchase, on: :collection
+        get :sales, on: :collection
+      end
+      resources :suppliers, only: [:index]
     end
   end
 

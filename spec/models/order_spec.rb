@@ -37,9 +37,6 @@
 
 require 'rails_helper'
 
-RSpec.describe PurchaseOrder do
-  describe '#receive!' do
-    xit 'updates available_count of items belongs to it' do
-    end
-  end
+RSpec.describe Order, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
 end

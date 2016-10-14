@@ -1,44 +1,136 @@
-<%= simple_form_for @purchase_order, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
-  <%= f.input :order_number, label: '進貨單號' %>
-  <%= f.association :supplier, label: '供應商' %>
-  <%= f.association :ship_to, label: '收貨地點', collection: Location.where(locationable_id: current_company.id, holds_stock: true) %>
-  <%= f.association :bill_to, label: '收發票地點', collection: Location.where(locationable_id: current_company.id) %>
-  <%= f.input :contact_email, label: '聯絡 email' %>
-
-  <div class="form-group string required purchase_order_due_on <%= 'has-error' if @purchase_order.errors.messages[:due_on].present? %>">
-    <label class="optional col-sm-2 control-label required" for="purchase_order_due_on">
-      <abbr title="required">*</abbr> 收貨日
-    </label>
-    <div class="col-sm-2">
-      <%= f.input_field :due_on,
-        as: :string,
-        class: 'form-control string date required datepicker',
-        value: (Time.zone.today + 14.days).to_s
-      %>
-      <%= content_tag(:span, '請填寫收貨日', class: 'help-block') if @purchase_order.errors.messages[:due_on].present? %>
+<div id="new-purchase-order-form">
+  <div class="col-md-12">
+    <div class="col-md-4 m-b-lg">
+      <dl class="dl-horizontal">
+        <div class="form-group">
+          <dt>供應商</dt>
+          <dd>
+            <select class="form-control input-sm" v-model="order.partner_id">
+              <option selected disabled value="">-- 選取供應商 --</option>
+              <option v-for="supplier in suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
+            </select>
+          </dd>
+        </div>
+      </dl>
     </div>
   </div>
 
-  <hr />
+  <hr>
 
-  <div id="details">
-    <%= f.simple_fields_for :details do |detail| %>
-      <%= render 'detail_fields', :f => detail %>
-    <% end %>
-    <div class="col-sm-offset-2">
-      <%= link_to_add_association '加入貨品於此訂單', f, :details, class: 'btn btn-default btn-sm' %>
-    </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>採購單號</dt>
+        <dd>自動產生</dd>
+      </div>
+      <div class="form-group">
+        <dt>票據送至</dt>
+        <dd>
+          <select class="form-control input-sm" v-model="order.bill_to_location_id">
+            <option selected disabled value="">-- 選取票據寄送地點 --</option>
+            <option v-for="location in locations" v-bind:value="location.id">{{ location.name }}</option>
+          </select>
+        </dd>
+      </div>
+      <div class="form-group">
+        <dt>貨品送至</dt>
+        <dd>
+          <select class="form-control input-sm" v-model="order.ship_to_location_id">
+            <option selected disabled value="">-- 選取貨品寄送地點 --</option>
+            <option v-for="location in stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
+          </select>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>收貨日期</dt>
+        <dd><input type="date"></dd>
+      </div>
+      <div class="form-group">
+        <dt>Email</dt>
+        <dd><input type="text"></dd>
+      </div>
+      <div class="form-group">
+        <dt>收據上傳</dt>
+        <dd>施工中...</dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>幣別</dt>
+        <dd>台幣</dd>
+      </div>
+      <div class="form-group">
+        <dt>價別</dt>
+        <dd>
+          
+        </dd>
+      </div>
+      <div class="form-group">
+        <dt>總金額</dt>
+        <dd>稅外/稅入</dd>
+      </div>
+    </dl>
   </div>
 
-  <hr />
-
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-4">
-      <%= f.button :submit, "建立進貨單", class: 'btn-success', name: 'active' %>
-      或
-      <%= f.button :submit, "存為草稿", class: 'btn btn-default', name: 'draft' %>
-    </div>
+  <div class="col-md-12">
+    <%= render 'common/vue_data' %>
   </div>
+</div>
+
+<% content_for :js do %>
+<script type="text/javascript">
+  new Vue({
+    el: "#new-purchase-order-form",
+    data: {
+      order: {},
+      suppliers: [],
+      locations: [],
+      stockable_locations: [],
+    },
+    ready: function() {
+      this.getSupplierList()
+      this.getLocationList()
+      this.getStockableLocationList()
+      this.getPriceList()
+    },
+    methods: {
+      getSupplierList: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/suppliers",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          that.suppliers = data.suppliers
+        })
+      },
+      getLocationList: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/locations",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          that.locations = data.locations
+        })
+      },
+      getStockableLocationList: function() {
+        var that = this
+        $.ajax({
+          url: "/api/v1/locations/holds_stock",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          that.stockable_locations = data.locations
+        })
+      },
+    }
+  })
+</script>
 <% end %>
-
-<%= render 'common/init_datepicker' %>

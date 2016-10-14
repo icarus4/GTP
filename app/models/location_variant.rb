@@ -14,6 +14,7 @@
 #
 #  index_location_variants_on_bin_location_id  (bin_location_id)
 #  index_location_variants_on_company_id       (company_id)
+#  index_location_variants_on_quantity         (quantity)
 #  index_location_variants_on_variant_id       (variant_id)
 #
 
