@@ -45,7 +45,7 @@ group :development do
   gem 'spring', '1.6.4'
   gem 'better_errors', '2.1.1'
   gem 'binding_of_caller', '0.7.2'
-  gem 'xray-rails', '0.1.21'
+  gem 'xray-rails', '0.2.0'
   gem 'annotate', '2.7.1'
   gem 'guard-rspec', '4.7.2', require: false
   # gem 'rails_admin', '1.0.0.rc'
