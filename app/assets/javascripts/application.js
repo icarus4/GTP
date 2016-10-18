@@ -20,8 +20,5 @@
 //= require inspinia.js
 //= require lodash
 //= require common
-//= require cocoon
 //= require vue/vue
-//= require item_series
-//= require items
-//= require_tree .
+//= require partners

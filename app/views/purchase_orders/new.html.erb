@@ -1,13 +1,13 @@
 <div id="new-purchase-order-form">
-  <div class="col-md-12">
-    <div class="col-md-4 m-b-lg">
+  <div class="col-md-10">
+    <div class="col-md-4">
       <dl class="dl-horizontal">
         <div class="form-group">
           <dt>供應商</dt>
           <dd>
-            <select class="form-control input-sm" v-model="order.partner_id">
+            <select class="input-sm" v-model="order.partner_id">
               <option selected disabled value="">-- 選取供應商 --</option>
-              <option v-for="supplier in suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
+              <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
             </select>
           </dd>
         </div>
@@ -15,29 +15,29 @@
     </div>
   </div>
 
-  <hr>
+  <div class="col-md-10"><hr></div>
 
   <div class="col-md-3">
     <dl class="dl-horizontal">
       <div class="form-group">
         <dt>採購單號</dt>
-        <dd>自動產生</dd>
+        <dd>施工中...</dd>
       </div>
       <div class="form-group">
         <dt>票據送至</dt>
         <dd>
-          <select class="form-control input-sm" v-model="order.bill_to_location_id">
+          <select class="input-sm" v-model="order.bill_to_location_id">
             <option selected disabled value="">-- 選取票據寄送地點 --</option>
-            <option v-for="location in locations" v-bind:value="location.id">{{ location.name }}</option>
+            <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
         </dd>
       </div>
       <div class="form-group">
         <dt>貨品送至</dt>
         <dd>
-          <select class="form-control input-sm" v-model="order.ship_to_location_id">
+          <select class="input-sm" v-model="order.ship_to_location_id">
             <option selected disabled value="">-- 選取貨品寄送地點 --</option>
-            <option v-for="location in stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
+            <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
         </dd>
       </div>
@@ -68,7 +68,11 @@
       <div class="form-group">
         <dt>價別</dt>
         <dd>
-          
+          <select v-model="price_list" class="input-sm">
+            <option selected disabled value="">-- 請選取價別 --</option>
+            <option value="0">進貨價</option>
+            <option v-for="price_list in options.price_lists" v-bind:value="price_list.id">{{ price_list.name }}</option>
+          </select>
         </dd>
       </div>
       <div class="form-group">
@@ -78,59 +82,56 @@
     </dl>
   </div>
 
+  <div class="col-md-10"><hr></div>
+
+  <div class="col-md-10">
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <td></td>
+          <td>品名</td>
+          <td>數量</td>
+          <td>進貨後數量</td>
+          <td>單價</td>
+          <td>稅率</td>
+          <td>金額</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="item in order.items"
+          is="item-selector-component"
+          :item="item"
+          :index="$index"
+          :available_items="options.items"
+          v-on:press-delete-button="removeItem">
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-default" @click="addNewItem">新增商品</button>
+  </div>
+
   <div class="col-md-12">
     <%= render 'common/vue_data' %>
   </div>
 </div>
 
-<% content_for :js do %>
-<script type="text/javascript">
-  new Vue({
-    el: "#new-purchase-order-form",
-    data: {
-      order: {},
-      suppliers: [],
-      locations: [],
-      stockable_locations: [],
-    },
-    ready: function() {
-      this.getSupplierList()
-      this.getLocationList()
-      this.getStockableLocationList()
-      this.getPriceList()
-    },
-    methods: {
-      getSupplierList: function() {
-        var that = this
-        $.ajax({
-          url: "/api/v1/suppliers",
-          method: "GET",
-          dataType: "json"
-        }).done(function(data) {
-          that.suppliers = data.suppliers
-        })
-      },
-      getLocationList: function() {
-        var that = this
-        $.ajax({
-          url: "/api/v1/locations",
-          method: "GET",
-          dataType: "json"
-        }).done(function(data) {
-          that.locations = data.locations
-        })
-      },
-      getStockableLocationList: function() {
-        var that = this
-        $.ajax({
-          url: "/api/v1/locations/holds_stock",
-          method: "GET",
-          dataType: "json"
-        }).done(function(data) {
-          that.stockable_locations = data.locations
-        })
-      },
-    }
-  })
-</script>
-<% end %>
+
+<template id="item-selector-component">
+  <tr>
+    <td></td>
+    <td>
+      <select class="input-sm" v-model="item.id">
+        <option selected disabled value="">-- 請選取商品 --</option>
+        <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
+      </select>
+    </td>
+    <td><input type="number" min="1" placeholder="數量" value="1" v-model="item.quantity"></td>
+    <td>施工中...</td>
+    <td><input type="number" min="0" placeholder="單價" v-model="item.unit_price"></td>
+    <td><input type="number" min="0" placeholder="稅率" v-model="item.tax_rate"></td>
+    <td>施工中...</td>
+    <td><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
+  </tr>
+</template>

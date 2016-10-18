@@ -1,4 +1,9 @@
 class Api::V1::ItemsController < Api::V1::BaseController
+  def index
+    items = current_company.items
+    render json: { items: items }
+  end
+
   def update
     item = Item.includes_for_api.find_by(id: params[:id])
     if item.blank?

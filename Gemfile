@@ -69,7 +69,6 @@ gem 'pg', '0.18.4'
 gem 'rails_12factor', group: :production # for Heroku
 gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.4.1'
-gem 'cocoon', '1.2.9'
 gem 'font-awesome-rails', '4.6.3.1'
 gem 'awesome_print', '1.6.1'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave', branch: '8ceadb7fca5068564cfa8a33b1a76af86c6cbff3'
