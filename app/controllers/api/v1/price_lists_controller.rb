@@ -37,6 +37,34 @@ class Api::V1::PriceListsController < Api::V1::BaseController
     end
   end
 
+  def purchase
+    price_lists = current_company.price_lists.purchase.order(:id)
+    @price_lists = price_lists.map do |pl|
+      {
+        id:   pl.id,
+        name: pl.name,
+        price_list_type: pl.price_list_type,
+        price_list_type_in_chinese: pl.price_list_type_in_chinese,
+      }
+    end
+
+    render json: { price_lists: @price_lists }
+  end
+
+  def sales
+    price_lists = current_company.price_lists.sales.order(:id)
+    @price_lists = price_lists.map do |pl|
+      {
+        id:   pl.id,
+        name: pl.name,
+        price_list_type: pl.price_list_type,
+        price_list_type_in_chinese: pl.price_list_type_in_chinese,
+      }
+    end
+
+    render json: { price_lists: @price_lists }
+  end
+
   private
 
     def price_list_params

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161012040704) do
+ActiveRecord::Schema.define(version: 20161013045055) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -213,6 +213,37 @@ ActiveRecord::Schema.define(version: 20161012040704) do
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.index ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.integer  "company_id",                                       null: false
+    t.integer  "partner_id"
+    t.integer  "currency_id"
+    t.integer  "payment_method_id"
+    t.string   "type"
+    t.integer  "assignee_id"
+    t.integer  "bill_to_location_id"
+    t.integer  "ship_from_location_id"
+    t.integer  "ship_to_location_id"
+    t.string   "order_number"
+    t.string   "state"
+    t.string   "status"
+    t.boolean  "total_are_tax_inclusive"
+    t.integer  "total_units"
+    t.decimal  "total_amount",            precision: 12, scale: 2
+    t.date     "paid_on"
+    t.date     "expected_delivery_date"
+    t.text     "notes"
+    t.jsonb    "extra_info"
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.index ["assignee_id"], name: "index_orders_on_assignee_id", using: :btree
+    t.index ["company_id"], name: "index_orders_on_company_id", using: :btree
+    t.index ["order_number"], name: "index_orders_on_order_number", using: :btree
+    t.index ["partner_id"], name: "index_orders_on_partner_id", using: :btree
+    t.index ["state"], name: "index_orders_on_state", using: :btree
+    t.index ["status"], name: "index_orders_on_status", using: :btree
+    t.index ["type"], name: "index_orders_on_type", using: :btree
   end
 
   create_table "packaging_types", force: :cascade do |t|

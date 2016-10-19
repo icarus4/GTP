@@ -20,16 +20,6 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="price_list in price_lists"
-            class="cursor-pointer"
-            data-toggle="modal"
-            data-target="#price-lists-form-modal"
-            @click="setupEditPriceList($index)">
-          <td>{{ price_list.name }}</td>
-          <td></td>
-          <td>{{ price_list.price_list_type_in_chinese }}</td>
-          <td></td>
-        </tr>
         <tr>
           <td>進貨價</td>
           <td>內建</td>
@@ -46,6 +36,16 @@
           <td>零售價</td>
           <td>內建</td>
           <td>銷售</td>
+          <td></td>
+        </tr>
+        <tr v-for="price_list in price_lists"
+            class="cursor-pointer"
+            data-toggle="modal"
+            data-target="#price-lists-form-modal"
+            @click="setupEditPriceList($index)">
+          <td>{{ price_list.name }}</td>
+          <td></td>
+          <td>{{ price_list.price_list_type_in_chinese }}</td>
           <td></td>
         </tr>
       </tbody>
