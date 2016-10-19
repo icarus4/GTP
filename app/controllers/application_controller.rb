@@ -25,4 +25,8 @@ class ApplicationController < ActionController::Base
       redirect_to new_users_session_path
     end
   end
+
+  def require_admin!
+    redirect_to '/' if !user_signed_in? || current_user.id != 1
+  end
 end

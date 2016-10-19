@@ -32,12 +32,13 @@ class Company < ActiveRecord::Base
                  :default_payment_method_id,
                  :default_tax_type_id
 
-  has_many :customers
   has_many :partners
+  has_many :manufacturers, -> { joins(:roles).where(partner_roles: { name: 'manufacturer' }) }, class_name: 'Partner'
+  has_many :suppliers,     -> { joins(:roles).where(partner_roles: { name: 'supplier' }) }, class_name: 'Partner'
+  has_many :customers,     -> { joins(:roles).where(partner_roles: { name: 'customer' }) }, class_name: 'Partner'
   has_many :items
   has_many :variants, through: :items
   has_many :brands
-  has_many :manufacturers, -> { joins(:roles).where(partner_roles: { name: 'manufacturer' }) }, class_name: 'Partner'
   has_many :item_series
   has_many :locations, as: :locationable
   has_many :purchase_orders

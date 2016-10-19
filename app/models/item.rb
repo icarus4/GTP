@@ -30,9 +30,10 @@
 #
 # Indexes
 #
-#  index_items_on_company_id  (company_id)
-#  index_items_on_name        (name)
-#  index_items_on_sku         (sku)
+#  index_items_on_company_id      (company_id)
+#  index_items_on_item_series_id  (item_series_id)
+#  index_items_on_name            (name)
+#  index_items_on_sku             (sku)
 #
 
 class Item < ActiveRecord::Base
@@ -102,6 +103,7 @@ class Item < ActiveRecord::Base
   private
 
     def quantity_in_active_orders
+      return 0 # FIXME: Purchase order is WIP, return 0 first
       quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
     end
 

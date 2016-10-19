@@ -45,7 +45,7 @@ group :development do
   gem 'spring', '1.6.4'
   gem 'better_errors', '2.1.1'
   gem 'binding_of_caller', '0.7.2'
-  gem 'xray-rails', '0.1.21'
+  gem 'xray-rails', '0.2.0'
   gem 'annotate', '2.7.1'
   gem 'guard-rspec', '4.7.2', require: false
   # gem 'rails_admin', '1.0.0.rc'
@@ -69,7 +69,6 @@ gem 'pg', '0.18.4'
 gem 'rails_12factor', group: :production # for Heroku
 gem 'momentjs-rails', '2.11.0'
 gem 'bootstrap-datepicker-rails', '1.6.4.1'
-gem 'cocoon', '1.2.9'
 gem 'font-awesome-rails', '4.6.3.1'
 gem 'awesome_print', '1.6.1'
 gem 'carrierwave', github: 'carrierwaveuploader/carrierwave', branch: '8ceadb7fca5068564cfa8a33b1a76af86c6cbff3'
@@ -80,3 +79,4 @@ gem 'lodash-rails', '4.14.1'
 gem 'exception_notification', '4.2.1'
 gem 'slack-notifier', '1.5.1'
 gem "auto_strip_attributes", "~> 2.1"
+gem 'blazer', '1.7.0'

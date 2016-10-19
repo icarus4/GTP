@@ -8,5 +8,7 @@ class CreateLocationVariants < ActiveRecord::Migration
 
       t.timestamps null: false
     end
+
+    add_index :location_variants, :quantity, where: 'quantity > 0'
   end
 end

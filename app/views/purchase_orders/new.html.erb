@@ -1,44 +1,167 @@
-<%= simple_form_for @purchase_order, wrapper: 'horizontal_form', html: { class: 'form-horizontal' } do |f| %>
-  <%= f.input :order_number, label: '進貨單號' %>
-  <%= f.association :supplier, label: '供應商' %>
-  <%= f.association :ship_to, label: '收貨地點', collection: Location.where(locationable_id: current_company.id, holds_stock: true) %>
-  <%= f.association :bill_to, label: '收發票地點', collection: Location.where(locationable_id: current_company.id) %>
-  <%= f.input :contact_email, label: '聯絡 email' %>
-
-  <div class="form-group string required purchase_order_due_on <%= 'has-error' if @purchase_order.errors.messages[:due_on].present? %>">
-    <label class="optional col-sm-2 control-label required" for="purchase_order_due_on">
-      <abbr title="required">*</abbr> 收貨日
-    </label>
-    <div class="col-sm-2">
-      <%= f.input_field :due_on,
-        as: :string,
-        class: 'form-control string date required datepicker',
-        value: (Time.zone.today + 14.days).to_s
-      %>
-      <%= content_tag(:span, '請填寫收貨日', class: 'help-block') if @purchase_order.errors.messages[:due_on].present? %>
+<div id="new-purchase-order-form">
+  <div class="col-md-10">
+    <div class="col-md-5">
+      <dl class="dl-horizontal">
+        <div class="form-group">
+          <dt class="control-label">供應商</dt>
+          <dd>
+            <select class="input-sm" v-model="order.partner_id">
+              <option selected disabled value="">-- 選取供應商 --</option>
+              <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
+            </select>
+          </dd>
+        </div>
+      </dl>
     </div>
   </div>
 
-  <hr />
+  <div class="col-md-10"><hr></div>
 
-  <div id="details">
-    <%= f.simple_fields_for :details do |detail| %>
-      <%= render 'detail_fields', :f => detail %>
-    <% end %>
-    <div class="col-sm-offset-2">
-      <%= link_to_add_association '加入貨品於此訂單', f, :details, class: 'btn btn-default btn-sm' %>
-    </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>採購單號</dt>
+        <dd>施工中...</dd>
+      </div>
+      <div class="form-group">
+        <dt>票據送至</dt>
+        <dd>
+          <select class="input-sm" v-model="order.bill_to_location_id">
+            <option selected disabled value="">-- 選取票據寄送地點 --</option>
+            <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
+          </select>
+        </dd>
+      </div>
+      <div class="form-group">
+        <dt>貨品送至</dt>
+        <dd>
+          <select class="input-sm" v-model="order.ship_to_location_id">
+            <option selected disabled value="">-- 選取貨品寄送地點 --</option>
+            <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
+          </select>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>收貨日期</dt>
+        <dd><input type="date"></dd>
+      </div>
+      <div class="form-group">
+        <dt>Email</dt>
+        <dd><input type="text"></dd>
+      </div>
+      <div class="form-group">
+        <dt>收據上傳</dt>
+        <dd>施工中...</dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>幣別</dt>
+        <dd>台幣</dd>
+      </div>
+      <div class="form-group">
+        <dt>價別</dt>
+        <dd>
+          <select v-model="price_list" class="input-sm">
+            <option selected disabled value="">-- 選取價別 --</option>
+            <option value="0">進貨價</option>
+            <option v-for="price_list in options.price_lists" v-bind:value="price_list.id">{{ price_list.name }}</option>
+          </select>
+        </dd>
+      </div>
+      <div class="form-group">
+        <dt>總金額</dt>
+        <dd>
+          <select v-model="order.total_are_tax_inclusive" class="input-sm">
+            <option selected value="false">稅外</option>
+            <option value="true">稅入</option>
+          </select>
+        </dd>
+      </div>
+    </dl>
   </div>
 
-  <hr />
+  <div class="col-md-10"><hr></div>
 
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-4">
-      <%= f.button :submit, "建立進貨單", class: 'btn-success', name: 'active' %>
-      或
-      <%= f.button :submit, "存為草稿", class: 'btn btn-default', name: 'draft' %>
+  <div class="col-md-10">
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr>
+          <td></td>
+          <td>品名</td>
+          <td>數量</td>
+          <td>進貨後數量</td>
+          <td>單價</td>
+          <td>稅率</td>
+          <td>金額</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="item in order.items"
+          is="item-selector-component"
+          :item="item"
+          :index="$index"
+          :available_items="options.items"
+          v-on:press-delete-button="removeItem">
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-center"><button class="btn btn-default" @click="addNewItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+  </div>
+
+  <div class="col-md-10"><hr class="m-t-lg"></div>
+
+  <div class="col-md-10 m-t">
+    <div class="col-md-6 m-t">
+      <textarea v-model="order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+    </div>
+    <div class="col-md-3 col-md-offset-3">
+      <ul class="list-group no-padding">
+        <li class="list-group-item">
+          <span>總數量</span>
+          <span class="pull-right">{{ total_units }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>金額小計</span>
+          <span class="pull-right">NT$ {{ subtotal }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>稅額</span>
+          <span class="pull-right">NT$ {{ total_tax }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>總金額</span>
+          <span class="pull-right">NT$ {{ total_amount }}</span>
+        </li>
+
+      </ul>
     </div>
   </div>
-<% end %>
+</div>
 
-<%= render 'common/init_datepicker' %>
+
+<template id="item-selector-component">
+  <tr>
+    <td></td>
+    <td class="td-v-align">
+      <select class="input-sm" v-model="item.id">
+        <option selected disabled value="">-- 請選取商品 --</option>
+        <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
+      </select>
+    </td>
+    <td class="td-v-align"><input class="no-border no-outline" type="number" min="1" placeholder="數量" value="1" v-model="item.quantity" number></td>
+    <td class="td-v-align">{{ available_count }}</td>
+    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="item.unit_price" number></td>
+    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="item.tax_rate" number>%</td>
+    <td class="td-v-align">{{ total || 0 }}</td>
+    <td class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
+  </tr>
+</template>

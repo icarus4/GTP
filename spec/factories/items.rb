@@ -30,9 +30,10 @@
 #
 # Indexes
 #
-#  index_items_on_company_id  (company_id)
-#  index_items_on_name        (name)
-#  index_items_on_sku         (sku)
+#  index_items_on_company_id      (company_id)
+#  index_items_on_item_series_id  (item_series_id)
+#  index_items_on_name            (name)
+#  index_items_on_sku             (sku)
 #
 
 FactoryGirl.define do

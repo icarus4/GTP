@@ -58,7 +58,7 @@ Rails.application.routes.draw do
       resources :item_series, only: [:create] do
         resources :items, only: [:index, :create], controller: 'item_series/items'
       end
-      resources :items, only: [:update] do
+      resources :items, only: [:index, :update] do
         get :stock_info_by_location, on: :member
         resources :price_lists, only: [:index], controller: 'items/price_lists'
       end
@@ -73,7 +73,15 @@ Rails.application.routes.draw do
       resources :payment_methods, only: [:index, :update, :create]
       resources :payment_terms, only: [:index, :update, :create]
       resources :tax_types, only: [:index, :update, :create]
-      resources :price_lists, only: [:index, :update, :create]
+      resources :price_lists, only: [:index, :update, :create] do
+        get :purchase, on: :collection
+        get :sales, on: :collection
+      end
+      resources :suppliers, only: [:index]
     end
+  end
+
+  namespace :admin do
+    mount Blazer::Engine, at: "blazer"
   end
 end
