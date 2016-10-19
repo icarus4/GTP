@@ -1,9 +1,9 @@
 <div id="new-purchase-order-form">
   <div class="col-md-10">
-    <div class="col-md-4">
+    <div class="col-md-5">
       <dl class="dl-horizontal">
         <div class="form-group">
-          <dt>供應商</dt>
+          <dt class="control-label">供應商</dt>
           <dd>
             <select class="input-sm" v-model="order.partner_id">
               <option selected disabled value="">-- 選取供應商 --</option>
@@ -69,7 +69,7 @@
         <dt>價別</dt>
         <dd>
           <select v-model="price_list" class="input-sm">
-            <option selected disabled value="">-- 請選取價別 --</option>
+            <option selected disabled value="">-- 選取價別 --</option>
             <option value="0">進貨價</option>
             <option v-for="price_list in options.price_lists" v-bind:value="price_list.id">{{ price_list.name }}</option>
           </select>
@@ -85,7 +85,7 @@
   <div class="col-md-10"><hr></div>
 
   <div class="col-md-10">
-    <table class="table table-condensed">
+    <table class="table table-condensed table-bordered">
       <thead>
         <tr>
           <td></td>
@@ -105,11 +105,41 @@
           :item="item"
           :index="$index"
           :available_items="options.items"
-          v-on:press-delete-button="removeItem">
+          v-on:press-delete-button="removeItem"
+          v-on:total-updated="updateSubtotal">
         </tr>
       </tbody>
     </table>
-    <button class="btn btn-default" @click="addNewItem">新增商品</button>
+    <div class="text-center"><button class="btn btn-default" @click="addNewItem">新增商品</button></div>
+  </div>
+
+  <div class="col-md-10"><hr class="m-t-lg"></div>
+
+  <div class="col-md-10 m-t">
+    <div class="col-md-6">
+      <textarea v-model="order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+    </div>
+    <div class="col-md-3 col-md-offset-3">
+      <ul class="list-group clear-list">,
+        <li class="list-group-item first-item">
+          <span>總數量</span>
+          <span class="pull-right">{{ total_units }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>金額小計</span>
+          <span class="pull-right">{{ subtotal }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>稅額</span>
+          <span class="pull-right">{{  }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>總金額</span>
+          <span class="pull-right">{{  }}</span>
+        </li>
+
+      </ul>
+    </div>
   </div>
 
   <div class="col-md-12">
@@ -121,17 +151,17 @@
 <template id="item-selector-component">
   <tr>
     <td></td>
-    <td>
+    <td class="td-v-align">
       <select class="input-sm" v-model="item.id">
         <option selected disabled value="">-- 請選取商品 --</option>
         <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
       </select>
     </td>
-    <td><input type="number" min="1" placeholder="數量" value="1" v-model="item.quantity"></td>
-    <td>施工中...</td>
-    <td><input type="number" min="0" placeholder="單價" v-model="item.unit_price"></td>
-    <td><input type="number" min="0" placeholder="稅率" v-model="item.tax_rate"></td>
-    <td>施工中...</td>
-    <td><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
+    <td class="td-v-align"><input class="no-border no-outline" type="number" min="1" placeholder="數量" value="1" v-model="item.quantity" number></td>
+    <td class="td-v-align">{{ available_count }}</td>
+    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="item.unit_price" number></td>
+    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="item.tax_rate" number>%</td>
+    <td class="td-v-align">{{ total || 0 }}</td>
+    <td class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
   </tr>
 </template>

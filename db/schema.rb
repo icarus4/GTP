@@ -233,6 +233,7 @@ ActiveRecord::Schema.define(version: 20161013045055) do
     t.decimal  "total_amount",            precision: 12, scale: 2
     t.date     "paid_on"
     t.date     "expected_delivery_date"
+    t.text     "notes"
     t.jsonb    "extra_info"
     t.datetime "created_at",                                       null: false
     t.datetime "updated_at",                                       null: false

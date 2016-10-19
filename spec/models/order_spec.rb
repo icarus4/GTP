@@ -20,6 +20,7 @@
 #  total_amount            :decimal(12, 2)
 #  paid_on                 :date
 #  expected_delivery_date  :date
+#  notes                   :text
 #  extra_info              :jsonb
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null

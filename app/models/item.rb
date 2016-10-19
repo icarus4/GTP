@@ -103,6 +103,7 @@ class Item < ActiveRecord::Base
   private
 
     def quantity_in_active_orders
+      return 0 # FIXME: Purchase order is WIP, return 0 first
       quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
     end
 

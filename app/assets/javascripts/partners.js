@@ -10,14 +10,36 @@ if (document.getElementById('new-purchase-order-form'))
       available_items: Array,
       index: Number
     },
+    watch: {
+      total: function() {
+        this.$dispatch('total-updated')
+      }
+    },
+    computed: {
+      total: function() {
+        var total = this.item.quantity * this.item.unit_price
+        this.item.total = total
+        return total
+      },
+      available_count: {
+        get: function() {
+          if (!_.isInteger(this.item.id)) {
+            return ''
+          }
+          var that = this
+          var selected_item = _.find(this.available_items, function(item) {
+            return item.id == that.item.id
+          })
+          return parseInt(selected_item.available_count) + parseInt(this.item.quantity)
+        }
+      }
+    },
     methods: {
       pressDeleteButton: function(index) {
         this.$dispatch('press-delete-button', index)
       }
     }
   })
-
-  // Vue.component('item-selector-component', ItemSelectorComponent)
 
   new Vue({
     el: "#new-purchase-order-form",
@@ -28,6 +50,7 @@ if (document.getElementById('new-purchase-order-form'))
       order: {
         items: [{}]
       },
+      subtotal: 0,
       item_template: {
         id: null,
         quantity: 1,
@@ -42,6 +65,18 @@ if (document.getElementById('new-purchase-order-form'))
         items: [],
         stockable_locations: [],
       }
+    },
+    computed: {
+      total_units: function() {
+        var total = 0
+        this.order.items.forEach(function(item) {
+          // 選定了商品時才計入
+          if (_.isInteger(item.quantity) && _.isInteger(item.id)) {
+            total += item.quantity
+          }
+        })
+        return total
+      },
     },
     ready: function() {
       this.getSupplierList()
@@ -106,6 +141,15 @@ if (document.getElementById('new-purchase-order-form'))
       },
       removeItem: function(index) {
         this.order.items.$remove(this.order.items[index])
+      },
+      updateSubtotal: function() {
+        var subtotal = 0
+        this.order.items.forEach(function(item) {
+          if (_.isInteger(item.total) && _.isInteger(item.id)) {
+            subtotal += item.total
+          }
+        })
+        this.subtotal = subtotal
       }
     }
   })
