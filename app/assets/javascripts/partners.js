@@ -10,14 +10,12 @@ if (document.getElementById('new-purchase-order-form'))
       available_items: Array,
       index: Number
     },
-    watch: {
-      total: function() {
-        this.$dispatch('total-updated')
-      }
-    },
     computed: {
       total: function() {
-        var total = this.item.quantity * this.item.unit_price
+        var total = 0
+        if (_.isInteger(this.item.quantity) && _.isInteger(this.item.unit_price)) {
+          total = this.item.quantity * this.item.unit_price
+        }
         this.item.total = total
         return total
       },
@@ -48,7 +46,8 @@ if (document.getElementById('new-purchase-order-form'))
     },
     data: {
       order: {
-        items: [{}]
+        items: [],
+        subtotal: 0,
       },
       subtotal: 0,
       item_template: {
@@ -56,6 +55,7 @@ if (document.getElementById('new-purchase-order-form'))
         quantity: 1,
         unit_price: null,
         tax_rate: null
+        total: 0
       },
       price_list: null,
       options: {
@@ -68,15 +68,25 @@ if (document.getElementById('new-purchase-order-form'))
     },
     computed: {
       total_units: function() {
-        var total = 0
+        var total_units = 0
         this.order.items.forEach(function(item) {
           // 選定了商品時才計入
           if (_.isInteger(item.quantity) && _.isInteger(item.id)) {
-            total += item.quantity
+            total_units += item.quantity
           }
         })
-        return total
+        return total_units
       },
+      subtotal: function() {
+        var subtotal = 0
+        this.order.items.forEach(function(item) {
+          if (_.isInteger(item.total) && _.isInteger(item.id)) {
+            subtotal += item.total
+          }
+        })
+        this.order.subtotal = subtotal
+        return subtotal
+      }
     },
     ready: function() {
       this.getSupplierList()
@@ -84,6 +94,7 @@ if (document.getElementById('new-purchase-order-form'))
       this.getStockableLocationList()
       this.getPriceList()
       this.getItemList()
+      this.addNewItem()
     },
     methods: {
       getSupplierList: function() {
@@ -142,15 +153,6 @@ if (document.getElementById('new-purchase-order-form'))
       removeItem: function(index) {
         this.order.items.$remove(this.order.items[index])
       },
-      updateSubtotal: function() {
-        var subtotal = 0
-        this.order.items.forEach(function(item) {
-          if (_.isInteger(item.total) && _.isInteger(item.id)) {
-            subtotal += item.total
-          }
-        })
-        this.subtotal = subtotal
-      }
     }
   })
 }
