@@ -48,13 +48,15 @@ if (document.getElementById('new-purchase-order-form'))
       order: {
         items: [],
         subtotal: 0,
+        total_are_tax_inclusive: null,
+        total_tax: 0,
+        total_amount: 0,
       },
-      subtotal: 0,
       item_template: {
         id: null,
         quantity: 1,
         unit_price: null,
-        tax_rate: null
+        tax_rate: null,
         total: 0
       },
       price_list: null,
@@ -86,6 +88,47 @@ if (document.getElementById('new-purchase-order-form'))
         })
         this.order.subtotal = subtotal
         return subtotal
+      },
+      total_tax: function() {
+        var total_tax = 0
+        var that = this
+        this.order.items.forEach(function(item) {
+          if (_.isInteger(item.id) && _.isInteger(item.total) && _.isNumber(item.tax_rate)) {
+            if (that.order.total_are_tax_inclusive === 'false') {
+              total_tax += item.total * item.tax_rate / 100
+            }
+            else {
+              // 推導
+              // total_without_tax * (100 + tax_rate) / 100 = total
+              // total_without_tax * (100 + tax_rate) / 100 = total_without_tax + tax
+              // total_without_tax * (100 + tax_rate) / 100 - total_without_tax = tax
+              // total_without_tax * ((100 + tax_rate) / 100 - 1) = tax
+              // (total - tax) * ((100 + tax_rate) / 100 - 1) = tax
+              // total * ((100 + tax_rate) / 100 - 1) - tax * ((100 + tax_rate) / 100 - 1) = tax
+              // total * ((100 + tax_rate) / 100 - 1) = tax + tax * ((100 + tax_rate) / 100 - 1)
+              // total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
+              // total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
+              // total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax          
+              total_tax += item.total / (1 / ((100 + item.tax_rate) / 100 - 1) + 1)
+            }
+          }
+        })
+        total_tax = Math.round(total_tax * 100) / 100
+        this.order.total_tax = total_tax
+        return total_tax
+      },
+      total_amount: function() {
+        var total_amount = 0
+        if (_.isNumber(this.subtotal) && _.isNumber(this.total_tax)) {
+          if (this.order.total_are_tax_inclusive === 'false') {
+            total_amount = this.subtotal + this.total_tax
+          }
+          else if (this.order.total_are_tax_inclusive === 'true') {
+            total_amount = this.subtotal
+          }
+        }
+        this.order.total_amount = total_amount
+        return total_amount
       }
     },
     ready: function() {

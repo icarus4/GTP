@@ -77,7 +77,12 @@
       </div>
       <div class="form-group">
         <dt>總金額</dt>
-        <dd>稅外/稅入</dd>
+        <dd>
+          <select v-model="order.total_are_tax_inclusive" class="input-sm">
+            <option selected value="false">稅外</option>
+            <option value="true">稅入</option>
+          </select>
+        </dd>
       </div>
     </dl>
   </div>
@@ -109,40 +114,36 @@
         </tr>
       </tbody>
     </table>
-    <div class="text-center"><button class="btn btn-default" @click="addNewItem">新增商品</button></div>
+    <div class="text-center"><button class="btn btn-default" @click="addNewItem"><i class="fa fa-plus"></i> 新增商品</button></div>
   </div>
 
   <div class="col-md-10"><hr class="m-t-lg"></div>
 
   <div class="col-md-10 m-t">
-    <div class="col-md-6">
+    <div class="col-md-6 m-t">
       <textarea v-model="order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
     </div>
     <div class="col-md-3 col-md-offset-3">
-      <ul class="list-group clear-list">,
-        <li class="list-group-item first-item">
+      <ul class="list-group no-padding">
+        <li class="list-group-item">
           <span>總數量</span>
           <span class="pull-right">{{ total_units }}</span>
         </li>
         <li class="list-group-item">
           <span>金額小計</span>
-          <span class="pull-right">{{ subtotal }}</span>
+          <span class="pull-right">NT$ {{ subtotal }}</span>
         </li>
         <li class="list-group-item">
           <span>稅額</span>
-          <span class="pull-right">{{  }}</span>
+          <span class="pull-right">NT$ {{ total_tax }}</span>
         </li>
         <li class="list-group-item">
           <span>總金額</span>
-          <span class="pull-right">{{  }}</span>
+          <span class="pull-right">NT$ {{ total_amount }}</span>
         </li>
 
       </ul>
     </div>
-  </div>
-
-  <div class="col-md-12">
-    <%= render 'common/vue_data' %>
   </div>
 </div>
 
