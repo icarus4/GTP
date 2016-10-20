@@ -216,7 +216,7 @@ ActiveRecord::Schema.define(version: 20161013045055) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.integer  "company_id",                                       null: false
+    t.integer  "company_id",                                                  null: false
     t.integer  "partner_id"
     t.integer  "currency_id"
     t.integer  "payment_method_id"
@@ -228,15 +228,15 @@ ActiveRecord::Schema.define(version: 20161013045055) do
     t.string   "order_number"
     t.string   "state"
     t.string   "status"
-    t.boolean  "total_are_tax_inclusive"
+    t.integer  "tax_treatment",                                   default: 0, null: false
     t.integer  "total_units"
-    t.decimal  "total_amount",            precision: 12, scale: 2
+    t.decimal  "total_amount",           precision: 12, scale: 2
     t.date     "paid_on"
     t.date     "expected_delivery_date"
     t.text     "notes"
     t.jsonb    "extra_info"
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
     t.index ["assignee_id"], name: "index_orders_on_assignee_id", using: :btree
     t.index ["company_id"], name: "index_orders_on_company_id", using: :btree
     t.index ["order_number"], name: "index_orders_on_order_number", using: :btree

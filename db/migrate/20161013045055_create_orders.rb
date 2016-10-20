@@ -13,7 +13,7 @@ class CreateOrders < ActiveRecord::Migration[5.0]
       t.string     :order_number,            index: true
       t.string     :state,                   index: true
       t.string     :status,                  index: true
-      t.boolean    :total_are_tax_inclusive
+      t.integer    :tax_treatment,           null: false, default: 0
       t.integer    :total_units
       t.decimal    :total_amount, precision: 12, scale: 2
       t.date       :paid_on

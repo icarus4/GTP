@@ -78,9 +78,9 @@
       <div class="form-group">
         <dt>總金額</dt>
         <dd>
-          <select v-model="order.total_are_tax_inclusive" class="input-sm">
-            <option selected value="false">稅外</option>
-            <option value="true">稅入</option>
+          <select v-model="order.tax_treatment" class="input-sm">
+            <option selected value="exclusive">稅外</option>
+            <option value="inclusive">稅入</option>
           </select>
         </dd>
       </div>
@@ -105,7 +105,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="item in order.items"
+          v-for="item in order_line_items"
           is="item-selector-component"
           :item="item"
           :index="$index"
@@ -145,6 +145,23 @@
       </ul>
     </div>
   </div>
+
+  <div class="col-md-12"><hr></div>
+
+  <div class="col-md-12">
+    <div class="form-group col-md-4">
+      <label class="control-label">Tags</label>
+      <input type="text" class="form-control input-sm" placeholder="施工中...">
+    </div>
+
+  </div>
+  <div class="col-md-12">
+    <div class="pull-right">
+      <button class="btn btn-default">取消</button>
+      <button class="btn btn-default">存為草稿</button>
+      <button class="btn btn-primary" @click="submitForm">建立進貨單</button>
+    </div>
+  </div>
 </template>
 
 <script type="text/javascript">
@@ -156,12 +173,12 @@ var purchaseOrderComponent = Vue.extend({
   data: function() {
     return {
       order: {
-        items: [],
         subtotal: 0,
-        total_are_tax_inclusive: null,
+        tax_treatment: 'exclusive',
         total_tax: 0,
         total_amount: 0,
       },
+      order_line_items: [],
       item_template: {
         id: null,
         quantity: 1,
@@ -182,7 +199,7 @@ var purchaseOrderComponent = Vue.extend({
   computed: {
     total_units: function() {
       var total_units = 0
-      this.order.items.forEach(function(item) {
+      this.order_line_items.forEach(function(item) {
         // 選定了商品時才計入
         if (_.isInteger(item.quantity) && _.isInteger(item.id)) {
           total_units += item.quantity
@@ -192,7 +209,7 @@ var purchaseOrderComponent = Vue.extend({
     },
     subtotal: function() {
       var subtotal = 0
-      this.order.items.forEach(function(item) {
+      this.order_line_items.forEach(function(item) {
         if (_.isInteger(item.total) && _.isInteger(item.id)) {
           subtotal += item.total
         }
@@ -203,9 +220,9 @@ var purchaseOrderComponent = Vue.extend({
     total_tax: function() {
       var total_tax = 0
       var that = this
-      this.order.items.forEach(function(item) {
+      this.order_line_items.forEach(function(item) {
         if (_.isInteger(item.id) && _.isInteger(item.total) && _.isNumber(item.tax_rate)) {
-          if (that.order.total_are_tax_inclusive === 'false') {
+          if (that.order.tax_treatment === 'exclusive') {
             total_tax += item.total * item.tax_rate / 100
           }
           else {
@@ -231,10 +248,10 @@ var purchaseOrderComponent = Vue.extend({
     total_amount: function() {
       var total_amount = 0
       if (_.isNumber(this.subtotal) && _.isNumber(this.total_tax)) {
-        if (this.order.total_are_tax_inclusive === 'false') {
+        if (this.order.tax_treatment === 'exclusive') {
           total_amount = this.subtotal + this.total_tax
         }
-        else if (this.order.total_are_tax_inclusive === 'true') {
+        else if (this.order.tax_treatment === 'inclusive') {
           total_amount = this.subtotal
         }
       }
@@ -302,10 +319,10 @@ var purchaseOrderComponent = Vue.extend({
       })
     },
     addNewItem: function() {
-      this.order.items.push(_.cloneDeep(this.item_template))
+      this.order_line_items.push(_.cloneDeep(this.item_template))
     },
     removeItem: function(index) {
-      this.order.items.$remove(this.order.items[index])
+      this.order_line_items.$remove(this.order_line_items[index])
     },
   }
 })
