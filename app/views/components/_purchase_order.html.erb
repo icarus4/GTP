@@ -324,6 +324,19 @@ var purchaseOrderComponent = Vue.extend({
     removeItem: function(index) {
       this.order_line_items.$remove(this.order_line_items[index])
     },
+    submitForm: function() {
+      var that = this
+      $.ajax({
+        url: '/api/v1/purchase_orders',
+        method: 'POST',
+        dataType: 'json',
+        data: that.order
+      }).done(function(data) {
+        console.log(data)
+      }).fail(function(err) {
+        console.log(err.responseJSON)
+      })
+    }
   }
 })
 </script>

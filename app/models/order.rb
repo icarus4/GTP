@@ -7,15 +7,16 @@
 #  partner_id             :integer
 #  currency_id            :integer
 #  payment_method_id      :integer
-#  type                   :string
 #  assignee_id            :integer
 #  bill_to_location_id    :integer
 #  ship_from_location_id  :integer
 #  ship_to_location_id    :integer
+#  type                   :string
 #  order_number           :string
 #  state                  :string
 #  status                 :string
-#  tax_treatment          :integer          default("exclusive"), not null
+#  email                  :string
+#  tax_treatment          :integer          default(0), not null
 #  total_units            :integer
 #  total_amount           :decimal(12, 2)
 #  paid_on                :date
@@ -44,6 +45,4 @@ class Order < ApplicationRecord
   belongs_to :currency
   belongs_to :payment_method
   belongs_to :assignee, class_name: 'User'
-
-  enum tax_treatment: { exclusive: 0, inclusive: 1 }
 end

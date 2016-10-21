@@ -220,14 +220,15 @@ ActiveRecord::Schema.define(version: 20161013045055) do
     t.integer  "partner_id"
     t.integer  "currency_id"
     t.integer  "payment_method_id"
-    t.string   "type"
     t.integer  "assignee_id"
     t.integer  "bill_to_location_id"
     t.integer  "ship_from_location_id"
     t.integer  "ship_to_location_id"
+    t.string   "type"
     t.string   "order_number"
     t.string   "state"
     t.string   "status"
+    t.string   "email"
     t.integer  "tax_treatment",                                   default: 0, null: false
     t.integer  "total_units"
     t.decimal  "total_amount",           precision: 12, scale: 2

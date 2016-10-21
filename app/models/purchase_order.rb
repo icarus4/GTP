@@ -7,14 +7,15 @@
 #  partner_id             :integer
 #  currency_id            :integer
 #  payment_method_id      :integer
-#  type                   :string
 #  assignee_id            :integer
 #  bill_to_location_id    :integer
 #  ship_from_location_id  :integer
 #  ship_to_location_id    :integer
+#  type                   :string
 #  order_number           :string
 #  state                  :string
 #  status                 :string
+#  email                  :string
 #  tax_treatment          :integer          default("exclusive"), not null
 #  total_units            :integer
 #  total_amount           :decimal(12, 2)
@@ -59,11 +60,12 @@ class PurchaseOrder < Order
 
   validates :order_number, presence: true, uniqueness: { scope: [:company_id, :type] }
 
-  auto_strip_attributes :contact_email, :notes
+  auto_strip_attributes :email, :notes, :order_number
 
   VALID_STATUSES = %w(draft active received)
   validates :status, inclusion: { in: VALID_STATUSES }
 
+  enum tax_treatment: { exclusive: 0, inclusive: 1 }
 
   def self.next_number(company_id)
     where(company_id: company_id).maximum(:order_number).try(:next) || 'PO0001'
