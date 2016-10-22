@@ -80,6 +80,7 @@ Rails.application.routes.draw do
       resources :suppliers, only: [:index]
       resources :purchase_orders, only: [:create] do
         get :next_number, on: :collection
+        resources :line_items, only: [:create], controller: 'purchase_orders/line_items'
       end
     end
   end

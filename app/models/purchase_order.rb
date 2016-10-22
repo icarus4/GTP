@@ -18,6 +18,8 @@
 #  email                  :string
 #  tax_treatment          :integer          default("exclusive"), not null
 #  total_units            :integer
+#  subtotal               :decimal(12, 2)
+#  total_tax              :decimal(12, 2)
 #  total_amount           :decimal(12, 2)
 #  paid_on                :date
 #  expected_delivery_date :date

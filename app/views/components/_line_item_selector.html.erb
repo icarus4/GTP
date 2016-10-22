@@ -1,0 +1,55 @@
+<template id="line-item-selector-component">
+  <tr>
+    <td></td>
+    <td class="td-v-align">
+      <select class="input-sm" v-model="line_item.item_id">
+        <option selected disabled value="">-- 請選取商品 --</option>
+        <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
+      </select>
+    </td>
+    <td class="td-v-align"><input class="no-border no-outline" type="number" min="1" placeholder="數量" value="1" v-model="line_item.quantity" number></td>
+    <td class="td-v-align">{{ available_count }}</td>
+    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number></td>
+    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%</td>
+    <td class="td-v-align">{{ total || 0 }}</td>
+    <td class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
+  </tr>
+</template>
+
+<script type="text/javascript">
+var LineItemSelectorComponent = Vue.extend({
+  template: '#line-item-selector-component',
+  props: {
+    line_item: Object,
+    available_items: Array,
+    index: Number
+  },
+  computed: {
+    total: function() {
+      var total = 0
+      if (_.isInteger(this.line_item.quantity) && _.isInteger(this.line_item.unit_price)) {
+        total = this.line_item.quantity * this.line_item.unit_price
+      }
+      this.line_item.total = total
+      return total
+    },
+    available_count: {
+      get: function() {
+        if (!_.isInteger(this.line_item.item_id)) {
+          return ''
+        }
+        var that = this
+        var selected_item = _.find(this.available_items, function(item) {
+          return item.id == that.line_item.item_id
+        })
+        return parseInt(selected_item.available_count) + parseInt(this.line_item.quantity)
+      }
+    }
+  },
+  methods: {
+    pressDeleteButton: function(index) {
+      this.$dispatch('press-delete-button', index)
+    }
+  }
+})
+</script>

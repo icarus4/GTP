@@ -5,7 +5,7 @@
         <div class="form-group">
           <dt class="control-label">供應商</dt>
           <dd>
-            <select class="input-sm" v-model="order.partner_id">
+            <select class="input-sm" v-model="purchase_order.partner_id">
               <option selected disabled value="">-- 選取供應商 --</option>
               <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
             </select>
@@ -26,7 +26,7 @@
       <div class="form-group">
         <dt>票據送至</dt>
         <dd>
-          <select class="input-sm" v-model="order.bill_to_location_id">
+          <select class="input-sm" v-model="purchase_order.bill_to_location_id">
             <option selected disabled value="">-- 選取票據寄送地點 --</option>
             <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
@@ -35,7 +35,7 @@
       <div class="form-group">
         <dt>貨品送至</dt>
         <dd>
-          <select class="input-sm" v-model="order.ship_to_location_id">
+          <select class="input-sm" v-model="purchase_order.ship_to_location_id">
             <option selected disabled value="">-- 選取貨品寄送地點 --</option>
             <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
@@ -78,7 +78,7 @@
       <div class="form-group">
         <dt>總金額</dt>
         <dd>
-          <select v-model="order.tax_treatment" class="input-sm">
+          <select v-model="purchase_order.tax_treatment" class="input-sm">
             <option selected value="exclusive">稅外</option>
             <option value="inclusive">稅入</option>
           </select>
@@ -105,23 +105,23 @@
       </thead>
       <tbody>
         <tr
-          v-for="item in order_line_items"
-          is="item-selector-component"
-          :item="item"
+          v-for="line_item in purchase_order_line_items"
+          is="line-item-selector-component"
+          :line_item="line_item"
           :index="$index"
           :available_items="options.items"
-          v-on:press-delete-button="removeItem">
+          v-on:press-delete-button="removeLineItem">
         </tr>
       </tbody>
     </table>
-    <div class="text-center"><button class="btn btn-default" @click="addNewItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+    <div class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
   </div>
 
   <div class="col-md-12"><hr class="m-t-lg"></div>
 
   <div class="col-md-12 m-t">
     <div class="col-md-6 m-t">
-      <textarea v-model="order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+      <textarea v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
     </div>
     <div class="col-md-3 col-md-offset-3">
       <ul class="list-group no-padding">
@@ -168,19 +168,20 @@
 var purchaseOrderComponent = Vue.extend({
   template: '#purchase-order-component',
   components: {
-    'item-selector-component': ItemSelectorComponent
+    'line-item-selector-component': LineItemSelectorComponent
   },
   data: function() {
     return {
-      order: {
+      purchase_order: {
         subtotal: 0,
         tax_treatment: 'exclusive',
         total_tax: 0,
         total_amount: 0,
       },
-      order_line_items: [],
-      item_template: {
+      purchase_order_line_items: [],
+      purchase_order_line_item_template: {
         id: null,
+        item_id: null,
         quantity: 1,
         unit_price: null,
         tax_rate: null,
@@ -199,31 +200,31 @@ var purchaseOrderComponent = Vue.extend({
   computed: {
     total_units: function() {
       var total_units = 0
-      this.order_line_items.forEach(function(item) {
+      this.purchase_order_line_items.forEach(function(line_item) {
         // 選定了商品時才計入
-        if (_.isInteger(item.quantity) && _.isInteger(item.id)) {
-          total_units += item.quantity
+        if (_.isInteger(line_item.quantity) && _.isInteger(line_item.item_id)) {
+          total_units += line_item.quantity
         }
       })
       return total_units
     },
     subtotal: function() {
       var subtotal = 0
-      this.order_line_items.forEach(function(item) {
-        if (_.isInteger(item.total) && _.isInteger(item.id)) {
-          subtotal += item.total
+      this.purchase_order_line_items.forEach(function(line_item) {
+        if (_.isInteger(line_item.total) && _.isInteger(line_item.item_id)) {
+          subtotal += line_item.total
         }
       })
-      this.order.subtotal = subtotal
+      this.purchase_order.subtotal = subtotal
       return subtotal
     },
     total_tax: function() {
       var total_tax = 0
       var that = this
-      this.order_line_items.forEach(function(item) {
-        if (_.isInteger(item.id) && _.isInteger(item.total) && _.isNumber(item.tax_rate)) {
-          if (that.order.tax_treatment === 'exclusive') {
-            total_tax += item.total * item.tax_rate / 100
+      this.purchase_order_line_items.forEach(function(line_item) {
+        if (_.isInteger(line_item.item_id) && _.isInteger(line_item.total) && _.isNumber(line_item.tax_rate)) {
+          if (that.purchase_order.tax_treatment === 'exclusive') {
+            total_tax += line_item.total * line_item.tax_rate / 100
           }
           else {
             // 推導
@@ -237,25 +238,25 @@ var purchaseOrderComponent = Vue.extend({
             // total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
             // total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
             // total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
-            total_tax += item.total / (1 / ((100 + item.tax_rate) / 100 - 1) + 1)
+            total_tax += line_item.total / (1 / ((100 + line_item.tax_rate) / 100 - 1) + 1)
           }
         }
       })
       total_tax = Math.round(total_tax * 100) / 100
-      this.order.total_tax = total_tax
+      this.purchase_order.total_tax = total_tax
       return total_tax
     },
     total_amount: function() {
       var total_amount = 0
       if (_.isNumber(this.subtotal) && _.isNumber(this.total_tax)) {
-        if (this.order.tax_treatment === 'exclusive') {
+        if (this.purchase_order.tax_treatment === 'exclusive') {
           total_amount = this.subtotal + this.total_tax
         }
-        else if (this.order.tax_treatment === 'inclusive') {
+        else if (this.purchase_order.tax_treatment === 'inclusive') {
           total_amount = this.subtotal
         }
       }
-      this.order.total_amount = total_amount
+      this.purchase_order.total_amount = total_amount
       return total_amount
     }
   },
@@ -265,7 +266,7 @@ var purchaseOrderComponent = Vue.extend({
     this.getStockableLocationList()
     this.getPriceList()
     this.getItemList()
-    this.addNewItem()
+    this.addNewLineItem()
   },
   methods: {
     getSupplierList: function() {
@@ -318,11 +319,11 @@ var purchaseOrderComponent = Vue.extend({
         that.options.items = data.items
       })
     },
-    addNewItem: function() {
-      this.order_line_items.push(_.cloneDeep(this.item_template))
+    addNewLineItem: function() {
+      this.purchase_order_line_items.push(_.cloneDeep(this.purchase_order_line_item_template))
     },
-    removeItem: function(index) {
-      this.order_line_items.$remove(this.order_line_items[index])
+    removeLineItem: function(index) {
+      this.purchase_order_line_items.$remove(this.purchase_order_line_items[index])
     },
     submitForm: function() {
       var that = this
@@ -330,13 +331,39 @@ var purchaseOrderComponent = Vue.extend({
         url: '/api/v1/purchase_orders',
         method: 'POST',
         dataType: 'json',
-        data: that.order
+        data: { purchase_order: that.purchase_order, purchase_order_line_items: that.purchase_order_line_items }
       }).done(function(data) {
-        console.log(data)
+        that.purchase_order = data.purchase_order
+        that.purchase_order_line_items = data.purchase_order_line_items
       }).fail(function(err) {
         console.log(err.responseJSON)
+        alert(err.responseJSON.errors)
       })
-    }
+    },
+    // createLineItems: function(callback) {
+    //   var that = this
+    //   this.purchase_order_line_items.forEach(function(line_item) {
+    //     // Skip if lack of required info
+    //     if (!_.isNumber(line_item.quantity) || !_.isNumber(line_item.unit_price) || !_.isNumber(line_item.tax_rate)) {
+    //       return
+    //     }
+    //
+    //     $.ajax({
+    //       url: '/api/v1/purchase_orders/' + that.order.id + '/line_items',
+    //       method: 'POST',
+    //       dataType: 'json',
+    //       data: line_item
+    //     }).done(function(data) {
+    //
+    //     }).fail(function(err) {
+    //       console.log(err.responseJSON)
+    //     })
+    //   })
+    //
+    //   if (callback && typeof(callback) === "function") {
+    //     callback();
+    //   }
+    // }
   }
 })
 </script>

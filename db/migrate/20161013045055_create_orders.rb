@@ -16,6 +16,8 @@ class CreateOrders < ActiveRecord::Migration[5.0]
       t.string     :email
       t.integer    :tax_treatment,           null: false, default: 0
       t.integer    :total_units
+      t.decimal    :subtotal,     precision: 12, scale: 2
+      t.decimal    :total_tax,    precision: 12, scale: 2
       t.decimal    :total_amount, precision: 12, scale: 2
       t.date       :paid_on
       t.date       :expected_delivery_date

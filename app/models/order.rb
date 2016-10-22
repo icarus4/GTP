@@ -18,6 +18,8 @@
 #  email                  :string
 #  tax_treatment          :integer          default(0), not null
 #  total_units            :integer
+#  subtotal               :decimal(12, 2)
+#  total_tax              :decimal(12, 2)
 #  total_amount           :decimal(12, 2)
 #  paid_on                :date
 #  expected_delivery_date :date
@@ -45,4 +47,8 @@ class Order < ApplicationRecord
   belongs_to :currency
   belongs_to :payment_method
   belongs_to :assignee, class_name: 'User'
+
+  has_many :line_items
+  has_many :items,    through: :line_items
+  has_many :variants, through: :line_items
 end

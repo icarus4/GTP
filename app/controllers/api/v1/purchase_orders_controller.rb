@@ -7,16 +7,16 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
     partner = Partner.find_by(company: current_company, id: params[:partner_id])
 
     if partner.blank?
-      render json: { errors: "Partner not found" }, status: :bad_requrest and return
+      render json: { errors: "Partner not found" }, status: :bad_request and return
     end
 
-    po = current_company.purchase_orders.build(purchase_order_params)
-    po.partner = partner
+    purchase_order = current_company.purchase_orders.build(purchase_order_params)
+    purchase_order.partner = partner
 
-    if po.save
-      render json: { purchase_order: po.as_json }
+    if purchase_order.save
+      render json: { purchase_order: purchase_order.as_json }
     else
-      render json: { errors: po.errors }, status: :bad_requrest
+      render json: { errors: purchase_order.errors }, status: :bad_request
     end
   end
 
