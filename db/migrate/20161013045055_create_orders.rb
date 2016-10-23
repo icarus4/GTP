@@ -9,6 +9,7 @@ class CreateOrders < ActiveRecord::Migration[5.0]
       t.integer    :bill_to_location_id
       t.integer    :ship_from_location_id
       t.integer    :ship_to_location_id
+      t.integer    :line_items_count,        null: false, default: 0
       t.string     :type,                    index: true
       t.string     :order_number,            index: true
       t.string     :state,                   index: true

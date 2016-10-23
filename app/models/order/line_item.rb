@@ -22,7 +22,7 @@
 #
 
 class Order::LineItem < ApplicationRecord
-  belongs_to :order
+  belongs_to :order, counter_cache: true
   belongs_to :purchase_order, foreign_key: :order_id
   belongs_to :item
   belongs_to :variant
@@ -32,4 +32,12 @@ class Order::LineItem < ApplicationRecord
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 1 }
   validates :tax_rate, numericality: { greater_than_or_equal_to: 0 }
   validates :unit_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
+  before_save :calculate_total
+
+  private
+
+    def calculate_total
+      self.total = quantity * unit_price
+    end
 end

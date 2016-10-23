@@ -240,6 +240,7 @@ ActiveRecord::Schema.define(version: 20161021072829) do
     t.integer  "bill_to_location_id"
     t.integer  "ship_from_location_id"
     t.integer  "ship_to_location_id"
+    t.integer  "line_items_count",                                default: 0, null: false
     t.string   "type"
     t.string   "order_number"
     t.string   "state"

@@ -11,6 +11,7 @@
 #  bill_to_location_id    :integer
 #  ship_from_location_id  :integer
 #  ship_to_location_id    :integer
+#  line_items_count       :integer          default(0), not null
 #  type                   :string
 #  order_number           :string
 #  state                  :string

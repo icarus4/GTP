@@ -11,6 +11,7 @@
 #  bill_to_location_id    :integer
 #  ship_from_location_id  :integer
 #  ship_to_location_id    :integer
+#  line_items_count       :integer          default(0), not null
 #  type                   :string
 #  order_number           :string
 #  state                  :string
@@ -61,36 +62,40 @@ class PurchaseOrder < Order
             presence: true
 
   validates :order_number, presence: true, uniqueness: { scope: [:company_id, :type] }
+  validates :total_units,  numericality: { only_integer: true }, allow_nil: true
+  validates :subtotal,     numericality: true, allow_nil: true
+  validates :total_tax,    numericality: true, allow_nil: true
+  validates :total_amount, numericality: true, allow_nil: true
 
   auto_strip_attributes :email, :notes, :order_number
 
   VALID_STATUSES = %w(draft active received)
   validates :status, inclusion: { in: VALID_STATUSES }
 
-  enum tax_treatment: { exclusive: 0, inclusive: 1 }
+  enum tax_treatment: { exclusive: 0, inclusive: 1 }, _prefix: :tax
 
   def self.next_number(company_id)
     where(company_id: company_id).maximum(:order_number).try(:next) || 'PO0001'
   end
 
-  def update_total_amount
-    self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
-  end
-
-  def update_item_available_count!
-    items.each(&:update_available_count!)
-  end
+  # def update_total_amount
+  #   self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
+  # end
+  #
+  # def update_item_available_count!
+  #   items.each(&:update_available_count!)
+  # end
 
   def active?
     status == 'active'
   end
 
-  def approve!
-    # raise "Only draft order can be approved." unless draft?
-    # self.status = 'active'
-    # save!
-    raise NotImplementedError
-  end
+  # def approve!
+  #   # raise "Only draft order can be approved." unless draft?
+  #   # self.status = 'active'
+  #   # save!
+  #   raise NotImplementedError
+  # end
 
   def draft?
     status == 'draft'
@@ -100,26 +105,65 @@ class PurchaseOrder < Order
     status == 'received'
   end
 
-  def receive!
-    raise "Only active order can receive." unless active?
+  # def receive!
+  #   raise "Only active order can receive." unless active?
+  #
+  #   ActiveRecord::Base.transaction do
+  #     details.each do |detail|
+  #       variant = Variant.find_or_initialize_by(item_id: detail.item_id, expiry_date: detail.expiry_date)
+  #       variant.with_lock do
+  #         variant.quantity += detail.quantity
+  #         variant.save!
+  #       end
+  #
+  #       lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_to_location_id, variant_id: variant.id)
+  #       lv.with_lock do
+  #         lv.quantity += detail.quantity
+  #         lv.save!
+  #       end
+  #     end
+  #     self.status = 'received'
+  #     save!
+  #   end
+  # end
 
-    ActiveRecord::Base.transaction do
-      details.each do |detail|
-        variant = Variant.find_or_initialize_by(item_id: detail.item_id, expiry_date: detail.expiry_date)
-        variant.with_lock do
-          variant.quantity += detail.quantity
-          variant.save!
-        end
+  def calculate!
+    calcualte_subtotal
+    calcualte_total_units
+    calculate_total_tax
+    calculate_total_amount
+    save!
+  end
 
-        lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_to_location_id, variant_id: variant.id)
-        lv.with_lock do
-          lv.quantity += detail.quantity
-          lv.save!
-        end
-      end
-      self.status = 'received'
-      save!
-    end
+  def calcualte_subtotal
+    self.subtotal = line_items.sum(:total)
+  end
+
+  def calcualte_total_units
+    self.total_units = line_items.sum(:quantity)
+  end
+
+  # tax_inclusive 的 total tax 公式推導
+  # total_without_tax * (100 + tax_rate) / 100 = total
+  # total_without_tax * (100 + tax_rate) / 100 = total_without_tax + tax
+  # total_without_tax * (100 + tax_rate) / 100 - total_without_tax = tax
+  # total_without_tax * ((100 + tax_rate) / 100 - 1) = tax
+  # (total - tax) * ((100 + tax_rate) / 100 - 1) = tax
+  # total * ((100 + tax_rate) / 100 - 1) - tax * ((100 + tax_rate) / 100 - 1) = tax
+  # total * ((100 + tax_rate) / 100 - 1) = tax + tax * ((100 + tax_rate) / 100 - 1)
+  # total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
+  # total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
+  # total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
+  def calculate_total_tax
+    self.total_tax = if tax_exclusive?
+                       line_items.reduce { |total_tax, line_item| line_item.total * line_item.tax_rate / 100 }.round(2)
+                     else
+                       line_items.reduce { |total_tax, line_item| line_item.total / (1 / ((100 + line_item.tax_rate) / 100 - 1) + 1) }.round(2)
+                     end
+  end
+
+  def calculate_total_amount
+    self.total_amount = tax_exclusive? ? subtotal + total_tax : subtotal
   end
 
   private

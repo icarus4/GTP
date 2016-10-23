@@ -347,7 +347,6 @@ var purchaseOrderComponent = Vue.extend({
       }).fail(function(err) {
         _.assignIn(that.purchase_order, err.responseJSON.purchase_order)
         for (var i = 0; i < that.purchase_order_line_items.length; i++) {
-          console.log(err.responseJSON.purchase_order_line_items[i])
           _.assignIn(that.purchase_order_line_items[i], err.responseJSON.purchase_order_line_items[i])
         }
       })
