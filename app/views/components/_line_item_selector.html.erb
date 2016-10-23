@@ -1,16 +1,25 @@
 <template id="line-item-selector-component">
   <tr>
     <td></td>
-    <td class="td-v-align">
-      <select class="input-sm" v-model="line_item.item_id">
+    <td class="td-v-align" v-bind:class="{ 'has-error': line_item.errors.item_id }">
+      <select class="input-sm form-control" v-model="line_item.item_id">
         <option selected disabled value="">-- 請選取商品 --</option>
         <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
       </select>
     </td>
-    <td class="td-v-align"><input class="no-border no-outline" type="number" min="1" placeholder="數量" value="1" v-model="line_item.quantity" number></td>
+    <td class="td-v-align">
+      <span class="text-danger">{{ line_item.errors.quantity }}</span>
+      <input class="no-border no-outline" type="number" min="1" placeholder="數量" value="1" v-model="line_item.quantity" number>
+    </td>
     <td class="td-v-align">{{ available_count }}</td>
-    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number></td>
-    <td class="td-v-align"><input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%</td>
+    <td class="td-v-align">
+      <span class="text-danger">{{ line_item.errors.unit_price }}</span>
+      <input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number>
+    </td>
+    <td class="td-v-align">
+      <span class="text-danger">{{ line_item.errors.tax_rate }}</span>
+      <input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%
+    </td>
     <td class="td-v-align">{{ total || 0 }}</td>
     <td class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
   </tr>

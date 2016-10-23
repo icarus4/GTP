@@ -29,7 +29,7 @@ class Order::LineItem < ApplicationRecord
 
   validates :order_id, presence: true
   validates :item_id,  presence: true
-  validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 1 }
   validates :tax_rate, numericality: { greater_than_or_equal_to: 0 }
   validates :unit_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
 end

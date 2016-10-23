@@ -2,9 +2,10 @@
   <div class="col-md-12">
     <div class="col-md-5">
       <dl class="dl-horizontal">
-        <div class="form-group">
+        <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.partner_id }">
           <dt class="control-label">供應商</dt>
           <dd>
+            <span class="text-danger"> {{ purchase_order.errors.partner_id }}</span>
             <select class="input-sm" v-model="purchase_order.partner_id">
               <option selected disabled value="">-- 選取供應商 --</option>
               <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
@@ -23,18 +24,20 @@
         <dt>採購單號</dt>
         <dd>施工中...</dd>
       </div>
-      <div class="form-group">
+      <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
         <dt>票據送至</dt>
         <dd>
+          <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
           <select class="input-sm" v-model="purchase_order.bill_to_location_id">
             <option selected disabled value="">-- 選取票據寄送地點 --</option>
             <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
         </dd>
       </div>
-      <div class="form-group">
+      <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.ship_to_location_id }">
         <dt>貨品送至</dt>
         <dd>
+          <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
           <select class="input-sm" v-model="purchase_order.ship_to_location_id">
             <option selected disabled value="">-- 選取貨品寄送地點 --</option>
             <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
@@ -173,10 +176,14 @@ var purchaseOrderComponent = Vue.extend({
   data: function() {
     return {
       purchase_order: {
+        partner_id: null,
         subtotal: 0,
         tax_treatment: 'exclusive',
         total_tax: 0,
         total_amount: 0,
+        bill_to_location_id: null,
+        ship_to_location_id: null,
+        errors: {}
       },
       purchase_order_line_items: [],
       purchase_order_line_item_template: {
@@ -185,7 +192,8 @@ var purchaseOrderComponent = Vue.extend({
         quantity: 1,
         unit_price: null,
         tax_rate: null,
-        total: 0
+        total: 0,
+        errors: {}
       },
       price_list: null,
       options: {
@@ -336,8 +344,11 @@ var purchaseOrderComponent = Vue.extend({
         that.purchase_order = data.purchase_order
         that.purchase_order_line_items = data.purchase_order_line_items
       }).fail(function(err) {
-        console.log(err.responseJSON)
-        alert(err.responseJSON.errors)
+        _.assignIn(that.purchase_order, err.responseJSON.purchase_order)
+        for (var i = 0; i < that.purchase_order_line_items.length; i++) {
+          console.log(err.responseJSON.purchase_order_line_items[i])
+          _.assignIn(that.purchase_order_line_items[i], err.responseJSON.purchase_order_line_items[i])
+        }
       })
     },
     // createLineItems: function(callback) {
