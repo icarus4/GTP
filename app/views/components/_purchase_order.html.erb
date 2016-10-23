@@ -161,8 +161,8 @@
   <div class="col-md-12">
     <div class="pull-right">
       <button class="btn btn-default">取消</button>
-      <button class="btn btn-default">存為草稿</button>
-      <button class="btn btn-primary" @click="submitForm">建立進貨單</button>
+      <button class="btn btn-default" @click="submitForm('draft')">存為草稿</button>
+      <button class="btn btn-primary" @click="submitForm('active')">建立進貨單</button>
     </div>
   </div>
 </template>
@@ -333,7 +333,8 @@ var purchaseOrderComponent = Vue.extend({
     removeLineItem: function(index) {
       this.purchase_order_line_items.$remove(this.purchase_order_line_items[index])
     },
-    submitForm: function() {
+    submitForm: function(status) {
+      this.purchase_order.status = status
       var that = this
       $.ajax({
         url: '/api/v1/purchase_orders',
@@ -351,30 +352,6 @@ var purchaseOrderComponent = Vue.extend({
         }
       })
     },
-    // createLineItems: function(callback) {
-    //   var that = this
-    //   this.purchase_order_line_items.forEach(function(line_item) {
-    //     // Skip if lack of required info
-    //     if (!_.isNumber(line_item.quantity) || !_.isNumber(line_item.unit_price) || !_.isNumber(line_item.tax_rate)) {
-    //       return
-    //     }
-    //
-    //     $.ajax({
-    //       url: '/api/v1/purchase_orders/' + that.order.id + '/line_items',
-    //       method: 'POST',
-    //       dataType: 'json',
-    //       data: line_item
-    //     }).done(function(data) {
-    //
-    //     }).fail(function(err) {
-    //       console.log(err.responseJSON)
-    //     })
-    //   })
-    //
-    //   if (callback && typeof(callback) === "function") {
-    //     callback();
-    //   }
-    // }
   }
 })
 </script>

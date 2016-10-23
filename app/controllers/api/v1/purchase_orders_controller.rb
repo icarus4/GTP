@@ -52,6 +52,7 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
       params.require(:purchase_order).permit(
         :bill_to_location_id,
         :ship_to_location_id,
+        :status,
         :tax_treatment,
         :email,
         :expected_delivery_date,
