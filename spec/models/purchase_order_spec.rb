@@ -2,28 +2,32 @@
 #
 # Table name: orders
 #
-#  id                      :integer          not null, primary key
-#  company_id              :integer          not null
-#  partner_id              :integer
-#  currency_id             :integer
-#  payment_method_id       :integer
-#  type                    :string
-#  assignee_id             :integer
-#  bill_to_location_id     :integer
-#  ship_from_location_id   :integer
-#  ship_to_location_id     :integer
-#  order_number            :string
-#  state                   :string
-#  status                  :string
-#  total_are_tax_inclusive :boolean
-#  total_units             :integer
-#  total_amount            :decimal(12, 2)
-#  paid_on                 :date
-#  expected_delivery_date  :date
-#  notes                   :text
-#  extra_info              :jsonb
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
+#  id                     :integer          not null, primary key
+#  company_id             :integer          not null
+#  partner_id             :integer
+#  currency_id            :integer
+#  payment_method_id      :integer
+#  assignee_id            :integer
+#  bill_to_location_id    :integer
+#  ship_from_location_id  :integer
+#  ship_to_location_id    :integer
+#  line_items_count       :integer          default(0), not null
+#  type                   :string
+#  order_number           :string
+#  state                  :string
+#  status                 :string
+#  email                  :string
+#  tax_treatment          :integer          default("exclusive"), not null
+#  total_units            :integer
+#  subtotal               :decimal(12, 2)
+#  total_tax              :decimal(12, 2)
+#  total_amount           :decimal(12, 2)
+#  paid_on                :date
+#  expected_delivery_date :date
+#  notes                  :text
+#  extra_info             :jsonb
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
 #
 # Indexes
 #

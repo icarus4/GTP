@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161013045055) do
+ActiveRecord::Schema.define(version: 20161021072829) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -215,28 +215,48 @@ ActiveRecord::Schema.define(version: 20161013045055) do
     t.index ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
   end
 
+  create_table "order_line_items", force: :cascade do |t|
+    t.integer  "order_id",                            null: false
+    t.integer  "item_id",                             null: false
+    t.integer  "variant_id"
+    t.integer  "quantity",                            null: false
+    t.decimal  "unit_price", precision: 10, scale: 2, null: false
+    t.decimal  "tax_rate",   precision: 4,  scale: 1
+    t.decimal  "tax",        precision: 10, scale: 2
+    t.decimal  "total",      precision: 12, scale: 2, null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.index ["item_id"], name: "index_order_line_items_on_item_id", using: :btree
+    t.index ["order_id"], name: "index_order_line_items_on_order_id", using: :btree
+    t.index ["variant_id"], name: "index_order_line_items_on_variant_id", using: :btree
+  end
+
   create_table "orders", force: :cascade do |t|
-    t.integer  "company_id",                                       null: false
+    t.integer  "company_id",                                                  null: false
     t.integer  "partner_id"
     t.integer  "currency_id"
     t.integer  "payment_method_id"
-    t.string   "type"
     t.integer  "assignee_id"
     t.integer  "bill_to_location_id"
     t.integer  "ship_from_location_id"
     t.integer  "ship_to_location_id"
+    t.integer  "line_items_count",                                default: 0, null: false
+    t.string   "type"
     t.string   "order_number"
     t.string   "state"
     t.string   "status"
-    t.boolean  "total_are_tax_inclusive"
+    t.string   "email"
+    t.integer  "tax_treatment",                                   default: 0, null: false
     t.integer  "total_units"
-    t.decimal  "total_amount",            precision: 12, scale: 2
+    t.decimal  "subtotal",               precision: 12, scale: 2
+    t.decimal  "total_tax",              precision: 12, scale: 2
+    t.decimal  "total_amount",           precision: 12, scale: 2
     t.date     "paid_on"
     t.date     "expected_delivery_date"
     t.text     "notes"
     t.jsonb    "extra_info"
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
     t.index ["assignee_id"], name: "index_orders_on_assignee_id", using: :btree
     t.index ["company_id"], name: "index_orders_on_company_id", using: :btree
     t.index ["order_number"], name: "index_orders_on_order_number", using: :btree
@@ -340,10 +360,12 @@ ActiveRecord::Schema.define(version: 20161013045055) do
     t.integer  "bill_to_location_id"
     t.integer  "ship_to_location_id"
     t.string   "status"
-    t.integer  "total_amount"
+    t.decimal  "subtotal",                       precision: 12, scale: 2
+    t.decimal  "total_tax",                      precision: 12, scale: 2
+    t.decimal  "total_amount",                   precision: 12, scale: 2
     t.date     "due_on"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
     t.string   "order_number",        limit: 64
     t.string   "contact_email",       limit: 64
     t.text     "notes"

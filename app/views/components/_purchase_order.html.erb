@@ -1,0 +1,425 @@
+<template id="purchase-order-component">
+  <div class="col-md-12">
+    <div class="col-md-5">
+      <dl class="dl-horizontal">
+        <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.partner_id }">
+          <dt class="control-label">供應商</dt>
+          <dd>
+            <span class="text-danger"> {{ purchase_order.errors.partner_id }}</span>
+            <select v-if="edit_mode" class="input-sm" v-model="purchase_order.partner_id">
+              <option selected disabled value="">-- 選取供應商 --</option>
+              <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
+            </select>
+            <span v-else>{{ purchase_order.partner.name }}</span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="col-md-12"><hr></div>
+
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group inline">
+        <dt style="width: 80px">採購單號</dt>
+        <dd style="width: 120px; margin-left: 100px">{{ edit_mode ? '施工中...' : purchase_order.order_number }}</dd>
+      </div>
+      <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
+        <dt style="width: 80px">票據送至</dt>
+        <dd style="width: 120px; margin-left: 100px">
+        <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
+        <select v-if="edit_mode" class="input-sm" v-model="purchase_order.bill_to_location_id">
+          <option selected disabled value="">-- 選取票據寄送地點 --</option>
+          <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
+        </select>
+        <span v-else>{{ purchase_order.bill_to_location.name }}</span>
+        </dd>
+      </div>
+      <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.ship_to_location_id }">
+        <dt style="width: 80px">貨品送至</dt>
+        <dd style="width: 120px; margin-left: 100px">
+        <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
+        <select v-if="edit_mode" class="input-sm" v-model="purchase_order.ship_to_location_id">
+          <option selected disabled value="">-- 選取貨品寄送地點 --</option>
+          <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
+        </select>
+        <span v-else>{{ purchase_order.ship_to_location.name }}</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>收貨日期</dt>
+        <dd>
+          <input v-if="edit_mode" type="date" v-model="purchase_order.expected_delivery_date">
+          <span v-else>{{ purchase_order.expected_delivery_date }}</span>
+        </dd>
+      </div>
+      <div class="form-group">
+        <dt>Email</dt>
+        <dd><input v-if="edit_mode" type="text" v-model="purchase_order.email"><span v-else>{{ purchase_order.email }}</span></dd>
+      </div>
+      <div class="form-group">
+        <dt>收據上傳</dt>
+        <dd>施工中...</dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <div class="form-group">
+        <dt>幣別</dt>
+        <dd>台幣</dd>
+      </div>
+      <div v-if="edit_mode" class="form-group">
+        <dt>價別</dt>
+        <dd>
+          <select v-model="price_list" class="input-sm">
+            <option selected disabled value="">-- 選取價別 --</option>
+            <option value="0">進貨價</option>
+            <option v-for="price_list in options.price_lists" v-bind:value="price_list.id">{{ price_list.name }}</option>
+          </select>
+        </dd>
+      </div>
+      <div class="form-group">
+        <dt>總金額</dt>
+        <dd>
+          <select v-if="edit_mode" v-model="purchase_order.tax_treatment" class="input-sm">
+            <option selected value="exclusive">稅外</option>
+            <option value="inclusive">稅入</option>
+          </select>
+          <span v-else>{{ purchase_order.tax_treatment === 'exclusive' ? '稅外' : '稅內' }}</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="col-md-12"><hr></div>
+
+  <div class="col-md-12">
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr>
+          <td></td>
+          <td>品名</td>
+          <td>數量</td>
+          <td>進貨後數量</td>
+          <td>單價</td>
+          <td>稅率</td>
+          <td>金額</td>
+          <td v-if="edit_mode"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="line_item in purchase_order_line_items"
+          is="line-item-selector-component"
+          :edit_mode="edit_mode"
+          :line_item="line_item"
+          :index="$index"
+          :available_items="options.items"
+          v-on:press-delete-button="removeLineItem">
+        </tr>
+      </tbody>
+    </table>
+    <div v-if="edit_mode" class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+  </div>
+
+  <div class="col-md-12"><hr class="m-t-lg"></div>
+
+  <div class="col-md-12 m-t">
+    <div class="col-md-6 m-t">
+      <textarea v-if="edit_mode" v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+      <div v-if="!edit_mode && purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div>
+    </div>
+    <div class="col-md-3 col-md-offset-3">
+      <ul class="list-group no-padding">
+        <li class="list-group-item">
+          <span>總數量</span>
+          <span class="pull-right">{{ total_units }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>金額小計</span>
+          <span class="pull-right">NT$ {{ subtotal }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>稅額</span>
+          <span class="pull-right">NT$ {{ total_tax }}</span>
+        </li>
+        <li class="list-group-item">
+          <span>總金額</span>
+          <span class="pull-right">NT$ {{ total_amount }}</span>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-12"><hr></div>
+
+  <div v-if="edit_mode" class="col-md-12">
+    <div class="form-group col-md-4">
+      <label class="control-label">Tags</label>
+      <input type="text" class="form-control input-sm" placeholder="施工中...">
+    </div>
+  </div>
+
+  <div v-if="edit_mode" class="col-md-12">
+    <div class="pull-right">
+      <button class="btn btn-default">取消</button>
+      <button class="btn btn-default" @click="submitForm('draft')">存為草稿</button>
+      <button class="btn btn-primary" @click="submitForm('active')">建立進貨單</button>
+    </div>
+  </div>
+</template>
+
+<script type="text/javascript">
+var purchaseOrderComponent = Vue.extend({
+  template: '#purchase-order-component',
+  components: {
+    'line-item-selector-component': LineItemSelectorComponent
+  },
+  props: {
+    edit_mode: {
+      type: Boolean,
+      default: null
+    },
+    purchase_order_id: {
+      type: Number,
+      default: null
+    }
+  },
+  data: function() {
+    return {
+      purchase_order: {
+        id: null,
+        partner_id: null,
+        partner: {},
+        order_number: null,
+        subtotal: 0,
+        tax_treatment: 'exclusive',
+        total_tax: 0,
+        total_amount: 0,
+        bill_to_location_id: null,
+        ship_to_location_id: null,
+        bill_to_location: {},
+        ship_to_location: {},
+        expected_delivery_date: null,
+        email: null,
+        errors: {}
+      },
+      purchase_order_line_items: [],
+      purchase_order_line_item_template: {
+        id: null,
+        item_id: null,
+        item: {},
+        quantity: 1,
+        unit_price: null,
+        tax_rate: null,
+        total: 0,
+        errors: {}
+      },
+      price_list: null,
+      options: {
+        suppliers: [],
+        locations: [],
+        price_lists: [],
+        items: [],
+        stockable_locations: [],
+      }
+    }
+  },
+  computed: {
+    total_units: function() {
+      var total_units = 0
+      this.purchase_order_line_items.forEach(function(line_item) {
+        // 選定了商品時才計入
+        if (_.isInteger(line_item.quantity) && _.isInteger(line_item.item_id)) {
+          total_units += line_item.quantity
+        }
+      })
+      return total_units
+    },
+    subtotal: function() {
+      var subtotal = 0
+      this.purchase_order_line_items.forEach(function(line_item) {
+        var line_item_total = parseFloat(line_item.total)
+        if (_.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isInteger(line_item.item_id)) {
+          subtotal += line_item_total
+        }
+      })
+      this.purchase_order.subtotal = subtotal
+      return subtotal
+    },
+    total_tax: function() {
+      var total_tax = 0
+      var that = this
+      this.purchase_order_line_items.forEach(function(line_item) {
+        var line_item_total = parseFloat(line_item.total)
+        var line_item_tax_rate = parseFloat(line_item.tax_rate)
+        if (_.isInteger(line_item.item_id) && _.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isNumber(line_item_tax_rate) && !_.isNaN(line_item_tax_rate)) {
+          if (that.purchase_order.tax_treatment === 'exclusive') {
+            total_tax += line_item_total * line_item_tax_rate / 100
+          }
+          else {
+            // 推導
+            // total_without_tax * (100 + tax_rate) / 100 = total
+            // total_without_tax * (100 + tax_rate) / 100 = total_without_tax + tax
+            // total_without_tax * (100 + tax_rate) / 100 - total_without_tax = tax
+            // total_without_tax * ((100 + tax_rate) / 100 - 1) = tax
+            // (total - tax) * ((100 + tax_rate) / 100 - 1) = tax
+            // total * ((100 + tax_rate) / 100 - 1) - tax * ((100 + tax_rate) / 100 - 1) = tax
+            // total * ((100 + tax_rate) / 100 - 1) = tax + tax * ((100 + tax_rate) / 100 - 1)
+            // total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
+            // total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
+            // total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
+            total_tax += line_item_total / (1 / ((100 + line_item_tax_rate) / 100 - 1) + 1)
+          }
+        }
+      })
+      total_tax = Math.round(total_tax * 100) / 100
+      this.purchase_order.total_tax = total_tax
+      return total_tax
+    },
+    total_amount: function() {
+      var total_amount = 0
+      if (_.isNumber(this.subtotal) && _.isNumber(this.total_tax)) {
+        if (this.purchase_order.tax_treatment === 'exclusive') {
+          total_amount = this.subtotal + this.total_tax
+        }
+        else if (this.purchase_order.tax_treatment === 'inclusive') {
+          total_amount = this.subtotal
+        }
+      }
+      this.purchase_order.total_amount = total_amount
+      return total_amount
+    }
+  },
+  ready: function() {
+    this.getItemList()
+    if (this.edit_mode) {
+      this.getSupplierList()
+      this.getLocationList()
+      this.getStockableLocationList()
+      this.getPriceList()
+      this.addNewLineItem()
+    }
+    else {
+      this.getPurchaseOrder()
+      this.getPurchaseOrderLineItems()
+    }
+  },
+  methods: {
+    getPurchaseOrder: function() {
+      if (this.edit_mode || _.isNull(this.purchase_order_id)) {
+        return
+      }
+
+      var that = this
+      $.ajax({
+        url: '/api/v1/purchase_orders/' + that.purchase_order_id,
+        method: 'GET',
+        dataType: 'json'
+      }).done(function(data) {
+        _.assignIn(that.purchase_order, data.purchase_order)
+      }).fail(function(err) {
+        console.log(err)
+        alert('Get purchase order failed')
+      })
+    },
+    getPurchaseOrderLineItems: function() {
+      var that = this
+      $.ajax({
+        url: '/api/v1/purchase_orders/' + that.purchase_order_id + '/line_items',
+        method: 'GET',
+        dataType: 'json'
+      }).done(function(data) {
+        for (var i = 0; i < data.purchase_order_line_items.length; i++) {
+          var purchase_order_line_item = _.cloneDeep(that.purchase_order_line_item_template)
+          _.assignIn(purchase_order_line_item, data.purchase_order_line_items[i])
+          that.purchase_order_line_items.push(purchase_order_line_item)
+        }
+      }).fail(function(err) {
+        console.log(err)
+        alert('Get purchase order line items failed')
+      })
+    },
+    getSupplierList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/suppliers",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.suppliers = data.suppliers
+      })
+    },
+    getLocationList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/locations",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.locations = data.locations
+      })
+    },
+    getStockableLocationList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/locations/holds_stock",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.stockable_locations = data.locations
+      })
+    },
+    getPriceList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/price_lists/purchase",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.price_lists = data.price_lists
+      })
+    },
+    getItemList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/items",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.items = data.items
+      })
+    },
+    addNewLineItem: function() {
+      this.purchase_order_line_items.push(_.cloneDeep(this.purchase_order_line_item_template))
+    },
+    removeLineItem: function(index) {
+      this.purchase_order_line_items.$remove(this.purchase_order_line_items[index])
+    },
+    submitForm: function(status) {
+      this.purchase_order.status = status
+      var that = this
+      $.ajax({
+        url: '/api/v1/purchase_orders',
+        method: 'POST',
+        dataType: 'json',
+        data: { purchase_order: that.purchase_order, purchase_order_line_items: that.purchase_order_line_items }
+      }).done(function(data) {
+        window.location.href = '/purchase_orders/' + data.purchase_order.id
+      }).fail(function(err) {
+        _.assignIn(that.purchase_order, err.responseJSON.purchase_order)
+        for (var i = 0; i < that.purchase_order_line_items.length; i++) {
+          _.assignIn(that.purchase_order_line_items[i], err.responseJSON.purchase_order_line_items[i])
+        }
+      })
+    },
+  }
+})
+</script>

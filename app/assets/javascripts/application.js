@@ -21,4 +21,4 @@
 //= require lodash
 //= require common
 //= require vue/vue
-//= require partners
+//= require purchase_orders
