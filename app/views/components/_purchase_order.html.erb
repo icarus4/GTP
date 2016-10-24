@@ -180,8 +180,10 @@
   </div>
 </template>
 
+<%= render 'components/line_item_selector' %>
+
 <script type="text/javascript">
-var purchaseOrderComponent = Vue.extend({
+var PurchaseOrderComponent = Vue.extend({
   template: '#purchase-order-component',
   components: {
     'line-item-selector-component': LineItemSelectorComponent
