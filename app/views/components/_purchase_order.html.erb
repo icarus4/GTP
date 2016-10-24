@@ -13,6 +13,10 @@
             <span v-else>{{ purchase_order.partner.name }}</span>
           </dd>
         </div>
+        <div v-if="!edit_mode">
+          <dt>狀態</dt>
+          <dd>{{ purchase_order.status }}</dd>
+        </div>
       </dl>
     </div>
   </div>
@@ -209,6 +213,7 @@ var purchaseOrderComponent = Vue.extend({
         ship_to_location: {},
         expected_delivery_date: null,
         email: null,
+        status: null,
         errors: {}
       },
       purchase_order_line_items: [],
