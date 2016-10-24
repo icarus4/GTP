@@ -3,6 +3,15 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
     render json: { next_number: PurchaseOrder.next_number(current_company.id) }
   end
 
+  def show
+    purchase_order = PurchaseOrder.find_by(company: current_company, id: params[:id])
+    if purchase_order.blank?
+      render json: { errors: 'Purchase order not found' }, status: :bad_request and return
+    end
+
+    render json: { purchase_order: purchase_order }
+  end
+
   def create
     partner = Partner.find_by(company: current_company, id: params[:purchase_order][:partner_id])
 

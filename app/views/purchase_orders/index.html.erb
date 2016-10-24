@@ -19,11 +19,11 @@
     <% @purchase_orders.each do |order| %>
       <tr data-link="<%= purchase_order_path(order) %>">
         <td><%= order.order_number %></td>
-        <td><%= order.supplier.name %></td>
-        <td><%= order.ship_to.name %></td>
-        <td><%= order.bill_to.name %></td>
-        <td><%= order.details.sum(:quantity) %></td>
-        <td><%= order.due_on %></td>
+        <td><%= order.partner.name %></td>
+        <td><%= order.ship_to_location.name %></td>
+        <td><%= order.bill_to_location.name %></td>
+        <td><%= order.total_units %></td>
+        <td><%= order.expected_delivery_date %></td>
         <td><%= order.status.humanize %></td>
       </tr>
     <% end %>

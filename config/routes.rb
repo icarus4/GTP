@@ -78,8 +78,9 @@ Rails.application.routes.draw do
         get :sales, on: :collection
       end
       resources :suppliers, only: [:index]
-      resources :purchase_orders, only: [:create] do
+      resources :purchase_orders, only: [:show, :create] do
         get :next_number, on: :collection
+        resources :line_items, only: [:index], controller: 'purchase_orders/line_items'
       end
     end
   end
