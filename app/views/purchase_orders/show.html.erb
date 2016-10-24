@@ -1,65 +1,17 @@
-<div class="row">
-  <div class="col-md-4">
-    <dl class="dl-horizontal">
-      <dt>訂單編號</dt><dd><%= @purchase_order.order_number %></dd>
-      <dt>狀態</dt><dd><%= render_status(@purchase_order.status) %></dd>
-      <dt>供應商</dt><dd><%= @purchase_order.supplier.name %></dd>
-      <dt>送貨地點</dt><dd><%= @purchase_order.ship_to.name %></dd>
-      <dt>發票寄送地點</dt><dd><%= @purchase_order.bill_to.name %></dd>
-    </dl>
-  </div>
-
-  <div class="col-md-4">
-    <dl class="dl-horizontal">
-      <dt>預計送達日</dt><dd><%= @purchase_order.due_on %></dd>
-    </dl>
-  </div>
-
-  <div class="col-md-4">
-    <dl class="dl-horizontal">
-      <dt>聯絡email</dt><dd><%= @purchase_order.contact_email %></dd>
-    </dl>
-  </div>
+<div id="purchase-order" class="col-md-10">
+  <purchase-order-component :edit_mode="false" :purchase_order_id="<%= @purchase_order.id %>"></purchase-order-component>
 </div>
 
-<div class="row">
-<% if @purchase_order.draft? %>
-  <%= link_to "批准進貨單", approve_purchase_order_path(@purchase_order), class: 'btn btn-success', method: :put %>
-<% elsif @purchase_order.active? %>
-  <%= link_to "收貨", prepare_to_receive_purchase_order_path(@purchase_order), class: 'btn btn-success' %>
+<% content_for :js do %>
+  <%= render 'components/line_item_selector' %>
+  <%= render 'components/purchase_order' %>
+
+  <script type="text/javascript">
+    new Vue({
+      el: '#purchase-order',
+      components: {
+        'purchase-order-component': purchaseOrderComponent
+      }
+    })
+  </script>
 <% end %>
-</div>
-
-<div class="row table-container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>圖片</th>
-        <th>名稱</th>
-        <th>訂購數量</th>
-        <%= "<th>到貨後總數量</th>".html_safe unless @purchase_order.received? %>
-        <th>進貨單價</th>
-        <th>總價</th>
-      </tr>
-    </thead>
-    <tbody>
-    <% @purchase_order.details.each do |detail| %>
-      <tr>
-        <td><%= image_tag(detail.item.image.thumb, size: '32x32') if detail.item.image.present? %></td>
-        <td><%= detail.item.sku_name %></td>
-        <td><%= detail.quantity %></td>
-        <%= "<td>#{detail.quantity_after_receiving}</td>".html_safe unless @purchase_order.received? %>
-        <td><%= detail.unit_price %></td>
-        <td><%= detail.amount %></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-</div>
-
-<div class="row">
-  <ul>
-    <li>總數量：<%= @purchase_order.details.inject(0) { |sum, detail| sum + detail.quantity }.to_s(:delimited) %></li>
-    <li>總費用：<%= @purchase_order.total_amount.to_s(:currency, precision: 0) %></li>
-  </ul>
-</div>

@@ -6,10 +6,10 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
   def create
     # Check the specified customer exists and is belongs to current company
     customer = current_company.customers.find_by(id: params[:customer][:id])
-    render json: nil, status: :bad_requrest and return if customer.blank?
+    render json: nil, status: :bad_request and return if customer.blank?
 
     # Check order number exists or not
-    render json: nil, status: :bad_requrest and return if SalesOrder.where(order_number: params[:orderNumber]).exists?
+    render json: nil, status: :bad_request and return if SalesOrder.where(order_number: params[:orderNumber]).exists?
 
     # TODO: check ship_to, ship_from and receipt location is valid or not
 
