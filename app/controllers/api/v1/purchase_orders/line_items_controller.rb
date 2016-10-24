@@ -5,7 +5,7 @@ class Api::V1::PurchaseOrders::LineItemsController < Api::V1::BaseController
       render json: { errors: 'Purchase order not found' }, status: :bad_request and return
     end
 
-    line_items = purchase_order.line_items.order(:id)
-    render json: { purchase_order_line_items: line_items }
+    line_items = purchase_order.line_items.includes(:item).order(:id)
+    render json: { purchase_order_line_items: line_items.as_json(include: :item) }
   end
 end

@@ -10,7 +10,7 @@
               <option selected disabled value="">-- 選取供應商 --</option>
               <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
             </select>
-            <span v-else>{{ purchase_order.partner_id }}</span>
+            <span v-else>{{ purchase_order.partner.name }}</span>
           </dd>
         </div>
       </dl>
@@ -21,30 +21,30 @@
 
   <div class="col-md-3">
     <dl class="dl-horizontal">
-      <div class="form-group">
-        <dt>採購單號</dt>
-        <dd>{{ edit_mode ? '施工中...' : purchase_order.order_number }}</dd>
+      <div class="form-group inline">
+        <dt style="width: 80px">採購單號</dt>
+        <dd style="width: 120px; margin-left: 100px">{{ edit_mode ? '施工中...' : purchase_order.order_number }}</dd>
       </div>
-      <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
-        <dt>票據送至</dt>
-        <dd>
-          <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
-          <select v-if="edit_mode" class="input-sm" v-model="purchase_order.bill_to_location_id">
-            <option selected disabled value="">-- 選取票據寄送地點 --</option>
-            <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
-          </select>
-          <span v-else>{{ purchase_order.bill_to_location_id }}</span>
+      <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
+        <dt style="width: 80px">票據送至</dt>
+        <dd style="width: 120px; margin-left: 100px">
+        <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
+        <select v-if="edit_mode" class="input-sm" v-model="purchase_order.bill_to_location_id">
+          <option selected disabled value="">-- 選取票據寄送地點 --</option>
+          <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
+        </select>
+        <span v-else>{{ purchase_order.bill_to_location.name }}</span>
         </dd>
       </div>
-      <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.ship_to_location_id }">
-        <dt>貨品送至</dt>
-        <dd>
-          <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
-          <select v-if="edit_mode" class="input-sm" v-model="purchase_order.ship_to_location_id">
-            <option selected disabled value="">-- 選取貨品寄送地點 --</option>
-            <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
-          </select>
-          <span v-else>{{ purchase_order.ship_to_location_id }}</span>
+      <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.ship_to_location_id }">
+        <dt style="width: 80px">貨品送至</dt>
+        <dd style="width: 120px; margin-left: 100px">
+        <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
+        <select v-if="edit_mode" class="input-sm" v-model="purchase_order.ship_to_location_id">
+          <option selected disabled value="">-- 選取貨品寄送地點 --</option>
+          <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
+        </select>
+        <span v-else>{{ purchase_order.ship_to_location.name }}</span>
         </dd>
       </div>
     </dl>
@@ -133,7 +133,7 @@
   <div class="col-md-12 m-t">
     <div class="col-md-6 m-t">
       <textarea v-if="edit_mode" v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
-      <div v-if="purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div>
+      <div v-if="!edit_mode && purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div>
     </div>
     <div class="col-md-3 col-md-offset-3">
       <ul class="list-group no-padding">
@@ -197,6 +197,7 @@ var purchaseOrderComponent = Vue.extend({
       purchase_order: {
         id: null,
         partner_id: null,
+        partner: {},
         order_number: null,
         subtotal: 0,
         tax_treatment: 'exclusive',
@@ -204,13 +205,17 @@ var purchaseOrderComponent = Vue.extend({
         total_amount: 0,
         bill_to_location_id: null,
         ship_to_location_id: null,
+        bill_to_location: {},
+        ship_to_location: {},
         expected_delivery_date: null,
+        email: null,
         errors: {}
       },
       purchase_order_line_items: [],
       purchase_order_line_item_template: {
         id: null,
         item_id: null,
+        item: {},
         quantity: 1,
         unit_price: null,
         tax_rate: null,
@@ -242,7 +247,7 @@ var purchaseOrderComponent = Vue.extend({
       var subtotal = 0
       this.purchase_order_line_items.forEach(function(line_item) {
         var line_item_total = parseFloat(line_item.total)
-        if (_.isNumber(line_item_total) && _.isInteger(line_item.item_id)) {
+        if (_.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isInteger(line_item.item_id)) {
           subtotal += line_item_total
         }
       })
@@ -255,7 +260,7 @@ var purchaseOrderComponent = Vue.extend({
       this.purchase_order_line_items.forEach(function(line_item) {
         var line_item_total = parseFloat(line_item.total)
         var line_item_tax_rate = parseFloat(line_item.tax_rate)
-        if (_.isInteger(line_item.item_id) && _.isNumber(line_item_total) && _.isNumber(line_item_tax_rate)) {
+        if (_.isInteger(line_item.item_id) && _.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isNumber(line_item_tax_rate) && !_.isNaN(line_item_tax_rate)) {
           if (that.purchase_order.tax_treatment === 'exclusive') {
             total_tax += line_item_total * line_item_tax_rate / 100
           }
@@ -407,8 +412,7 @@ var purchaseOrderComponent = Vue.extend({
         dataType: 'json',
         data: { purchase_order: that.purchase_order, purchase_order_line_items: that.purchase_order_line_items }
       }).done(function(data) {
-        that.purchase_order = data.purchase_order
-        that.purchase_order_line_items = data.purchase_order_line_items
+        window.location.href = '/purchase_orders/' + data.purchase_order.id
       }).fail(function(err) {
         _.assignIn(that.purchase_order, err.responseJSON.purchase_order)
         for (var i = 0; i < that.purchase_order_line_items.length; i++) {

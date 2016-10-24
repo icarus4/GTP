@@ -360,10 +360,12 @@ ActiveRecord::Schema.define(version: 20161021072829) do
     t.integer  "bill_to_location_id"
     t.integer  "ship_to_location_id"
     t.string   "status"
-    t.integer  "total_amount"
+    t.decimal  "subtotal",                       precision: 12, scale: 2
+    t.decimal  "total_tax",                      precision: 12, scale: 2
+    t.decimal  "total_amount",                   precision: 12, scale: 2
     t.date     "due_on"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
     t.string   "order_number",        limit: 64
     t.string   "contact_email",       limit: 64
     t.text     "notes"

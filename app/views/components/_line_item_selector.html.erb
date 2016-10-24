@@ -6,7 +6,7 @@
         <option selected disabled value="">-- 請選取商品 --</option>
         <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
       </select>
-      <span v-else>{{ line_item.item_id }}</span>
+      <span v-else>{{ line_item.item.name }}</span>
     </td>
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.quantity }}</span>

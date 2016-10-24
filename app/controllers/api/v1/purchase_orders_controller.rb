@@ -4,12 +4,12 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
   end
 
   def show
-    purchase_order = PurchaseOrder.find_by(company: current_company, id: params[:id])
+    purchase_order = PurchaseOrder.includes(:partner).find_by(company: current_company, id: params[:id])
     if purchase_order.blank?
       render json: { errors: 'Purchase order not found' }, status: :bad_request and return
     end
 
-    render json: { purchase_order: purchase_order }
+    render json: { purchase_order: purchase_order.as_json(include: [:partner, :ship_to_location, :bill_to_location]) }
   end
 
   def create
