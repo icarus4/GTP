@@ -14,14 +14,14 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
       company:                current_company,
       name:                   params[:name],
       sku:                    params[:sku],
-      purchase_price:         params[:purchase_price]&.to_d,
-      wholesale_price:        params[:wholesale_price]&.to_d,
-      retail_price:           params[:retail_price]&.to_d,
-      cost_per_unit:          params[:cost_per_unit]&.to_d,
+      purchase_price:         params[:purchase_price],
+      wholesale_price:        params[:wholesale_price],
+      retail_price:           params[:retail_price],
+      cost_per_unit:          params[:cost_per_unit],
       packaging_type_id:      params[:packaging_type_id],
       weight_unit:            params[:weight_unit],
-      weight_value:           params[:weight_value]&.to_d,
-      low_stock_alert_level:  params[:low_stock_alert_level]&.to_i, # Set available_count to on_hand_count at initial
+      weight_value:           params[:weight_value],
+      low_stock_alert_level:  params[:low_stock_alert_level], # Set available_count to on_hand_count at initial
     )
 
     error_message = nil
