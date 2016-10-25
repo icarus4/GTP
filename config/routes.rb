@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   # Company
   resources :companies, only: [:index]
-  resources :partners, only: [:new, :index, :show]
+  resources :partners, only: [:new, :index, :show, :edit]
   resources :item_series, only: [:new, :index, :show] do
     resources :items, shallow: true do
       post :upload_image, on: :member
@@ -66,7 +66,7 @@ Rails.application.routes.draw do
       resources :manufacturers, only: [:index, :create]
       resources :cities, only: [:index]
       resources :packaging_types, only: [:index]
-      resources :partners, only: [:create] do
+      resources :partners, only: [:show, :create, :update] do
         resources :locations, only: [:index, :update, :create], controller: 'partners/locations'
         resources :contacts,  only: [:index, :update, :create], controller: 'partners/contacts'
       end

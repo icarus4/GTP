@@ -1,0 +1,474 @@
+<template id="partner-form-component">
+  <div class="form-horizontal">
+
+    <div v-if="mode === 'new'" class="form-group">
+      <label class="col-sm-3 control-label">客戶/廠商類型</label>
+      <div class="col-sm-4">
+        <div>
+          <label class="control-label">
+            <input type="radio" value="domestic_company" name="partner_type" v-model="partner.partner_type"> 國內公司
+          </label>
+        </div>
+        <div>
+          <label class="control-label">
+            <input type="radio" value="foreign_company" name="partner_type" v-model="partner.partner_type"> 國外公司
+          </label>
+        </div>
+        <div>
+          <label class="control-label">
+            <input type="radio" value="person" name="partner_type" v-model="partner.partner_type"> 散客
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="show_roles">
+      <div class="hr-line-dashed"></div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">關係</label>
+        <div class="col-sm-4">
+          <div>
+            <label class="control-label">
+              <input type="checkbox" value="customer" v-model="partner.roles"> 客戶
+            </label>
+          </div>
+          <div v-show="show_supplier">
+            <label class="control-label">
+              <input type="checkbox" value="supplier" v-model="partner.roles"> 供應商
+            </label>
+          </div>
+          <div>
+            <label class="control-label">
+              <input type="checkbox" value="manufacturer" v-model="partner.roles"> 製造商
+            </label>
+          </div>
+          <div v-show="show_logistics">
+            <label class="control-label">
+              <input type="checkbox" value="logistics" v-model="partner.roles"> 物流商
+            </label>
+          </div>
+          <div v-show="show_exporter">
+            <label class="control-label">
+              <input type="checkbox" value="exporter" v-model="partner.roles"> 國外出口商
+            </label>
+          </div>
+          <div>
+            <label class="control-label">
+              <input type="checkbox" value="responsibility" v-model="partner.roles"> 責任廠商
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="show_details">
+      <div class="hr-line-dashed"></div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">* 名稱 (全名)</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.name" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">簡稱/別名</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.alias_name" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_tax_number">
+        <label class="col-sm-3 control-label">統一編號</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.tax_number" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">描述</label>
+        <div class="col-sm-4">
+          <textarea v-model="partner.description" class="form-control input-sm"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">* 電話</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.phone" class="form-control input-sm" placeholder="02-23456789">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">傳真</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.fax" class="form-control input-sm" placeholder="02-98765432">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">網址</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.website" class="form-control input-sm" placeholder="https://example.com">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Email</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.email" class="form-control input-sm" placeholder="bob@gmail.com">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_food_industry_registration_number">
+        <label class="col-sm-3 control-label">食品業者登錄字號</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.food_industry_registration_number" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_no_food_industry_registration_number_reason">
+        <label class="col-sm-3 control-label">若無食品業者登錄字號，請填原因</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.no_food_industry_registration_number_reason" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_factory_registration_number">
+        <label class="col-sm-3 control-label">工廠登錄字號</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.factory_registration_number" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="hr-line-dashed"></div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">預設發票聯式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.receipt_type">
+            <option value="receipt_free">不開發票</option>
+            <option value="two_parts">二聯式</option>
+            <option value="three_parts">三聯式</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_sales_payment_method_and_payment_term">
+        <label class="col-sm-3 control-label">預設收款條件</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_sales_payment_term_id">
+            <option selected disabled value="">-- 選取預設收款條件 --</option>
+            <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_sales_payment_method_and_payment_term">
+        <label class="col-sm-3 control-label">預設收款方式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_sales_payment_method_id">
+            <option selected disabled value="">-- 選取預設收款方式 --</option>
+            <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_purchase_payment_method_and_payment_term">
+        <label class="col-sm-3 control-label">預設付款條件</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_purchase_payment_term_id">
+            <option selected disabled value="">-- 選取預設付款條件 --</option>
+            <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }} ({{ payment_term.full_name_in_chinese }})</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_purchase_payment_method_and_payment_term">
+        <label class="col-sm-3 control-label">預設付款方式</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_purchase_payment_method_id">
+            <option selected disabled value="">-- 選取預設付款方式 --</option>
+            <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">預設稅別</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_tax_type_id">
+            <option selected disabled value="">-- 選取預設稅別 --</option>
+            <option v-for="tax_type in options.tax_types" v-bind:value="tax_type.id">{{ tax_type.name }} ({{ tax_type.percentage }}%)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" v-show="show_default_receiving_location">
+        <label class="col-sm-3 control-label">預設收貨倉庫</label>
+        <div class="col-sm-4">
+          <select class="form-control input-sm" v-model="partner.default_receiving_location_id">
+            <option selected disabled value="">-- 選取預設收貨倉庫 --</option>
+            <option v-for="location in options.hold_stock_locations" v-bind:value="location.id">{{ location.name }} ({{ location.address }})</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hr-line-dashed"></div>
+
+      <div v-if="mode === 'new'" class="form-group">
+        <label class="col-sm-3 control-label">* 地址名稱</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.name" class="form-control input-sm" placeholder="辦公室 / 倉庫 / 收貨地址 / 帳單地址">
+        </div>
+      </div>
+
+      <div v-if="mode === 'new'" class="form-group">
+        <label class="col-sm-3 control-label">Email</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.email" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div v-if="mode === 'new'" class="form-group">
+        <label class="col-sm-3 control-label">聯絡電話</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.phone" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div v-if="mode === 'new'" class="form-group">
+        <label class="col-sm-3 control-label">* 地址</label>
+        <div class="col-sm-4">
+          <input type="text" v-model="partner.location.address" class="form-control input-sm">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-4 col-sm-offset-3">
+          <button class="btn btn-default" @click="redirectToPartersPath(mode)">取消</button>
+          <button v-if="mode === 'new'"  class="btn btn-primary" @click="submitForm(mode)">建立</button>
+          <button v-if="mode === 'edit'" class="btn btn-primary" @click="submitForm(mode)">儲存</button>
+        </div>
+      </div>
+    </div><!-- <div v-show="show_details"> -->
+
+  </div>
+</template>
+
+<script type="text/javascript">
+var PartnerFormComponent = Vue.extend({
+  template: "#partner-form-component",
+  props: {
+    mode: String,
+    partner_id: Number
+  },
+  data: function() {
+    return {
+      options: {
+        payment_methods: [],
+        payment_terms: [],
+        hold_stock_locations: [],
+        tax_types: [],
+      },
+      partner: {
+        partner_type: null,
+        company_id: null,
+        name: null,
+        alias_name: null,
+        tax_number: null,
+        phone: null,
+        fax: null,
+        email: null,
+        description: null,
+        website: null,
+        roles: [],
+        food_industry_registration_number: null,
+        no_food_industry_registration_number_reason: null,
+        factory_registration_number: null,
+        location: {},
+        receipt_type: 'receipt_free',
+        default_sales_payment_term_id: null,
+        default_sales_payment_method_id: null,
+        default_purchase_payment_term_id: null,
+        default_purchase_payment_method_id: null,
+        default_tax_type_id: null,
+        default_receiving_location_id: null,
+      }
+    }
+  },
+  computed: {
+    show_roles: function() {
+      return (this.partner.partner_type !== null && this.partner.partner_type !== 'person')
+    },
+    show_details: function() {
+      return (!(_.isEmpty(this.partner.roles)) || this.partner.partner_type === 'person')
+    },
+    show_supplier: function() {
+      return this.partner.partner_type === 'domestic_company'
+    },
+    show_logistics: function() {
+      return this.partner.partner_type === 'domestic_company'
+    },
+    show_exporter: function() {
+      return this.partner.partner_type === 'foreign_company'
+    },
+    show_factory_registration_number: function() {
+      return this.partner.partner_type === 'domestic_company' && _.includes(this.partner.roles, 'manufacturer')
+    },
+    show_tax_number: function() {
+      return this.partner.partner_type === 'domestic_company' || this.partner.partner_type === 'foreign_company'
+    },
+    show_food_industry_registration_number: function() {
+      return this.partner.partner_type === 'domestic_company'
+    },
+    show_no_food_industry_registration_number_reason: function() {
+      return this.partner.partner_type === 'domestic_company' && _.isEmpty(this.partner.food_industry_registration_number)
+    },
+    show_default_sales_payment_method_and_payment_term: function() {
+      return _.includes(this.partner.roles, 'customer')
+    },
+    show_default_purchase_payment_method_and_payment_term: function() {
+      return _.includes(this.partner.roles, 'supplier') ||
+             _.includes(this.partner.roles, 'manufacturer') ||
+             _.includes(this.partner.roles, 'logistics') ||
+             _.includes(this.partner.roles, 'exporter') ||
+             _.includes(this.partner.roles, 'responsibility')
+    },
+    show_default_receiving_location: function() {
+      return _.includes(this.partner.roles, 'supplier') ||
+             _.includes(this.partner.roles, 'manufacturer') ||
+             _.includes(this.partner.roles, 'logistics') ||
+             _.includes(this.partner.roles, 'exporter') ||
+             _.includes(this.partner.roles, 'responsibility')
+    },
+  },
+  watch: {
+    'partner.partner_type': function(val, oldVal) {
+      if (this.mode === 'edit') {
+        return
+      }
+      // 切換"客戶/廠商類型"時
+      if (val !== oldVal) {
+        // 將關係清空，以免切換後被遮蔽的欄位遺留前值
+        this.partner.roles = []
+        // 刪除"無食品業者登錄字號原因"
+        this.partner.no_food_industry_registration_number_reason = null
+      }
+      // 若為散客
+      if (val === 'person') {
+        // "關係"自動設為客戶
+        this.partner.roles = ['customer']
+        // "無食品業者登錄字號原因"自動設為散客
+        this.partner.no_food_industry_registration_number_reason = '散客'
+      }
+    },
+    'show_factory_registration_number': function(val, oldVal) {
+      if (val !== true) {
+        this.partner.factory_registration_number = null
+      }
+    },
+    'show_no_food_industry_registration_number_reason': function(val) {
+      if (val !== true) {
+        this.partner.no_food_industry_registration_number_reason = null
+      }
+    },
+  },
+  ready: function() {
+    if (this.mode === 'edit') {
+      this.getPartner()
+    }
+    this.getPaymentMethodList()
+    this.getPaymentTermList()
+    this.getTaxTypeList()
+    this.getHoldStockLocationList()
+  },
+  methods: {
+    getPartner: function() {
+      var that = this
+      $.ajax({
+        url: '/api/v1/partners/' + that.partner_id,
+        method: 'GET',
+        dataType: 'json'
+      }).done(function(data) {
+        _.assignIn(that.partner, data.partner)
+      }).fail(function(err) {
+        console.log(err.responseJSON)
+        window.location.href = '/partners'
+      })
+    },
+    getPaymentMethodList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/payment_methods",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.payment_methods = data.payment_methods
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
+    getPaymentTermList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/payment_terms",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.payment_terms = data.payment_terms
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
+    getTaxTypeList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/tax_types",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.tax_types = data.tax_types
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
+    getHoldStockLocationList: function() {
+      var that = this
+      $.ajax({
+        url: "/api/v1/locations/holds_stock",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        that.options.hold_stock_locations = data.locations
+      }).fail(function(err) {
+        console.log(err.responseJSON.errors)
+      })
+    },
+    submitForm: function(mode) {
+      var that = this
+      var method = mode === 'new' ? 'POST' : 'PATCH'
+      var url = mode === 'new' ? "/api/v1/partners" : "/api/v1/partners/" + this.partner_id
+      $.ajax({
+        url: url,
+        method: method,
+        dataType: "json",
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        data: that.partner
+      }).done(function(data) {
+        window.location.href = "/partners/" + data.partner.id
+      }).fail(function(err) {
+        console.log(err)
+        alert(err.responseJSON.errors)
+      })
+    },
+    redirectToPartersPath: function(mode) {
+      if (mode === 'new') {
+        window.location.href = "/partners"
+      }
+      else {
+        window.location.href = "/partners/" + this.partner.id
+      }
+    }
+  }
+})
+</script>

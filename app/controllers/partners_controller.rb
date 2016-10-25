@@ -14,4 +14,9 @@ class PartnersController < ApplicationController
       redirect_to partners_path
     end
   end
+
+  def edit
+    @partner = Partner.find_by(company: current_company, id: params[:id])
+    redirect_to partners_path if @partner.blank?
+  end
 end
