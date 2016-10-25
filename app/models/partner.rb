@@ -40,6 +40,18 @@ class Partner < ActiveRecord::Base
                  :default_tax_type_id,                # 預設稅別
                  :default_receiving_location_id       # 預設收貨倉庫
 
+  # Convert all store_accessor values to integer
+  stored_attributes[:settings].each do |accessor_name|
+    self.class_eval do
+      define_method(accessor_name) do
+        super().to_i
+      end
+      define_method(:"#{accessor_name}=") do |value|
+        super(value.to_i)
+      end
+    end
+  end
+
   belongs_to :company
   has_many :partner_relationships
   has_many :roles, through: :partner_relationships, class_name: 'PartnerRole', foreign_key: 'partner_role_id'

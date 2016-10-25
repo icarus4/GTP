@@ -1,0 +1,16 @@
+<div id="edit-partner-form">
+  <edit-partner-form-component mode="edit" :partner_id="<%= @partner.id %>"></edit-partner-form-component>
+</div>
+
+<% content_for :js do %>
+  <%= render 'components/partner_form' %>
+
+  <script type="text/javascript">
+    new Vue({
+      el: "#edit-partner-form",
+      components: {
+        'edit-partner-form-component': PartnerFormComponent
+      }
+    })
+  </script>
+<% end %>
