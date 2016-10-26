@@ -1,4 +1,5 @@
 <template id="purchase-order-component">
+<div class="col-md-9">
   <div class="col-md-12">
     <div class="col-md-5">
       <dl class="dl-horizontal">
@@ -178,6 +179,20 @@
       <button class="btn btn-primary" @click="submitForm('active')">建立進貨單</button>
     </div>
   </div>
+</div>
+
+<div class="col-md-3">
+  <div class="col-md-12">
+    <div class="ibox border-left-right border-bottom">
+      <div class="ibox-title">
+        <h5>收貨</h5>
+      </div>
+      <div class="ibox-content">
+        <button class="btn-btn-default">收貨</button>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
 <%= render 'components/line_item_selector' %>
