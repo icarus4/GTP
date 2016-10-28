@@ -1,5 +1,5 @@
 <div id="purchase-order" class="row">
-  <purchase-order-component :edit_mode="false" :purchase_order_id="<%= @purchase_order.id %>"></purchase-order-component>
+  <purchase-order-component mode="show" :purchase_order_id="<%= @purchase_order.id %>"></purchase-order-component>
 </div>
 
 <% content_for :js do %>

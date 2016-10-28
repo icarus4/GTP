@@ -52,5 +52,6 @@ class Variant < ActiveRecord::Base
 
   def update_item_on_hand_count!
     item.update_on_hand_count!
+    item.update_available_count!
   end
 end

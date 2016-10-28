@@ -1,6 +1,8 @@
 <template id="line-item-selector-component">
   <tr>
-    <td></td>
+    <td>
+      <input v-if="procurable" type="checkbox" v-model="line_item.checked">
+    </td>
     <td class="td-v-align" v-bind:class="{ 'has-error': line_item.errors.item_id }">
       <select v-if="edit_mode" class="input-sm form-control" v-model="line_item.item_id">
         <option selected disabled value="">-- 請選取商品 --</option>
@@ -10,10 +12,13 @@
     </td>
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.quantity }}</span>
-      <input v-if="edit_mode" class="no-border no-outline" type="number" min="1" placeholder="數量" value="1" v-model="line_item.quantity" number>
+      <input v-if="edit_mode" class="no-border no-outline" type="number" min="1" placeholder="數量" v-model="line_item.quantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
-    <td class="td-v-align">{{ available_count }}</td>
+    <td v-if="procurable" class="td-v-align">
+      <input class="no-border no-outline input-s-sm" type="number" min="1" max="{{ line_item.quantity }}" v-model="line_item.quantity_to_receive" number>
+    </td>
+    <td class="td-v-align">{{ after_count }}</td>
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.unit_price }}</span>
       <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number>
@@ -24,7 +29,7 @@
       <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
     </td>
-    <td class="td-v-align">{{ total || 0 }}</td>
+    <td class="td-v-align">{{ procurable ? (total_of_procurement || 0) : (total || 0) }}</td>
     <td v-if="edit_mode" class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
   </tr>
 </template>
@@ -33,6 +38,10 @@
 var LineItemSelectorComponent = Vue.extend({
   template: '#line-item-selector-component',
   props: {
+    procurable: {
+      type: Boolean,
+      default: false
+    },
     edit_mode: {
       type: Boolean,
       default: false
@@ -51,7 +60,15 @@ var LineItemSelectorComponent = Vue.extend({
       this.line_item.total = total
       return total
     },
-    available_count: {
+    total_of_procurement: function() {
+      var total = 0
+      var unit_price = parseFloat(this.line_item.unit_price)
+      if (_.isInteger(this.line_item.quantity_to_receive) && _.isNumber(unit_price)) {
+        total = this.line_item.quantity_to_receive * unit_price
+      }
+      return total
+    },
+    after_count: {
       get: function() {
         if (!_.isInteger(this.line_item.item_id)) {
           return ''
@@ -65,7 +82,9 @@ var LineItemSelectorComponent = Vue.extend({
           return null
         }
         else {
-          return parseInt(selected_item.available_count) + parseInt(this.line_item.quantity)
+          var available_count = parseInt(selected_item.available_count)
+          var quantity = this.procurable ? parseInt(this.line_item.quantity_to_receive) : parseInt(this.line_item.quantity)
+          return available_count + quantity
         }
       }
     }

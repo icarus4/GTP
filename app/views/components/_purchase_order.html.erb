@@ -111,6 +111,7 @@
           <td></td>
           <td>品名</td>
           <td>數量</td>
+          <td v-if="procurable">收貨數量</td>
           <td>進貨後數量</td>
           <td>單價</td>
           <td>稅率</td>
@@ -123,6 +124,7 @@
           v-for="line_item in purchase_order_line_items"
           is="line-item-selector-component"
           :edit_mode="edit_mode"
+          :procurable="procurable"
           :line_item="line_item"
           :index="$index"
           :available_items="options.items"
@@ -204,9 +206,11 @@ var PurchaseOrderComponent = Vue.extend({
     'line-item-selector-component': LineItemSelectorComponent
   },
   props: {
-    edit_mode: {
-      type: Boolean,
-      default: null
+    mode: {
+      type: String,
+      validator: function(value) {
+        return _.includes(['show', 'new'], value)
+      }
     },
     purchase_order_id: {
       type: Number,
@@ -239,10 +243,12 @@ var PurchaseOrderComponent = Vue.extend({
         item_id: null,
         item: {},
         quantity: 1,
+        quantity_to_receive: null,
         unit_price: null,
         tax_rate: null,
         total: 0,
-        errors: {}
+        errors: {},
+        checked: true,
       },
       price_list: null,
       options: {
@@ -255,6 +261,12 @@ var PurchaseOrderComponent = Vue.extend({
     }
   },
   computed: {
+    edit_mode: function() {
+      return this.mode === 'new'
+    },
+    procurable: function() {
+      return this.mode === 'show' && this.purchase_order.status === 'active'
+    },
     total_units: function() {
       var total_units = 0
       this.purchase_order_line_items.forEach(function(line_item) {
@@ -362,6 +374,7 @@ var PurchaseOrderComponent = Vue.extend({
         for (var i = 0; i < data.purchase_order_line_items.length; i++) {
           var purchase_order_line_item = _.cloneDeep(that.purchase_order_line_item_template)
           _.assignIn(purchase_order_line_item, data.purchase_order_line_items[i])
+          purchase_order_line_item.quantity_to_receive = data.purchase_order_line_items[i].quantity
           that.purchase_order_line_items.push(purchase_order_line_item)
         }
       }).fail(function(err) {
