@@ -345,7 +345,7 @@ ActiveRecord::Schema.define(version: 20161026101303) do
 
   create_table "procurements", force: :cascade do |t|
     t.integer  "purchase_order_id", null: false
-    t.datetime "received_at"
+    t.datetime "procured_at"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.index ["purchase_order_id"], name: "index_procurements_on_purchase_order_id", using: :btree
