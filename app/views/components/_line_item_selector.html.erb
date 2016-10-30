@@ -1,14 +1,14 @@
 <template id="line-item-selector-component">
   <tr>
     <td>
-      <input v-if="procurable" type="checkbox" v-model="line_item.checked">
+      <input v-if="procurable" type="checkbox" v-model="line_item.checked_for_procurement">
     </td>
     <td class="td-v-align" v-bind:class="{ 'has-error': line_item.errors.item_id }">
       <select v-if="edit_mode" class="input-sm form-control" v-model="line_item.item_id">
         <option selected disabled value="">-- 請選取商品 --</option>
-        <option v-for="i in available_items" v-bind:value="i.id">{{ i.name }}</option>
+        <option v-for="i in available_items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
       </select>
-      <span v-else>{{ line_item.item.name }}</span>
+      <span v-else>{{ line_item.item.sku + ' - ' + line_item.item.name }}</span>
     </td>
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.quantity }}</span>
@@ -16,7 +16,7 @@
       <span v-else>{{ line_item.quantity }}</span>
     </td>
     <td v-if="procurable" class="td-v-align">
-      <input class="no-border no-outline input-s-sm" type="number" min="1" max="{{ line_item.quantity }}" v-model="line_item.quantity_to_receive" number>
+      <input class="no-border no-outline input-s-sm" type="number" min="1" max="{{ line_item.quantity }}" v-model="line_item.quantity_to_procure" number>
     </td>
     <td class="td-v-align">{{ after_count }}</td>
     <td class="td-v-align">
@@ -29,7 +29,7 @@
       <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
     </td>
-    <td class="td-v-align">{{ procurable ? (total_of_procurement || 0) : (total || 0) }}</td>
+    <td class="td-v-align">{{ procurable ? (procurement_total || 0) : (total || 0) }}</td>
     <td v-if="edit_mode" class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
   </tr>
 </template>
@@ -60,13 +60,14 @@ var LineItemSelectorComponent = Vue.extend({
       this.line_item.total = total
       return total
     },
-    total_of_procurement: function() {
-      var total = 0
+    procurement_total: function() {
+      var procurement_total = 0
       var unit_price = parseFloat(this.line_item.unit_price)
-      if (_.isInteger(this.line_item.quantity_to_receive) && _.isNumber(unit_price)) {
-        total = this.line_item.quantity_to_receive * unit_price
+      if (this.line_item.checked_for_procurement && _.isInteger(this.line_item.quantity_to_procure) && _.isNumber(unit_price)) {
+        procurement_total = this.line_item.quantity_to_procure * unit_price
       }
-      return total
+      this.line_item.procurement_total = procurement_total
+      return procurement_total
     },
     after_count: {
       get: function() {
@@ -83,7 +84,7 @@ var LineItemSelectorComponent = Vue.extend({
         }
         else {
           var available_count = parseInt(selected_item.available_count)
-          var quantity = this.procurable ? parseInt(this.line_item.quantity_to_receive) : parseInt(this.line_item.quantity)
+          var quantity = this.procurable ? parseInt(this.line_item.quantity_to_procure) : parseInt(this.line_item.quantity)
           return available_count + quantity
         }
       }

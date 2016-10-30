@@ -20,6 +20,13 @@
         </div>
       </dl>
     </div>
+    <div class="col-md-7"></div>
+    <div v-if="procurable" class="col-md-12">
+      <button
+        class="btn btn-primary pull-right"
+        data-toggle="modal"
+        data-target="#procurement-confirmation-modal">收取貨品</button>
+    </div>
   </div>
 
   <div class="col-md-12"><hr></div>
@@ -110,7 +117,7 @@
         <tr>
           <td></td>
           <td>品名</td>
-          <td>數量</td>
+          <td>進貨數量</td>
           <td v-if="procurable">收貨數量</td>
           <td>進貨後數量</td>
           <td>單價</td>
@@ -160,7 +167,6 @@
           <span>總金額</span>
           <span class="pull-right">NT$ {{ total_amount }}</span>
         </li>
-
       </ul>
     </div>
   </div>
@@ -191,6 +197,44 @@
       </div>
       <div class="ibox-content">
         <button class="btn-btn-default">收貨</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for confirming procurement -->
+<div class="modal inmodal" id="procurement-confirmation-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content animated fadeIn">
+
+      <div class="modal-header">
+        <h4 class="modal-title">輸入收貨日期</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="col-md-12">
+          <label class="control-label">收貨日期</label>
+          <input type="date" v-model="procured_on">
+        </div>
+        <div class="col-md-12">
+          <div class="col-md-4 pull-right">
+            <ul class="list-group no-padding">
+              <li class="list-group-item">
+                <span>收貨總數量</span>
+                <span class="pull-right">{{ procurement_total_units }}</span>
+              </li>
+              <li class="list-group-item">
+                <span>收貨總金額</span>
+                <span class="pull-right">{{ procurement_total_amount }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div> <!-- modal body -->
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+        <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="">收取貨品</button>
       </div>
     </div>
   </div>
@@ -243,12 +287,13 @@ var PurchaseOrderComponent = Vue.extend({
         item_id: null,
         item: {},
         quantity: 1,
-        quantity_to_receive: null,
+        quantity_to_procure: null,
         unit_price: null,
         tax_rate: null,
         total: 0,
+        procurement_total: 0,
         errors: {},
-        checked: true,
+        checked_for_procurement: true,
       },
       price_list: null,
       options: {
@@ -277,6 +322,16 @@ var PurchaseOrderComponent = Vue.extend({
       })
       return total_units
     },
+    procurement_total_units: function() {
+      var procurement_total_units = 0
+      this.purchase_order_line_items.forEach(function(line_item) {
+        // 選定了商品時才計入
+        if (_.isInteger(line_item.quantity_to_procure) && _.isInteger(line_item.item_id)) {
+          procurement_total_units += line_item.quantity_to_procure
+        }
+      })
+      return procurement_total_units
+    },
     subtotal: function() {
       var subtotal = 0
       this.purchase_order_line_items.forEach(function(line_item) {
@@ -287,6 +342,19 @@ var PurchaseOrderComponent = Vue.extend({
       })
       this.purchase_order.subtotal = subtotal
       return subtotal
+    },
+    procurement_subtotal: function() {
+      var procurement_subtotal = 0
+      this.purchase_order_line_items.forEach(function(line_item) {
+        if (line_item.checked_for_procurement && _.isInteger(line_item.item_id)) {
+          var line_item_procurement_total = parseFloat(line_item.procurement_total)
+          if (_.isNumber(line_item_procurement_total) && !_.isNaN(line_item_procurement_total)) {
+            console.log(line_item_procurement_total)
+            procurement_subtotal += line_item_procurement_total
+          }
+        }
+      })
+      return procurement_subtotal
     },
     total_tax: function() {
       var total_tax = 0
@@ -330,6 +398,47 @@ var PurchaseOrderComponent = Vue.extend({
       }
       this.purchase_order.total_amount = total_amount
       return total_amount
+    },
+    procurement_total_tax: function() {
+      var procurement_total_tax = 0
+      var that = this
+      this.purchase_order_line_items.forEach(function(line_item) {
+        var line_item_procurement_total = parseFloat(line_item.procurement_total)
+        var line_item_tax_rate = parseFloat(line_item.tax_rate)
+        if (line_item.checked_for_procurement && _.isInteger(line_item.item_id) && _.isNumber(line_item_procurement_total) && !_.isNaN(line_item_procurement_total) && _.isNumber(line_item_tax_rate) && !_.isNaN(line_item_tax_rate)) {
+          if (that.purchase_order.tax_treatment === 'exclusive') {
+            procurement_total_tax += line_item_procurement_total * line_item_tax_rate / 100
+          }
+          else {
+            // TODO: Move to another place
+            // 推導
+            // total_without_tax * (100 + tax_rate) / 100 = total
+            // total_without_tax * (100 + tax_rate) / 100 = total_without_tax + tax
+            // total_without_tax * (100 + tax_rate) / 100 - total_without_tax = tax
+            // total_without_tax * ((100 + tax_rate) / 100 - 1) = tax
+            // (total - tax) * ((100 + tax_rate) / 100 - 1) = tax
+            // total * ((100 + tax_rate) / 100 - 1) - tax * ((100 + tax_rate) / 100 - 1) = tax
+            // total * ((100 + tax_rate) / 100 - 1) = tax + tax * ((100 + tax_rate) / 100 - 1)
+            // total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
+            // total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
+            // total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
+            procurement_total_tax += line_item_procurement_total / (1 / ((100 + line_item_tax_rate) / 100 - 1) + 1)
+          }
+        }
+      })
+      procurement_total_tax = Math.round(procurement_total_tax * 100) / 100
+      return procurement_total_tax
+    },
+    procurement_total_amount: function() {
+      var procurement_total_amount = 0
+
+      if (this.purchase_order.tax_treatment === 'exclusive') {
+        procurement_total_amount = this.procurement_subtotal + this.procurement_total_tax
+      }
+      else if (this.purchase_order.tax_treatment === 'inclusive') {
+        procurement_total_amount = this.procurement_subtotal
+      }
+      return procurement_total_amount
     }
   },
   ready: function() {
@@ -374,7 +483,7 @@ var PurchaseOrderComponent = Vue.extend({
         for (var i = 0; i < data.purchase_order_line_items.length; i++) {
           var purchase_order_line_item = _.cloneDeep(that.purchase_order_line_item_template)
           _.assignIn(purchase_order_line_item, data.purchase_order_line_items[i])
-          purchase_order_line_item.quantity_to_receive = data.purchase_order_line_items[i].quantity
+          purchase_order_line_item.quantity_to_procure = data.purchase_order_line_items[i].quantity
           that.purchase_order_line_items.push(purchase_order_line_item)
         }
       }).fail(function(err) {
