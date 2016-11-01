@@ -53,7 +53,7 @@ Rails.application.routes.draw do
       end
       resources :locations, only: [:index, :update] do
         get :holds_stock, on: :collection
-        resources :bin_locations, only: [:create]
+        resources :bin_locations, only: [:create, :index], controller: 'locations/bin_locations'
       end
       resources :item_series, only: [:create] do
         resources :items, only: [:index, :create], controller: 'item_series/items'
@@ -82,6 +82,7 @@ Rails.application.routes.draw do
         get :next_number, on: :collection
         resources :line_items, only: [:index], controller: 'purchase_orders/line_items'
       end
+      resources :procurements, only: [:create]
     end
   end
 

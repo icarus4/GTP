@@ -3,6 +3,7 @@
     <td>
       <input v-if="procurable" type="checkbox" v-model="line_item.checked_for_procurement">
     </td>
+    <!-- 品名 -->
     <td class="td-v-align" v-bind:class="{ 'has-error': line_item.errors.item_id }">
       <select v-if="edit_mode" class="input-sm form-control" v-model="line_item.item_id">
         <option selected disabled value="">-- 請選取商品 --</option>
@@ -10,26 +11,99 @@
       </select>
       <span v-else>{{ line_item.item.sku + ' - ' + line_item.item.name }}</span>
     </td>
+    <!-- 保存期限 -->
+    <td v-if="procurable" class="td-v-align">
+      <input type="date" class="no-outline" style="width: 140px" v-model="line_item.expiry_date">
+    </td>
+    <!-- 倉位 -->
+    <td v-if="procurable" class="td-v-align">
+      <select class="input-sm form-control" v-model="line_item.bin_location_id">
+        <option selected disabled value="">-- 請選擇 --</option>
+        <option v-for="bin_location in ship_to_bin_locations" v-bind:value="bin_location.id">{{ bin_location.name }}</option>
+      </select>
+    </td>
+    <!-- GTP資訊 -->
+    <td v-if="procurable" class="td-v-align">
+      <button
+        class="btn btn-sm btn-default"
+        data-toggle="modal"
+        data-target="#gtp-info-modal-{{ line_item.id }}">
+        輸入
+        <i v-if="gtp_info_filled" class="fa fa-check text-navy" ></i>
+        <i v-else class="fa fa-ellipsis-h text-danger" ></i>
+      </button>
+        <!-- GTP資訊modal -->
+        <div v-if="procurable" class="modal inmodal" id="gtp-info-modal-{{ line_item.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h4 class="modal-title">輸入GTP資訊</h4>
+              </div>
+
+              <div class="modal-body">
+                <dl class="dl-horizontal">
+                  <div class="form-group">
+                    <dt class="control-dt">輸入許可通知編號</dt>
+                    <dd>
+                      <input type="text" v-model="line_item.import_admitted_notice_number">
+                    </dd>
+                  </div>
+                  <div class="form-group">
+                    <dt class="control-label">項次</dt>
+                    <dd>
+                      <input type="text" v-model="line_item.item_number">
+                    </dd>
+                  </div>
+                  <div class="form-group">
+                    <dt class="control-label">製造批號</dt>
+                    <dd>
+                      <input type="text" v-model="line_item.lot_number">
+                    </dd>
+                  </div>
+                  <div class="form-group">
+                    <dt class="control-label">許可通知書</dt>
+                    <dd>
+                      施工中...
+                    </dd>
+                  </div>
+                </dl>
+              </div> <!-- modal body -->
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">確定</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </td>
+    <!-- 進貨數量 -->
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.quantity }}</span>
       <input v-if="edit_mode" class="no-border no-outline" type="number" min="1" placeholder="數量" v-model="line_item.quantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
+    <!-- 收貨數量 -->
     <td v-if="procurable" class="td-v-align">
-      <input class="no-border no-outline input-s-sm" type="number" min="1" max="{{ line_item.quantity }}" v-model="line_item.quantity_to_procure" number>
+      <input class="no-outline input-s-sm" style="width: 60px" type="number" min="1" max="{{ line_item.quantity }}" v-model="line_item.quantity_to_procure" number>
     </td>
+    <!-- 進貨後數量 -->
     <td class="td-v-align">{{ after_count }}</td>
+    <!-- 單價 -->
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.unit_price }}</span>
       <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number>
       <span v-else>{{ line_item.unit_price }}</span>
     </td>
+    <!-- 稅率 -->
     <td class="td-v-align">
       <span class="text-danger">{{ line_item.errors.tax_rate }}</span>
       <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
     </td>
+    <!-- 金額 -->
     <td class="td-v-align">{{ procurable ? (procurement_total || 0) : (total || 0) }}</td>
+    <!-- Delete button -->
     <td v-if="edit_mode" class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
   </tr>
 </template>
@@ -48,7 +122,8 @@ var LineItemSelectorComponent = Vue.extend({
     },
     line_item: Object,
     available_items: Array,
-    index: Number
+    index: Number,
+    ship_to_bin_locations: Array,
   },
   computed: {
     total: function() {
@@ -88,6 +163,12 @@ var LineItemSelectorComponent = Vue.extend({
           return available_count + quantity
         }
       }
+    },
+    gtp_info_filled: function() {
+      var a = !_.isEmpty(this.line_item.import_admitted_notice_number)
+      var b = !_.isEmpty(this.line_item.item_number)
+      var c = !_.isEmpty(this.line_item.lot_number)
+      return (a && b && c)
     }
   },
   methods: {

@@ -476,6 +476,7 @@ ActiveRecord::Schema.define(version: 20161026101303) do
 
   create_table "variants", force: :cascade do |t|
     t.integer  "item_id",                                               null: false
+    t.integer  "procurement_id"
     t.integer  "quantity",                                  default: 0, null: false
     t.date     "manufacturing_date"
     t.date     "expiry_date"
@@ -489,6 +490,7 @@ ActiveRecord::Schema.define(version: 20161026101303) do
     t.index ["goods_declaration_number"], name: "index_variants_on_goods_declaration_number", using: :btree
     t.index ["import_admitted_notice_number"], name: "index_variants_on_import_admitted_notice_number", using: :btree
     t.index ["item_id"], name: "index_variants_on_item_id", using: :btree
+    t.index ["procurement_id"], name: "index_variants_on_procurement_id", using: :btree
   end
 
 end

@@ -1,6 +1,6 @@
 <template id="purchase-order-component">
 <div class="col-md-9">
-  <div class="col-md-12">
+  <div class="row">
     <div class="col-md-5">
       <dl class="dl-horizontal">
         <div class="form-group" v-bind:class="{ 'has-error': purchase_order.errors.partner_id }">
@@ -29,97 +29,102 @@
     </div>
   </div>
 
-  <div class="col-md-12"><hr></div>
+  <div class="row"><hr></div>
 
-  <div class="col-md-3">
-    <dl class="dl-horizontal">
-      <div class="form-group inline">
-        <dt style="width: 80px">採購單號</dt>
-        <dd style="width: 120px; margin-left: 100px">{{ edit_mode ? '施工中...' : purchase_order.order_number }}</dd>
-      </div>
-      <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
-        <dt style="width: 80px">票據送至</dt>
-        <dd style="width: 120px; margin-left: 100px">
-        <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
-        <select v-if="edit_mode" class="input-sm" v-model="purchase_order.bill_to_location_id">
-          <option selected disabled value="">-- 選取票據寄送地點 --</option>
-          <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
-        </select>
-        <span v-else>{{ purchase_order.bill_to_location.name }}</span>
-        </dd>
-      </div>
-      <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.ship_to_location_id }">
-        <dt style="width: 80px">貨品送至</dt>
-        <dd style="width: 120px; margin-left: 100px">
-        <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
-        <select v-if="edit_mode" class="input-sm" v-model="purchase_order.ship_to_location_id">
-          <option selected disabled value="">-- 選取貨品寄送地點 --</option>
-          <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
-        </select>
-        <span v-else>{{ purchase_order.ship_to_location.name }}</span>
-        </dd>
-      </div>
-    </dl>
-  </div>
-  <div class="col-md-3">
-    <dl class="dl-horizontal">
-      <div class="form-group">
-        <dt>收貨日期</dt>
-        <dd>
-          <input v-if="edit_mode" type="date" v-model="purchase_order.expected_delivery_date">
-          <span v-else>{{ purchase_order.expected_delivery_date }}</span>
-        </dd>
-      </div>
-      <div class="form-group">
-        <dt>Email</dt>
-        <dd><input v-if="edit_mode" type="text" v-model="purchase_order.email"><span v-else>{{ purchase_order.email }}</span></dd>
-      </div>
-      <div class="form-group">
-        <dt>收據上傳</dt>
-        <dd>施工中...</dd>
-      </div>
-    </dl>
-  </div>
-  <div class="col-md-3">
-    <dl class="dl-horizontal">
-      <div class="form-group">
-        <dt>幣別</dt>
-        <dd>台幣</dd>
-      </div>
-      <div v-if="edit_mode" class="form-group">
-        <dt>價別</dt>
-        <dd>
-          <select v-model="price_list" class="input-sm">
-            <option selected disabled value="">-- 選取價別 --</option>
-            <option value="0">進貨價</option>
-            <option v-for="price_list in options.price_lists" v-bind:value="price_list.id">{{ price_list.name }}</option>
+  <div class="row">
+    <div class="col-md-3">
+      <dl class="dl-horizontal">
+        <div class="form-group inline">
+          <dt style="width: 80px">採購單號</dt>
+          <dd style="width: 120px; margin-left: 100px">{{ edit_mode ? '施工中...' : purchase_order.order_number }}</dd>
+        </div>
+        <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
+          <dt style="width: 80px">票據送至</dt>
+          <dd style="width: 120px; margin-left: 100px">
+          <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
+          <select v-if="edit_mode" class="input-sm" v-model="purchase_order.bill_to_location_id">
+            <option selected disabled value="">-- 選取票據寄送地點 --</option>
+            <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
-        </dd>
-      </div>
-      <div class="form-group">
-        <dt>總金額</dt>
-        <dd>
-          <select v-if="edit_mode" v-model="purchase_order.tax_treatment" class="input-sm">
-            <option selected value="exclusive">稅外</option>
-            <option value="inclusive">稅入</option>
+          <span v-else>{{ purchase_order.bill_to_location.name }}</span>
+          </dd>
+        </div>
+        <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.ship_to_location_id }">
+          <dt style="width: 80px">貨品送至</dt>
+          <dd style="width: 120px; margin-left: 100px">
+          <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
+          <select v-if="edit_mode" class="input-sm" v-model="purchase_order.ship_to_location_id">
+            <option selected disabled value="">-- 選取貨品寄送地點 --</option>
+            <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
-          <span v-else>{{ purchase_order.tax_treatment === 'exclusive' ? '稅外' : '稅內' }}</span>
-        </dd>
-      </div>
-    </dl>
+          <span v-else>{{ purchase_order.ship_to_location.name }}</span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+    <div class="col-md-3">
+      <dl class="dl-horizontal">
+        <div class="form-group">
+          <dt>收貨日期</dt>
+          <dd>
+            <input v-if="edit_mode" type="date" v-model="purchase_order.expected_delivery_date">
+            <span v-else>{{ purchase_order.expected_delivery_date }}</span>
+          </dd>
+        </div>
+        <div class="form-group">
+          <dt>Email</dt>
+          <dd><input v-if="edit_mode" type="text" v-model="purchase_order.email"><span v-else>{{ purchase_order.email }}</span></dd>
+        </div>
+        <div class="form-group">
+          <dt>收據上傳</dt>
+          <dd>施工中...</dd>
+        </div>
+      </dl>
+    </div>
+    <div class="col-md-3">
+      <dl class="dl-horizontal">
+        <div class="form-group">
+          <dt>幣別</dt>
+          <dd>台幣</dd>
+        </div>
+        <div v-if="edit_mode" class="form-group">
+          <dt>價別</dt>
+          <dd>
+            <select v-model="price_list" class="input-sm">
+              <option selected disabled value="">-- 選取價別 --</option>
+              <option value="0">進貨價</option>
+              <option v-for="price_list in options.price_lists" v-bind:value="price_list.id">{{ price_list.name }}</option>
+            </select>
+          </dd>
+        </div>
+        <div class="form-group">
+          <dt>總金額</dt>
+          <dd>
+            <select v-if="edit_mode" v-model="purchase_order.tax_treatment" class="input-sm">
+              <option selected value="exclusive">稅外</option>
+              <option value="inclusive">稅入</option>
+            </select>
+            <span v-else>{{ purchase_order.tax_treatment === 'exclusive' ? '稅外' : '稅內' }}</span>
+          </dd>
+        </div>
+      </dl>
+    </div>
   </div>
 
-  <div class="col-md-12"><hr></div>
+  <div class="row"><hr></div>
 
-  <div class="col-md-12">
+  <div class="row">
     <table class="table table-condensed table-bordered">
       <thead>
         <tr>
           <td></td>
           <td>品名</td>
-          <td>進貨數量</td>
-          <td v-if="procurable">收貨數量</td>
-          <td>進貨後數量</td>
+          <td v-if="procurable">保存期限</td>
+          <td v-if="procurable">入庫倉位</td>
+          <td v-if="procurable">GTP資訊</td>
+          <td>進貨量</td>
+          <td v-if="procurable">入庫量</td>
+          <td>入庫後</td>
           <td>單價</td>
           <td>稅率</td>
           <td>金額</td>
@@ -135,6 +140,7 @@
           :line_item="line_item"
           :index="$index"
           :available_items="options.items"
+          :ship_to_bin_locations="options.ship_to_bin_locations"
           v-on:press-delete-button="removeLineItem">
         </tr>
       </tbody>
@@ -142,9 +148,9 @@
     <div v-if="edit_mode" class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
   </div>
 
-  <div class="col-md-12"><hr class="m-t-lg"></div>
+  <div class="row"><hr class="m-t-lg"></div>
 
-  <div class="col-md-12 m-t">
+  <div class="row m-t">
     <div class="col-md-6 m-t">
       <textarea v-if="edit_mode" v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
       <div v-if="!edit_mode && purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div>
@@ -171,16 +177,16 @@
     </div>
   </div>
 
-  <div class="col-md-12"><hr></div>
+  <div class="row"><hr></div>
 
-  <div v-if="edit_mode" class="col-md-12">
+  <div v-if="edit_mode" class="row">
     <div class="form-group col-md-4">
       <label class="control-label">Tags</label>
       <input type="text" class="form-control input-sm" placeholder="施工中...">
     </div>
   </div>
 
-  <div v-if="edit_mode" class="col-md-12">
+  <div v-if="edit_mode" class="row">
     <div class="pull-right">
       <button class="btn btn-default">取消</button>
       <button class="btn btn-default" @click="submitForm('draft')">存為草稿</button>
@@ -193,10 +199,10 @@
   <div class="col-md-12">
     <div class="ibox border-left-right border-bottom">
       <div class="ibox-title">
-        <h5>收貨</h5>
+        <h5>退貨</h5>
       </div>
       <div class="ibox-content">
-        <button class="btn-btn-default">收貨</button>
+        施工中..
       </div>
     </div>
   </div>
@@ -212,29 +218,33 @@
       </div>
 
       <div class="modal-body">
-        <div class="col-md-12">
-          <label class="control-label">收貨日期</label>
-          <input type="date" v-model="procured_on">
+        <div class="row">
+          <div class="col-md-12">
+            <label class="control-label">收貨日期</label>
+            <input type="date" v-model="procurement.procured_on">
+          </div>
         </div>
-        <div class="col-md-12">
-          <div class="col-md-4 pull-right">
-            <ul class="list-group no-padding">
-              <li class="list-group-item">
-                <span>收貨總數量</span>
-                <span class="pull-right">{{ procurement_total_units }}</span>
-              </li>
-              <li class="list-group-item">
-                <span>收貨總金額</span>
-                <span class="pull-right">{{ procurement_total_amount }}</span>
-              </li>
-            </ul>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4 pull-right">
+              <ul class="list-group no-padding">
+                <li class="list-group-item">
+                  <span>收貨總數量</span>
+                  <span class="pull-right">{{ procurement_total_units }}</span>
+                </li>
+                <li class="list-group-item">
+                  <span>收貨總金額</span>
+                  <span class="pull-right">{{ procurement_total_amount }}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div> <!-- modal body -->
 
       <div class="modal-footer">
         <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-        <button v-if="mode === 'new'" type="button" class="btn btn-primary" @click="">收取貨品</button>
+        <button v-if="mode === 'show'" type="button" class="btn btn-primary" @click="procure">收取</button>
       </div>
     </div>
   </div>
@@ -279,7 +289,7 @@ var PurchaseOrderComponent = Vue.extend({
         expected_delivery_date: null,
         email: null,
         status: null,
-        errors: {}
+        errors: {},
       },
       purchase_order_line_items: [],
       purchase_order_line_item_template: {
@@ -294,6 +304,11 @@ var PurchaseOrderComponent = Vue.extend({
         procurement_total: 0,
         errors: {},
         checked_for_procurement: true,
+        expiry_date: "",
+        import_admitted_notice_number: null,
+        item_number: null,
+        lot_number: null,
+        bin_location_id: null,
       },
       price_list: null,
       options: {
@@ -302,6 +317,10 @@ var PurchaseOrderComponent = Vue.extend({
         price_lists: [],
         items: [],
         stockable_locations: [],
+        ship_to_bin_locations: [],
+      },
+      procurement: {
+        procured_on: null
       }
     }
   },
@@ -349,7 +368,6 @@ var PurchaseOrderComponent = Vue.extend({
         if (line_item.checked_for_procurement && _.isInteger(line_item.item_id)) {
           var line_item_procurement_total = parseFloat(line_item.procurement_total)
           if (_.isNumber(line_item_procurement_total) && !_.isNaN(line_item_procurement_total)) {
-            console.log(line_item_procurement_total)
             procurement_subtotal += line_item_procurement_total
           }
         }
@@ -445,15 +463,17 @@ var PurchaseOrderComponent = Vue.extend({
     this.getItemList()
     if (this.edit_mode) {
       this.getSupplierList()
+      this.getPriceList()
       this.getLocationList()
       this.getStockableLocationList()
-      this.getPriceList()
       this.addNewLineItem()
     }
     else {
       this.getPurchaseOrder()
       this.getPurchaseOrderLineItems()
     }
+    now = new Date()
+    this.procurement.procured_on = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()
   },
   methods: {
     getPurchaseOrder: function() {
@@ -468,9 +488,22 @@ var PurchaseOrderComponent = Vue.extend({
         dataType: 'json'
       }).done(function(data) {
         _.assignIn(that.purchase_order, data.purchase_order)
+        if (that.purchase_order.ship_to_location_id) {
+          that.getShipToBinLocations(that.purchase_order.ship_to_location_id)
+        }
       }).fail(function(err) {
         console.log(err)
         alert('Get purchase order failed')
+      })
+    },
+    getShipToBinLocations: function(ship_to_location_id) {
+      var that = this
+      $.ajax({
+        url: '/api/v1/locations/' + ship_to_location_id + '/bin_locations',
+        method: 'GET',
+        dataType: 'json',
+      }).done(function(data) {
+        that.options.ship_to_bin_locations = data.bin_locations
       })
     },
     getPurchaseOrderLineItems: function() {
@@ -564,6 +597,30 @@ var PurchaseOrderComponent = Vue.extend({
         }
       })
     },
+    procure: function() {
+      var purchase_order_line_items = []
+      this.purchase_order_line_items.forEach(function(line_item) {
+        var _line_item = {}
+        _line_item.id                            = line_item.id
+        _line_item.quantity_to_procure           = line_item.quantity_to_procure
+        _line_item.expiry_date                   = line_item.expiry_date
+        _line_item.import_admitted_notice_number = line_item.import_admitted_notice_number
+        _line_item.item_number                   = line_item.item_number
+        _line_item.lot_number                    = line_item.lot_number
+        _line_item.bin_location_id               = line_item.bin_location_id
+        purchase_order_line_items.push(_.cloneDeep(_line_item))
+      })
+
+      var procurement = _.cloneDeep(this.procurement)
+      _.assignIn(procurement, { purchase_order_id: this.purchase_order.id, purchase_order_line_items: purchase_order_line_items })
+
+      $.ajax({
+        url: '/api/v1/procurements',
+        method: 'POST',
+        dataType: 'json',
+        data: { procurement: procurement }
+      })
+    }
   }
 })
 </script>

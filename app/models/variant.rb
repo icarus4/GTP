@@ -4,6 +4,7 @@
 #
 #  id                            :integer          not null, primary key
 #  item_id                       :integer          not null
+#  procurement_id                :integer
 #  quantity                      :integer          default(0), not null
 #  manufacturing_date            :date
 #  expiry_date                   :date
@@ -20,6 +21,7 @@
 #  index_variants_on_goods_declaration_number       (goods_declaration_number)
 #  index_variants_on_import_admitted_notice_number  (import_admitted_notice_number)
 #  index_variants_on_item_id                        (item_id)
+#  index_variants_on_procurement_id                 (procurement_id)
 #
 
 class Variant < ActiveRecord::Base

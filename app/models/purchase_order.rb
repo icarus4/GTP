@@ -106,6 +106,10 @@ class PurchaseOrder < Order
     status == 'received'
   end
 
+  def receive!
+    update!(status: 'received')
+  end
+
   # def receive!
   #   raise "Only active order can receive." unless active?
   #
@@ -165,6 +169,10 @@ class PurchaseOrder < Order
 
   def calculate_total_amount
     self.total_amount = tax_exclusive? ? subtotal + total_tax : subtotal
+  end
+
+  def all_line_items_are_procured?
+    line_items.count > 0 && !line_items.where(procurement_id: nil).exists?
   end
 
   private
