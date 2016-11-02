@@ -78,7 +78,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       end
 
       # Change status to received when all line_items are procured
-      purchase_order.received! if purchase_order.all_line_items_are_procured?
+      purchase_order.receive! if purchase_order.all_line_items_are_procured?
     end
 
     # FIXME:
