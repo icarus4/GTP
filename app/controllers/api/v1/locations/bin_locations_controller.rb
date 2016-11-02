@@ -1,7 +1,16 @@
-class Api::V1::BinLocationsController < Api::V1::BaseController
+class Api::V1::Locations::BinLocationsController < Api::V1::BaseController
+  def index
+    location = Location.find_by(locationable: current_company, id: params[:location_id])
+    if location.nil?
+      render json: { errors: "Location not found" }, status: :bad_request and return
+    end
+
+    render json: { bin_locations: location.bin_locations }
+  end
+
   def create
     location = Location.find_by(locationable: current_company, id: params[:location_id])
-    if location.blank?
+    if location.nil?
       render json: { errors: "Location not found" }, status: :bad_request and return
     end
 
