@@ -52,7 +52,6 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
             item_number:                   item_detail[:item_number],
             lot_number:                    item_detail[:lot_number]
           )
-          variant.save!
 
           lv = LocationVariant.find_or_initialize_by(
             company:         current_company,

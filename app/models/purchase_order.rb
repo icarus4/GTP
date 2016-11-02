@@ -50,6 +50,7 @@ class PurchaseOrder < Order
 
   # has_many :details, class_name: 'PurchaseOrderDetail'
   # has_many :items, through: :details, source: :item
+  has_many :procurements
 
   # accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
   # accepts_nested_attributes_for :items
@@ -103,6 +104,10 @@ class PurchaseOrder < Order
 
   def received?
     status == 'received'
+  end
+
+  def receive!
+    update!(status: 'received')
   end
 
   # def receive!
@@ -164,6 +169,10 @@ class PurchaseOrder < Order
 
   def calculate_total_amount
     self.total_amount = tax_exclusive? ? subtotal + total_tax : subtotal
+  end
+
+  def all_line_items_are_procured?
+    line_items.count > 0 && !line_items.where(procurement_id: nil).exists?
   end
 
   private

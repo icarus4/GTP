@@ -67,7 +67,7 @@ gem 'bootstrap-sass', '3.3.6'
 gem 'simple_form', '3.2.1'
 gem 'pg', '0.18.4'
 gem 'rails_12factor', group: :production # for Heroku
-gem 'momentjs-rails', '2.11.0'
+gem 'momentjs-rails', '2.15.1'
 gem 'bootstrap-datepicker-rails', '1.6.4.1'
 gem 'font-awesome-rails', '4.6.3.1'
 gem 'awesome_print', '1.6.1'

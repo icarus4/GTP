@@ -2,6 +2,7 @@ class CreateOrderLineItems < ActiveRecord::Migration[5.0]
   def change
     create_table :order_line_items do |t|
       t.references :order,      null: false, index: true
+      t.references :procurement,             index: true
       t.references :item,       null: false, index: true
       t.references :variant,                 index: true
       t.integer    :quantity,   null: false
