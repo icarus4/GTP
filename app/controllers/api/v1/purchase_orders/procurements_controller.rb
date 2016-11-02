@@ -5,7 +5,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       render json: { errors: 'Purchase order not found' }, status: :bad_request
     end
 
-    render json: { procurements: purchase_order.procurements.order(:procured_at).as_json(include: { purchase_order_line_items: { include: [:item, :variant] } }) }
+    render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant] } }) }
   end
 
   def create
@@ -80,6 +80,12 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       # Change status to received when all line_items are procured
       purchase_order.received! if purchase_order.all_line_items_are_procured?
     end
+
+    # FIXME:
+    # 部分情況會導致 procurement 產生，但是卻沒有任何 variant 產生，此時的 procurement 為無效，不應該被產生
+    # 目前先用此笨方法 workaround
+    # 已知情況1: 使用者收貨時沒有選擇 bin_location
+    procurement.destroy unless procurement.variants.exists?
 
     render json: { procurement: procurement }
   end

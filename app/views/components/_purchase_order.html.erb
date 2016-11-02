@@ -256,7 +256,7 @@
 <!-- Modal for confirming procurement -->
 <div class="modal inmodal" id="procurement-confirmation-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content animated fadeIn">
+    <div class="modal-content">
 
       <div class="modal-header">
         <h4 class="modal-title">輸入收貨日期</h4>
@@ -518,8 +518,8 @@ var PurchaseOrderComponent = Vue.extend({
       this.getPurchaseOrder()
       this.getUnprocuredPurchaseOrderLineItemList()
     }
-    now = new Date()
-    this.procurement.procured_on = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()
+
+    this.procurement.procured_on = moment().format('YYYY-MM-DD')
   },
   watch: {
     // For initialization stage

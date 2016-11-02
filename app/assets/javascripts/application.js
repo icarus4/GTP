@@ -19,6 +19,7 @@
 //= require slimscroll/jquery.slimscroll.min.js
 //= require inspinia.js
 //= require lodash
+//= require moment
 //= require common
 //= require vue/vue
 //= require purchase_orders
