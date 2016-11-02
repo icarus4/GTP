@@ -32,7 +32,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         line_item = Order::LineItem.find_by(id: input_line_item[:id], order_id: purchase_order.id)
         next if line_item.nil?
         quantity_to_procure = input_line_item[:quantity_to_procure]&.to_i
-        next if quantity_to_procure.nil?
+        next if quantity_to_procure.nil? || quantity_to_procure <= 0
         bin_location = BinLocation.find_by(id: input_line_item[:bin_location_id])
         next if bin_location.nil?
 
