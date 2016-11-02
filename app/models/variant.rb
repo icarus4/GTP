@@ -28,6 +28,7 @@ class Variant < ActiveRecord::Base
   after_save :update_item_on_hand_count!
 
   belongs_to :item
+  belongs_to :procurement
   has_many :purchase_order_details
   has_many :purchase_orders, through: :purchase_order_details
   has_many :sales_order_details
@@ -39,9 +40,16 @@ class Variant < ActiveRecord::Base
   delegate :sku_name, to: :item
 
   validates :item_id, presence: true
-  validates :expiry_date,                   uniqueness: { scope: [:item_id, :import_admitted_notice_number, :goods_declaration_number] }
-  validates :import_admitted_notice_number, uniqueness: { scope: [:item_id, :expiry_date] }
-  validates :goods_declaration_number,      uniqueness: { scope: [:item_id, :expiry_date] }
+  validates :expiry_date, uniqueness: {
+    scope: [
+      :procurement_id,
+      :item_id,
+      :import_admitted_notice_number,
+      :goods_declaration_number,
+      :item_number,
+      :lot_number
+    ]
+  }
 
   auto_strip_attributes :import_admitted_notice_number,
                         :goods_declaration_number,

@@ -38,6 +38,8 @@ class Order::LineItem < ApplicationRecord
 
   before_save :calculate_total
 
+  scope :unprocured, -> { where(procurement_id: nil) }
+
   private
 
     def calculate_total

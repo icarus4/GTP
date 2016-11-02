@@ -470,10 +470,23 @@ var PurchaseOrderComponent = Vue.extend({
     }
     else {
       this.getPurchaseOrder()
-      this.getPurchaseOrderLineItems()
+      this.getUnprocuredPurchaseOrderLineItemList()
     }
     now = new Date()
     this.procurement.procured_on = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()
+  },
+  watch: {
+    // For initialization stage
+    'purchase_order.id': function(val, old_val) {
+      if (_.isInteger(val)) {
+        this.getProcurements(val)
+    },
+    // For initialization stage
+    'purchase_order.ship_to_location_id': function(val, old_val) {
+      if (_.isInteger(val)) {
+        this.getShipToBinLocationList(val)
+      }
+    }
   },
   methods: {
     getPurchaseOrder: function() {
@@ -488,15 +501,12 @@ var PurchaseOrderComponent = Vue.extend({
         dataType: 'json'
       }).done(function(data) {
         _.assignIn(that.purchase_order, data.purchase_order)
-        if (that.purchase_order.ship_to_location_id) {
-          that.getShipToBinLocations(that.purchase_order.ship_to_location_id)
-        }
       }).fail(function(err) {
         console.log(err)
         alert('Get purchase order failed')
       })
     },
-    getShipToBinLocations: function(ship_to_location_id) {
+    getShipToBinLocationList: function(ship_to_location_id) {
       var that = this
       $.ajax({
         url: '/api/v1/locations/' + ship_to_location_id + '/bin_locations',
@@ -506,10 +516,16 @@ var PurchaseOrderComponent = Vue.extend({
         that.options.ship_to_bin_locations = data.bin_locations
       })
     },
-    getPurchaseOrderLineItems: function() {
+    getProcurements: function() {
       var that = this
       $.ajax({
-        url: '/api/v1/purchase_orders/' + that.purchase_order_id + '/line_items',
+        url: '/api/v1/purchase'
+      })
+    },
+    getUnprocuredPurchaseOrderLineItemList: function() {
+      var that = this
+      $.ajax({
+        url: '/api/v1/purchase_orders/' + that.purchase_order_id + '/line_items/unprocured',
         method: 'GET',
         dataType: 'json'
       }).done(function(data) {

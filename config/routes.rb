@@ -80,9 +80,11 @@ Rails.application.routes.draw do
       resources :suppliers, only: [:index]
       resources :purchase_orders, only: [:show, :create] do
         get :next_number, on: :collection
-        resources :line_items, only: [:index], controller: 'purchase_orders/line_items'
+        resources :line_items, only: [:index], controller: 'purchase_orders/line_items' do
+          get :unprocured, on: :collection
+        end
+        resources :procurements, only: [:create, :index], controller: 'purchase_orders/procurements'
       end
-      resources :procurements, only: [:create]
     end
   end
 

@@ -15,6 +15,7 @@
 
 class Procurement < ApplicationRecord
   belongs_to :purchase_order
+  has_many :purchase_order_line_items, class_name: 'Order::LineItem', foreign_key: :procurement_id
 
   validates :purchase_order_id, presence: true
 end

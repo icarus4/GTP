@@ -9,7 +9,7 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
       render json: { errors: 'Purchase order not found' }, status: :bad_request and return
     end
 
-    render json: { purchase_order: purchase_order.as_json(include: [:partner, :ship_to_location, :bill_to_location]) }
+    render json: { purchase_order: purchase_order.as_json(include: [:partner, :ship_to_location, :bill_to_location], methods: :procurement_ids) }
   end
 
   def create
