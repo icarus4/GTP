@@ -1,11 +1,11 @@
 class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
   def index
-    purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: :item }).find_by(company: current_company, id: params[:purchase_order_id])
+    purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant] }).find_by(company: current_company, id: params[:purchase_order_id])
     if purchase_order.nil?
       render json: { errors: 'Purchase order not found' }, status: :bad_request
     end
 
-    render json: { procurements: purchase_order.procurements.as_json(include: { purchase_order_line_items: { include: :item } }) }
+    render json: { procurements: purchase_order.procurements.order(:procured_at).as_json(include: { purchase_order_line_items: { include: [:item, :variant] } }) }
   end
 
   def create
@@ -41,7 +41,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         # 若原先line_item.quantity為10個，此次收取3個
         # 則另外產生一個新的line_item，quantity為3，並將原先的line_item.quantity變為7
         if line_item.quantity > quantity_to_procure
-          Order::LineItem.create!(
+          procured_line_item = Order::LineItem.create!(
             order_id:    purchase_order.id,
             procurement: procurement,
             item_id:     line_item.item_id,
@@ -54,12 +54,14 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         else
           line_item.procurement = procurement
           line_item.save!
+          procured_line_item = line_item
         end
 
         # 2. Create variant if necessary
         variant = Variant.find_or_initialize_by(
           procurement: procurement,
           item_id:     line_item.item_id,
+          expiry_date:                   input_line_item[:expiry_date],
           import_admitted_notice_number: input_line_item[:import_admitted_notice_number],
           goods_declaration_number:      input_line_item[:goods_declaration_number],
           item_number:                   input_line_item[:item_number],
@@ -67,6 +69,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         )
         variant.increment(:quantity, quantity_to_procure)
         variant.save!
+        procured_line_item.update!(variant: variant)
 
         # 3. Setup LocationVariant
         lv = LocationVariant.find_or_initialize_by(company: current_company, bin_location: bin_location, variant: variant)

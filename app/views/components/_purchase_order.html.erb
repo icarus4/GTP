@@ -7,14 +7,14 @@
           <dt class="control-label">供應商</dt>
           <dd>
             <span class="text-danger"> {{ purchase_order.errors.partner_id }}</span>
-            <select v-if="edit_mode" class="input-sm" v-model="purchase_order.partner_id">
+            <select v-if="editable" class="input-sm" v-model="purchase_order.partner_id">
               <option selected disabled value="">-- 選取供應商 --</option>
               <option v-for="supplier in options.suppliers" v-bind:value="supplier.id">{{ supplier.name }}</option>
             </select>
             <span v-else>{{ purchase_order.partner.name }}</span>
           </dd>
         </div>
-        <div v-if="!edit_mode">
+        <div v-if="!editable">
           <dt>狀態</dt>
           <dd>{{ purchase_order.status }}</dd>
         </div>
@@ -36,13 +36,13 @@
       <dl class="dl-horizontal">
         <div class="form-group inline">
           <dt style="width: 80px">採購單號</dt>
-          <dd style="width: 120px; margin-left: 100px">{{ edit_mode ? '施工中...' : purchase_order.order_number }}</dd>
+          <dd style="width: 120px; margin-left: 100px">{{ editable ? '施工中...' : purchase_order.order_number }}</dd>
         </div>
         <div class="form-group inline" v-bind:class="{ 'has-error': purchase_order.errors.bill_to_location_id }">
           <dt style="width: 80px">票據送至</dt>
           <dd style="width: 120px; margin-left: 100px">
           <span class="text-danger">{{ purchase_order.errors.bill_to_location_id }}</span>
-          <select v-if="edit_mode" class="input-sm" v-model="purchase_order.bill_to_location_id">
+          <select v-if="editable" class="input-sm" v-model="purchase_order.bill_to_location_id">
             <option selected disabled value="">-- 選取票據寄送地點 --</option>
             <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
@@ -53,7 +53,7 @@
           <dt style="width: 80px">貨品送至</dt>
           <dd style="width: 120px; margin-left: 100px">
           <span class="text-danger">{{ purchase_order.errors.ship_to_location_id }}</span>
-          <select v-if="edit_mode" class="input-sm" v-model="purchase_order.ship_to_location_id">
+          <select v-if="editable" class="input-sm" v-model="purchase_order.ship_to_location_id">
             <option selected disabled value="">-- 選取貨品寄送地點 --</option>
             <option v-for="location in options.stockable_locations" v-bind:value="location.id">{{ location.name }}</option>
           </select>
@@ -67,13 +67,13 @@
         <div class="form-group">
           <dt>收貨日期</dt>
           <dd>
-            <input v-if="edit_mode" type="date" v-model="purchase_order.expected_delivery_date">
+            <input v-if="editable" type="date" v-model="purchase_order.expected_delivery_date">
             <span v-else>{{ purchase_order.expected_delivery_date }}</span>
           </dd>
         </div>
         <div class="form-group">
           <dt>Email</dt>
-          <dd><input v-if="edit_mode" type="text" v-model="purchase_order.email"><span v-else>{{ purchase_order.email }}</span></dd>
+          <dd><input v-if="editable" type="text" v-model="purchase_order.email"><span v-else>{{ purchase_order.email }}</span></dd>
         </div>
         <div class="form-group">
           <dt>收據上傳</dt>
@@ -87,7 +87,7 @@
           <dt>幣別</dt>
           <dd>台幣</dd>
         </div>
-        <div v-if="edit_mode" class="form-group">
+        <div v-if="editable" class="form-group">
           <dt>價別</dt>
           <dd>
             <select v-model="price_list" class="input-sm">
@@ -100,7 +100,7 @@
         <div class="form-group">
           <dt>總金額</dt>
           <dd>
-            <select v-if="edit_mode" v-model="purchase_order.tax_treatment" class="input-sm">
+            <select v-if="editable" v-model="purchase_order.tax_treatment" class="input-sm">
               <option selected value="exclusive">稅外</option>
               <option value="inclusive">稅入</option>
             </select>
@@ -115,6 +115,12 @@
 
   <div class="row">
     <table class="table table-condensed table-bordered">
+      <thead v-if="procurable">
+        <tr>
+          <td></td>
+          <td colspan="11"><strong>未收取貨品列表</strong></td>
+        </tr>
+      </thead>
       <thead>
         <tr>
           <td></td>
@@ -128,14 +134,14 @@
           <td>單價</td>
           <td>稅率</td>
           <td>金額</td>
-          <td v-if="edit_mode"></td>
+          <td v-if="editable"></td>
         </tr>
       </thead>
       <tbody>
         <tr
           v-for="line_item in purchase_order_line_items"
           is="line-item-selector-component"
-          :edit_mode="edit_mode"
+          :editable="editable"
           :procurable="procurable"
           :line_item="line_item"
           :index="$index"
@@ -145,15 +151,54 @@
         </tr>
       </tbody>
     </table>
-    <div v-if="edit_mode" class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+    <div v-if="editable" class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+  </div>
+
+  <!-- 已收取貨品 -->
+  <div class="row" v-for="procurement in procurements">
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr>
+          <td></td>
+          <td colspan="11"><strong><i class="fa fa-check"></i> 已入庫 - {{ procurement.procured_at.substr(0, 10) }}</strong></td>
+        </tr>
+      </thead>
+      <thead>
+        <tr>
+          <td></td>
+          <td>品名</td>
+          <td>保存期限</td>
+          <td>進貨量</td>
+          <td>進貨後</td>
+          <td>單價</td>
+          <td>稅率</td>
+          <td>金額</td>
+          <td v-if="editable"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="line_item in procurement.purchase_order_line_items"
+          is="line-item-selector-component"
+          :editable="false"
+          :procurable="false"
+          :procured="true"
+          :line_item="line_item"
+          :index="$index"
+          :available_items="options.items"
+          :ship_to_bin_locations="options.ship_to_bin_locations"
+          v-on:press-delete-button="removeLineItem">
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="row"><hr class="m-t-lg"></div>
 
   <div class="row m-t">
     <div class="col-md-6 m-t">
-      <textarea v-if="edit_mode" v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
-      <div v-if="!edit_mode && purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div>
+      <textarea v-if="editable" v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+      <div v-if="!editable && purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div>
     </div>
     <div class="col-md-3 col-md-offset-3">
       <ul class="list-group no-padding">
@@ -179,14 +224,14 @@
 
   <div class="row"><hr></div>
 
-  <div v-if="edit_mode" class="row">
+  <div v-if="editable" class="row">
     <div class="form-group col-md-4">
       <label class="control-label">Tags</label>
       <input type="text" class="form-control input-sm" placeholder="施工中...">
     </div>
   </div>
 
-  <div v-if="edit_mode" class="row">
+  <div v-if="editable" class="row">
     <div class="pull-right">
       <button class="btn btn-default">取消</button>
       <button class="btn btn-default" @click="submitForm('draft')">存為草稿</button>
@@ -292,6 +337,7 @@ var PurchaseOrderComponent = Vue.extend({
         errors: {},
       },
       purchase_order_line_items: [],
+      procurements: [],
       purchase_order_line_item_template: {
         id: null,
         item_id: null,
@@ -319,13 +365,13 @@ var PurchaseOrderComponent = Vue.extend({
         stockable_locations: [],
         ship_to_bin_locations: [],
       },
-      procurement: {
+      procurement: { // For creating a procurement
         procured_on: null
       }
     }
   },
   computed: {
-    edit_mode: function() {
+    editable: function() {
       return this.mode === 'new'
     },
     procurable: function() {
@@ -345,7 +391,7 @@ var PurchaseOrderComponent = Vue.extend({
       var procurement_total_units = 0
       this.purchase_order_line_items.forEach(function(line_item) {
         // 選定了商品時才計入
-        if (_.isInteger(line_item.quantity_to_procure) && _.isInteger(line_item.item_id)) {
+        if (_.isInteger(line_item.checked_for_procurement && line_item.quantity_to_procure) && _.isInteger(line_item.item_id)) {
           procurement_total_units += line_item.quantity_to_procure
         }
       })
@@ -461,7 +507,7 @@ var PurchaseOrderComponent = Vue.extend({
   },
   ready: function() {
     this.getItemList()
-    if (this.edit_mode) {
+    if (this.editable) {
       this.getSupplierList()
       this.getPriceList()
       this.getLocationList()
@@ -480,6 +526,7 @@ var PurchaseOrderComponent = Vue.extend({
     'purchase_order.id': function(val, old_val) {
       if (_.isInteger(val)) {
         this.getProcurements(val)
+      }
     },
     // For initialization stage
     'purchase_order.ship_to_location_id': function(val, old_val) {
@@ -490,7 +537,7 @@ var PurchaseOrderComponent = Vue.extend({
   },
   methods: {
     getPurchaseOrder: function() {
-      if (this.edit_mode || _.isNull(this.purchase_order_id)) {
+      if (this.editable || _.isNull(this.purchase_order_id)) {
         return
       }
 
@@ -516,10 +563,15 @@ var PurchaseOrderComponent = Vue.extend({
         that.options.ship_to_bin_locations = data.bin_locations
       })
     },
-    getProcurements: function() {
+    getProcurements: function(input_purchase_order_id) {
+      var purchase_order_id = input_purchase_order_id || this.purchase_order.id
       var that = this
       $.ajax({
-        url: '/api/v1/purchase'
+        url: '/api/v1/purchase_orders/' + purchase_order_id + '/procurements',
+        method: 'GET',
+        dataType: 'json'
+      }).done(function(data) {
+        that.procurements = data.procurements
       })
     },
     getUnprocuredPurchaseOrderLineItemList: function() {
@@ -630,11 +682,17 @@ var PurchaseOrderComponent = Vue.extend({
       var procurement = _.cloneDeep(this.procurement)
       _.assignIn(procurement, { purchase_order_id: this.purchase_order.id, purchase_order_line_items: purchase_order_line_items })
 
+      var that = this
       $.ajax({
-        url: '/api/v1/procurements',
+        url: '/api/v1/purchase_orders/' + that.purchase_order.id + '/procurements',
         method: 'POST',
         dataType: 'json',
         data: { procurement: procurement }
+      }).done(function(data) {
+        // Dismiss modal window
+        $('#procurement-confirmation-modal').modal('hide')
+        // Reload page
+        window.location.reload()
       })
     }
   }

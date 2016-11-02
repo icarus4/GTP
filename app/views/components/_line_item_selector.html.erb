@@ -1,19 +1,20 @@
 <template id="line-item-selector-component">
   <tr>
     <td>
-      <input v-if="procurable" type="checkbox" v-model="line_item.checked_for_procurement">
+      <input v-if="show_line_item_checked_for_procurement" type="checkbox" v-model="line_item.checked_for_procurement">
     </td>
     <!-- 品名 -->
-    <td class="td-v-align" v-bind:class="{ 'has-error': line_item.errors.item_id }">
-      <select v-if="edit_mode" class="input-sm form-control" v-model="line_item.item_id">
+    <td class="td-v-align" v-bind:class="{ 'has-error': line_item.errors && line_item.errors.item_id }">
+      <select v-if="editable" class="input-sm form-control" v-model="line_item.item_id">
         <option selected disabled value="">-- 請選取商品 --</option>
         <option v-for="i in available_items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
       </select>
       <span v-else>{{ line_item.item.sku + ' - ' + line_item.item.name }}</span>
     </td>
     <!-- 保存期限 -->
-    <td v-if="procurable" class="td-v-align">
-      <input type="date" class="no-outline" style="width: 140px" v-model="line_item.expiry_date">
+    <td v-if="procurable || procured" class="td-v-align">
+      <input v-if="procurable" type="date" class="no-outline" style="width: 140px" v-model="line_item.expiry_date">
+      <span v-if="procured">{{ line_item.variant.expiry_date }}</span>
     </td>
     <!-- 倉位 -->
     <td v-if="procurable" class="td-v-align">
@@ -79,32 +80,33 @@
     </td>
     <!-- 進貨數量 -->
     <td class="td-v-align">
-      <span class="text-danger">{{ line_item.errors.quantity }}</span>
-      <input v-if="edit_mode" class="no-border no-outline" type="number" min="1" placeholder="數量" v-model="line_item.quantity" number>
+      <span class="text-danger">{{ line_item.errors && line_item.errors.quantity }}</span>
+      <input v-if="editable" class="no-border no-outline" type="number" min="1" placeholder="數量" v-model="line_item.quantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
     <!-- 收貨數量 -->
     <td v-if="procurable" class="td-v-align">
       <input class="no-outline input-s-sm" style="width: 60px" type="number" min="1" max="{{ line_item.quantity }}" v-model="line_item.quantity_to_procure" number>
     </td>
-    <!-- 進貨後數量 -->
-    <td class="td-v-align">{{ after_count }}</td>
+    <!-- 進貨後數量 or 庫存量 -->
+    <td v-if="procured" class="td-v-align">{{ line_item.item.on_hand_count }}</td>
+    <td v-else class="td-v-align">{{ after_count }}</td>
     <!-- 單價 -->
     <td class="td-v-align">
-      <span class="text-danger">{{ line_item.errors.unit_price }}</span>
-      <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number>
+      <span class="text-danger">{{ line_item.errors && line_item.errors.unit_price }}</span>
+      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" v-model="line_item.unit_price" number>
       <span v-else>{{ line_item.unit_price }}</span>
     </td>
     <!-- 稅率 -->
     <td class="td-v-align">
-      <span class="text-danger">{{ line_item.errors.tax_rate }}</span>
-      <input v-if="edit_mode" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%
+      <span class="text-danger">{{ line_item.errors && line_item.errors.tax_rate }}</span>
+      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" v-model="line_item.tax_rate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
     </td>
     <!-- 金額 -->
     <td class="td-v-align">{{ procurable ? (procurement_total || 0) : (total || 0) }}</td>
     <!-- Delete button -->
-    <td v-if="edit_mode" class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
+    <td v-if="editable" class="td-v-align"><div @click="pressDeleteButton(index)" class="cursor-pointer"><i class="fa fa-trash-o"></i></div></td>
   </tr>
 </template>
 
@@ -116,7 +118,11 @@ var LineItemSelectorComponent = Vue.extend({
       type: Boolean,
       default: false
     },
-    edit_mode: {
+    procured: {
+      type: Boolean,
+      default: false
+    },
+    editable: {
       type: Boolean,
       default: false
     },
@@ -143,6 +149,9 @@ var LineItemSelectorComponent = Vue.extend({
       }
       this.line_item.procurement_total = procurement_total
       return procurement_total
+    },
+    show_line_item_checked_for_procurement: function() {
+      return this.procurable && !this.procured
     },
     after_count: {
       get: function() {
