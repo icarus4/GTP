@@ -18,7 +18,7 @@
       <span v-if="procured">{{ line_item.variant.expiry_date }}</span>
     </td>
     <!-- 倉位 -->
-    <td v-if="procured"></td>
+    <td v-if="procured" class="td-v-align">{{ line_item.bin_location.name }}</td>
     <td v-if="procurable" class="td-v-align">
       <select class="input-sm form-control" v-model="line_item.bin_location_id">
         <option selected disabled value="">-- 請選擇 --</option>
