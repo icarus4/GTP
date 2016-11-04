@@ -24,8 +24,7 @@
     <div v-if="procurable" class="col-md-12">
       <button
         class="btn btn-primary pull-right"
-        data-toggle="modal"
-        data-target="#procurement-confirmation-modal">收取貨品</button>
+        @click="validate_procurement_inputs_and_show_confirmation_modal">收取貨品</button>
     </div>
   </div>
 
@@ -168,8 +167,11 @@
           <td></td>
           <td>品名</td>
           <td>保存期限</td>
+          <td>入庫倉位</td>
+          <td>GTP資訊</td>
           <td>進貨量</td>
-          <td>進貨後</td>
+          <td>入庫量</td>
+          <td>入庫後</td>
           <td>單價</td>
           <td>稅率</td>
           <td>金額</td>
@@ -348,7 +350,11 @@ var PurchaseOrderComponent = Vue.extend({
         tax_rate: null,
         total: 0,
         procurement_total: 0,
-        errors: {},
+        errors: {
+          bin_location_id: null,
+          expiry_date: null,
+          quantity_to_procure: null
+        },
         checked_for_procurement: true,
         expiry_date: "",
         import_admitted_notice_number: null,
@@ -664,6 +670,38 @@ var PurchaseOrderComponent = Vue.extend({
           _.assignIn(that.purchase_order_line_items[i], err.responseJSON.purchase_order_line_items[i])
         }
       })
+    },
+    validate_procurement_inputs_and_show_confirmation_modal: function() {
+      this.purchase_order_line_items.forEach(function(line_item) {
+        // Only validate checked line items and set all properties of errors to null for non checked items
+        if (!line_item.checked_for_procurement) {
+          for (var property in line_item.errors) {
+            if (line_item.errors.hasOwnProperty(property)) {
+              line_item.errors[property] = null
+            }
+          }
+          return
+        }
+
+        if (moment(line_item.expiry_date, "YYYY-MM-DD", true).isValid()) { line_item.errors.expiry_date = null } else { line_item.errors.expiry_date = "請輸入保存期限" }
+        if (_.isInteger(line_item.bin_location_id)) { line_item.errors.bin_location_id = null } else { line_item.errors.bin_location_id = "請選擇倉位" }
+        if (_.isInteger(line_item.quantity_to_procure) && line_item.quantity_to_procure > 0) { line_item.errors.quantity_to_procure = null } else { line_item.errors.quantity_to_procure = "請輸入入庫量" }
+      })
+
+      // Check if any error exists
+      var validation_passed = true
+      this.purchase_order_line_items.forEach(function(line_item) {
+        if (line_item.checked_for_procurement) {
+          for (var property in line_item.errors) {
+            if (line_item.errors.hasOwnProperty(property)) {
+              if (!_.isNull(line_item.errors[property])) { validation_passed = false; break }
+            }
+          }
+        }
+      })
+      if (validation_passed) {
+        $("#procurement-confirmation-modal").modal('show')
+      }
     },
     procure: function() {
       var purchase_order_line_items = []

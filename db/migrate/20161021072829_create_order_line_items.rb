@@ -5,6 +5,8 @@ class CreateOrderLineItems < ActiveRecord::Migration[5.0]
       t.references :procurement,             index: true
       t.references :item,       null: false, index: true
       t.references :variant,                 index: true
+      t.references :bin_location
+      t.references :location_variant
       t.integer    :quantity,   null: false
       t.decimal    :unit_price, null: false, precision: 10, scale: 2
       t.decimal    :tax_rate,                precision:  4, scale: 1

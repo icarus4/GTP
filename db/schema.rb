@@ -216,18 +216,22 @@ ActiveRecord::Schema.define(version: 20161026101303) do
   end
 
   create_table "order_line_items", force: :cascade do |t|
-    t.integer  "order_id",                                null: false
+    t.integer  "order_id",                                     null: false
     t.integer  "procurement_id"
-    t.integer  "item_id",                                 null: false
+    t.integer  "item_id",                                      null: false
     t.integer  "variant_id"
-    t.integer  "quantity",                                null: false
-    t.decimal  "unit_price",     precision: 10, scale: 2, null: false
-    t.decimal  "tax_rate",       precision: 4,  scale: 1
-    t.decimal  "tax",            precision: 10, scale: 2
-    t.decimal  "total",          precision: 12, scale: 2, null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.integer  "bin_location_id"
+    t.integer  "location_variant_id"
+    t.integer  "quantity",                                     null: false
+    t.decimal  "unit_price",          precision: 10, scale: 2, null: false
+    t.decimal  "tax_rate",            precision: 4,  scale: 1
+    t.decimal  "tax",                 precision: 10, scale: 2
+    t.decimal  "total",               precision: 12, scale: 2, null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+    t.index ["bin_location_id"], name: "index_order_line_items_on_bin_location_id", using: :btree
     t.index ["item_id"], name: "index_order_line_items_on_item_id", using: :btree
+    t.index ["location_variant_id"], name: "index_order_line_items_on_location_variant_id", using: :btree
     t.index ["order_id"], name: "index_order_line_items_on_order_id", using: :btree
     t.index ["procurement_id"], name: "index_order_line_items_on_procurement_id", using: :btree
     t.index ["variant_id"], name: "index_order_line_items_on_variant_id", using: :btree

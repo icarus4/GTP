@@ -1,11 +1,11 @@
 class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
   def index
-    purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant] }).find_by(company: current_company, id: params[:purchase_order_id])
+    purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant, :bin_location] }).find_by(company: current_company, id: params[:purchase_order_id])
     if purchase_order.nil?
       render json: { errors: 'Purchase order not found' }, status: :bad_request
     end
 
-    render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant] } }) }
+    render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant, :bin_location] } }) }
   end
 
   def create
@@ -28,6 +28,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       #    If the quantity to procure is not equal to the quantity of the line item, split the line item
       # 2. Create variant if necessary
       # 3. Setup LocationVariant
+      # 4. Update variant and location_variant info to procured line_item
       p[:purchase_order_line_items].each do |_, input_line_item|
         line_item = Order::LineItem.find_by(id: input_line_item[:id], order_id: purchase_order.id)
         next if line_item.nil?
@@ -69,12 +70,14 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         )
         variant.increment(:quantity, quantity_to_procure)
         variant.save!
-        procured_line_item.update!(variant: variant)
 
         # 3. Setup LocationVariant
         lv = LocationVariant.find_or_initialize_by(company: current_company, bin_location: bin_location, variant: variant)
         lv.increment(:quantity, quantity_to_procure)
         lv.save!
+
+        # 4. Update variant and location_variant info to procured line_item
+        procured_line_item.update!(variant: variant, location_variant: lv, bin_location: bin_location)
       end
 
       # Change status to received when all line_items are procured
