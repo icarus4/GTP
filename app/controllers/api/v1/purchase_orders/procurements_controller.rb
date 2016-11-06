@@ -2,7 +2,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
   def index
     purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant, :bin_location] }).find_by(company: current_company, id: params[:purchase_order_id])
     if purchase_order.nil?
-      render json: { errors: 'Purchase order not found' }, status: :bad_request
+      render json: { errors: 'Purchase order not found' }, status: :bad_request and return
     end
 
     render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant, :bin_location] } }) }
