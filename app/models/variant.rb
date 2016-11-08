@@ -26,6 +26,7 @@
 
 class Variant < ActiveRecord::Base
   after_save :update_item_on_hand_count!
+  after_destroy :update_item_on_hand_count!
 
   belongs_to :item
   belongs_to :procurement

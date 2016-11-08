@@ -91,6 +91,10 @@ class PurchaseOrder < Order
     status == 'active'
   end
 
+  def active!
+    update!(status: 'active')
+  end
+
   # def approve!
   #   # raise "Only draft order can be approved." unless draft?
   #   # self.status = 'active'
