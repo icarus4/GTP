@@ -1,0 +1,60 @@
+<template id="edit-procurement-modal-component">
+  <div class="modal inmodal" id="{{ modal_id }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h4 class="modal-title">編輯收貨紀錄</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="control-label">收貨日期</label>
+              <input type="date" v-model="procured_on">
+            </div>
+          </div>
+        </div> <!-- modal body -->
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger pull-left" @click="deleteProcurement(procurement.id)">Void</button>
+          <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" @click="updateProcurement(procurement.id)">儲存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script type="text/javascript">
+  var EditProcurementModalComponent = Vue.extend({
+    template: '#edit-procurement-modal-component',
+    props: {
+      procurement: Object,
+      modal_id: String,
+    },
+    data: function() {
+      return {
+        procured_on: null
+      }
+    },
+    ready: function() {
+      return (
+        this.procured_on = moment(this.procurement.procured_at).format('YYYY-MM-DD')
+      )
+    },
+    methods: {
+      deleteProcurement: function(procurement_id) {
+        $.ajax({
+          url: '/api/v1/procurements/' + procurement_id,
+          method: 'DELETE',
+          dataType: 'json',
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+        })
+      }
+    }
+  })
+</script>

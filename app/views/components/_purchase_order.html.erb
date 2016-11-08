@@ -159,7 +159,21 @@
       <thead>
         <tr>
           <td></td>
-          <td colspan="11"><strong><i class="fa fa-check"></i> 已入庫 - {{ procurement.procured_at.substr(0, 10) }}</strong></td>
+          <td colspan="11">
+            <strong><i class="fa fa-check"></i> 已入庫 - {{ procurement.procured_at.substr(0, 10) }}</strong>
+            <div class="pull-right">
+              <button
+                data-toggle="modal"
+                data-target="#edit-procurement-modal-{{ procurement.id }}"
+                class="btn btn-default btn-xs"><i class="fa fa-pencil"></i></button>
+              <div
+                is="edit-procurement-modal-component"
+                :modal_id="'edit-procurement-modal-' + procurement.id "
+                :procurement="procurement"
+                >
+              </div>
+            </div>
+          </td>
         </tr>
       </thead>
       <thead>
@@ -299,12 +313,14 @@
 </template>
 
 <%= render 'components/line_item_selector' %>
+<%= render 'components/edit_procurement_modal' %>
 
 <script type="text/javascript">
 var PurchaseOrderComponent = Vue.extend({
   template: '#purchase-order-component',
   components: {
-    'line-item-selector-component': LineItemSelectorComponent
+    'line-item-selector-component': LineItemSelectorComponent,
+    'edit-procurement-modal-component': EditProcurementModalComponent,
   },
   props: {
     mode: {
@@ -730,7 +746,7 @@ var PurchaseOrderComponent = Vue.extend({
         // Dismiss modal window
         $('#procurement-confirmation-modal').modal('hide')
         // Reload page
-        window.location.reload()
+        window.location.reload(true)
       })
     }
   }
