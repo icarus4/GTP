@@ -169,8 +169,7 @@
               <div
                 is="edit-procurement-modal-component"
                 :modal_id="'edit-procurement-modal-' + procurement.id "
-                :procurement="procurement"
-                >
+                :procurement="procurement">
               </div>
             </div>
           </td>
@@ -677,6 +676,7 @@ var PurchaseOrderComponent = Vue.extend({
         url: '/api/v1/purchase_orders',
         method: 'POST',
         dataType: 'json',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: { purchase_order: that.purchase_order, purchase_order_line_items: that.purchase_order_line_items }
       }).done(function(data) {
         window.location.href = '/purchase_orders/' + data.purchase_order.id
@@ -741,6 +741,7 @@ var PurchaseOrderComponent = Vue.extend({
         url: '/api/v1/purchase_orders/' + that.purchase_order.id + '/procurements',
         method: 'POST',
         dataType: 'json',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         data: { procurement: procurement }
       }).done(function(data) {
         // Dismiss modal window

@@ -12,14 +12,15 @@
             <div class="col-md-12">
               <label class="control-label">收貨日期</label>
               <input type="date" v-model="procured_on">
+              <span class="text-danger">{{ errors.procured_on }}</span>
             </div>
           </div>
         </div> <!-- modal body -->
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger pull-left" @click="deleteProcurement(procurement.id)">Void</button>
+          <button type="button" class="btn btn-danger pull-left" @click="deleteProcurement">作廢</button>
           <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-          <button type="button" class="btn btn-primary" @click="updateProcurement(procurement.id)">儲存</button>
+          <button type="button" class="btn btn-primary" @click="updateProcurement">儲存</button>
         </div>
       </div>
     </div>
@@ -35,7 +36,10 @@
     },
     data: function() {
       return {
-        procured_on: null
+        procured_on: null,
+        errors: {
+          procured_on: null
+        }
       }
     },
     ready: function() {
@@ -44,16 +48,47 @@
       )
     },
     methods: {
-      deleteProcurement: function(procurement_id) {
+      updateProcurement: function() {
+        if (!this.validateUpdateData()) { return }
+
+        var that = this
         $.ajax({
-          url: '/api/v1/procurements/' + procurement_id,
+          url: '/api/v1/procurements/' + that.procurement.id,
+          method: 'PATCH',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { procurement: { procured_on: that.procured_on } }
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+          alert(err.responseJSON)
+        })
+      },
+      deleteProcurement: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/procurements/' + that.procurement.id,
           method: 'DELETE',
           dataType: 'json',
         }).done(function(data) {
           window.location.reload(true)
         }).fail(function(err) {
           console.log(err.responseJSON)
+          alert(err.responseJSON)
         })
+      },
+      validateUpdateData: function() {
+        if (_.isEmpty(this.procured_on)) {
+          this.errors.procured_on = '請輸入日期'
+          return false
+        } else if (!moment(this.procured_on, "YYYY-MM-DD", true).isValid()) {
+          this.errors.procured_on = '請輸入正確日期'
+          return false
+        }
+
+        this.errors.procured_on = null
+        return true
       }
     }
   })

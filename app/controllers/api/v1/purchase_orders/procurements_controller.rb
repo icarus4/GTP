@@ -59,14 +59,22 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         end
 
         # 2. Create variant if necessary
+        #
+        # Here we must use .presence to convert empty string to nil.
+        # 否則會有類似如下的case:
+        # 假設已經有一個 variant，其 GTP 項目皆為 nil
+        # 若此時user輸入的資料與此variant完全相同，
+        # 照理說應該重複使用已經存在的 variant 即可，但是因為 GTP 資料在沒有輸入的情況下，
+        # 有可能會是 empty string (expiry_date也有相同情況)
+        # 造成此處會重新 new 一個新的 variant，造成新的 variant 在 save 時出現 validation error
         variant = Variant.find_or_initialize_by(
           procurement: procurement,
           item_id:     line_item.item_id,
-          expiry_date:                   input_line_item[:expiry_date],
-          import_admitted_notice_number: input_line_item[:import_admitted_notice_number],
-          goods_declaration_number:      input_line_item[:goods_declaration_number],
-          item_number:                   input_line_item[:item_number],
-          lot_number:                    input_line_item[:lot_number],
+          expiry_date:                   input_line_item[:expiry_date].presence,
+          import_admitted_notice_number: input_line_item[:import_admitted_notice_number].presence,
+          goods_declaration_number:      input_line_item[:goods_declaration_number].presence,
+          item_number:                   input_line_item[:item_number].presence,
+          lot_number:                    input_line_item[:lot_number].presence,
         )
         variant.increment(:quantity, quantity_to_procure)
         variant.save!
