@@ -51,6 +51,7 @@ class PurchaseOrder < Order
   # has_many :details, class_name: 'PurchaseOrderDetail'
   # has_many :items, through: :details, source: :item
   has_many :procurements
+  has_many :purchase_order_returns
 
   # accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
   # accepts_nested_attributes_for :items

@@ -1,0 +1,92 @@
+<template id="purchase-order-return-area-component">
+  <div class="ibox float-e-margins border-left-right border-bottom">
+    <div class="ibox-title">
+      <h5>退貨</h5>
+    </div>
+    <div class="ibox-content">
+      <div v-if="purchase_order_returns.length === 0">
+        <ol>
+          <li>選擇<span class="text-navy">部份退貨</span>並選取欲退貨商品</li>
+          <li>或選擇<span class="text-navy">全部退貨</span>一次退還所有商品</li>
+        </ol>
+      </div>
+      <div v-if="purchase_order_returns.length > 0">
+        <ul class="unstyled">
+          <li v-for="return in purchase_order_returns">
+            <div class="ibox-tools">
+              {{ return.order_number }}
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  <i class="fa fa-caret-down"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-user">
+                <li>
+                  <a href="#">刪除</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="ibox-footer">
+      <div class="row">
+        <div class="col-md-6"><button class="btn btn-default">部份退貨</button></div>
+        <div class="col-md-6"><button class="btn btn-primary" @click="returnAll">全部退貨</button></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script type="text/javascript">
+  var PurchaseOrderReturnAreaComponent = Vue.extend({
+    template: '#purchase-order-return-area-component',
+    props: {
+      purchase_order: { type: Object, default: null },
+      procurements: { type: Array, default: [] }
+    },
+    data: function() {
+      return {
+        purchase_order_returns: []
+      }
+    },
+    ready: function() {
+      this.getPurchaseOrderReturnList()
+    },
+    methods: {
+      getPurchaseOrderReturnList: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/purchase_orders/' + that.purchase_order.id + '/purchase_order_returns',
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          that.purchase_order_returns = data.purchase_order_returns
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+          alert(err.responseJSON)
+        })
+      },
+      returnAll: function() {
+        var returning_line_items = []
+        this.procurements.forEach(function(procurement) {
+          procurement.purchase_order_line_items.forEach(function(line_item) {
+            returning_line_items.push({ 'id': line_item.id, 'quantity': line_item.quantity })
+          })
+        })
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/purchase_order_returns',
+          method: 'POST',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { purchase_order_id: that.purchase_order.id, purchase_order_return_line_items: returning_line_items }
+        }).done(function(data) {
+          that.getPurchaseOrderReturnList()
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+          alert(err.responseJSON)
+        })
+      },
+    }
+  })
+</script>

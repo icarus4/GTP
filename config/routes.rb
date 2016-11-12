@@ -84,8 +84,10 @@ Rails.application.routes.draw do
           get :unprocured, on: :collection
         end
         resources :procurements, only: [:create, :index], controller: 'purchase_orders/procurements'
+        resources :purchase_order_returns, only: [:index], controller: 'purchase_orders/purchase_order_returns'
       end
       resources :procurements, only: [:update, :destroy]
+      resources :purchase_order_returns, only: [:create]
     end
   end
 
