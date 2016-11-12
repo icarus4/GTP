@@ -87,7 +87,7 @@ Rails.application.routes.draw do
         resources :purchase_order_returns, only: [:index], controller: 'purchase_orders/purchase_order_returns'
       end
       resources :procurements, only: [:update, :destroy]
-      resources :purchase_order_returns, only: [:create]
+      resources :purchase_order_returns, only: [:create, :destroy]
     end
   end
 

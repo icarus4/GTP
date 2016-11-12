@@ -23,7 +23,7 @@ class PurchaseOrderReturn < ApplicationRecord
   belongs_to :company
   belongs_to :purchase_order
 
-  has_many :line_items, class_name: 'PurchaseOrderReturnLineItem'
+  has_many :line_items, class_name: 'PurchaseOrderReturnLineItem', dependent: :destroy
 
   validates :purchase_order_id, presence: true
   validates :order_number, uniqueness: { scope: :company_id }

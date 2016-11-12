@@ -25,4 +25,15 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
 
     render json: { purchase_order_return: purchase_order_return.as_json(include: :line_items) }
   end
+
+  # 刪除 PurchaseOrderReturn
+  def destroy
+    purchase_order_return = PurchaseOrderReturn.find_by(company: current_company, id: params[:id])
+    if purchase_order_return.nil?
+      render json: { errors: 'Purchase order return not found' }, status: :not_found and return
+    end
+
+    purchase_order_return.destroy!
+    render json: { purchase_order_return: purchase_order_return }
+  end
 end

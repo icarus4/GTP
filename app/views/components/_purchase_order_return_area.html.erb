@@ -20,7 +20,7 @@
               </a>
               <ul class="dropdown-menu dropdown-user">
                 <li>
-                  <a href="#">刪除</a>
+                  <a href="#" @click="deletePurchaseOrderReturn(return.id)">刪除</a>
                 </li>
               </ul>
             </div>
@@ -83,10 +83,23 @@
         }).done(function(data) {
           that.getPurchaseOrderReturnList()
         }).fail(function(err) {
-          console.log(err.responseJSON)
+          console.log(err)
           alert(err.responseJSON)
         })
       },
+      deletePurchaseOrderReturn: function(purchase_order_return_id) {
+        var that = this
+        $.ajax({
+          url: '/api/v1/purchase_order_returns/' + purchase_order_return_id,
+          method: 'DELETE',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        }).done(function(data) {
+          that.getPurchaseOrderReturnList()
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON)
+        })
+      }
     }
   })
 </script>
