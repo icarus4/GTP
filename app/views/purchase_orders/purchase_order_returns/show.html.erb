@@ -1,0 +1,39 @@
+<div id="purchase-order-return" class="row">
+  <purchase-order-return-component
+    :purchase_order_id="<%= @purchase_order.id %>"
+    :purchase_order_return_id="<%= @purchase_order_return.id %>"
+    :purchase_order="purchase_order">
+  </purchase-order-return-component>
+</div>
+
+<% content_for :js do %>
+  <%= render 'components/purchase_order_return' %>
+
+  <script type="text/javascript">
+    new Vue({
+      el: '#purchase-order-return',
+      components: {
+        'purchase-order-return-component': PurchaseOrderReturnComponent
+      },
+      data: function() {
+        return {
+          purchase_order: { tax_treatment: null },
+        }
+      },
+      ready: function() {
+        this.getPurchaseOrder()
+      },
+      methods: {
+        getPurchaseOrder: function() {
+          var that = this
+          $.ajax({
+            url: '/api/v1/purchase_orders/' + <%= @purchase_order.id %>,
+            method: 'GET'
+          }).done(function(data) {
+            that.purchase_order = data.purchase_order
+          })
+        }
+      }
+    })
+  </script>
+<% end %>

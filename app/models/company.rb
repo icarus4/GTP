@@ -42,6 +42,7 @@ class Company < ActiveRecord::Base
   has_many :item_series
   has_many :locations, as: :locationable
   has_many :purchase_orders
+  has_many :purchase_order_returns
   has_many :stock_transfers
   has_many :sales_orders
   has_many :payment_methods

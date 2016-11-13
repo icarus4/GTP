@@ -27,7 +27,9 @@ Rails.application.routes.draw do
     put :approve, on: :member
     get :prepare_to_receive, on: :member
     post :receive, on: :member
+    resources :purchase_order_returns, only: [:show], controller: 'purchase_orders/purchase_order_returns'
   end
+
 
   resources :sales_orders, only: [:index, :new, :create, :show] do
     put :ship, on: :member
@@ -84,8 +86,10 @@ Rails.application.routes.draw do
           get :unprocured, on: :collection
         end
         resources :procurements, only: [:create, :index], controller: 'purchase_orders/procurements'
+        resources :purchase_order_returns, only: [:index], controller: 'purchase_orders/purchase_order_returns'
       end
       resources :procurements, only: [:update, :destroy]
+      resources :purchase_order_returns, only: [:create, :destroy, :show]
     end
   end
 

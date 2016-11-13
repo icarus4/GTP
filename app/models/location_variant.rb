@@ -28,6 +28,7 @@ class LocationVariant < ActiveRecord::Base
 
   validates :company_id, :variant_id, :quantity, presence: true
   validates :bin_location_id, presence: true, uniqueness: { scope: :variant_id }
+  validates :quantity, presence: true
 
   private
 

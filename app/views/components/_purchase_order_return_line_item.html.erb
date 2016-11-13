@@ -1,0 +1,27 @@
+<template id="purchase-order-return-line-item-component">
+  <tr>
+    <td>{{ return_line_item.item.name }}</td>
+    <td>{{ return_line_item.quantity }}</td>
+    <td>{{ return_line_item.purchase_order_line_item.quantity }}</td>
+    <td>{{ total }}</td>
+  </tr>
+</template>
+
+<script type="text/javascript">
+  var PurchaseOrderReturnLineItemComponent = Vue.extend({
+    template: '#purchase-order-return-line-item-component',
+    props: {
+      return_line_item: { type: Object, default: null }
+    },
+    computed: {
+      total: function() {
+        var total = 0
+        var unit_price = parseFloat(this.return_line_item.purchase_order_line_item.unit_price)
+        if (_.isInteger(this.return_line_item.quantity) && _.isNumber(unit_price)) {
+          total = this.return_line_item.quantity * unit_price
+        }
+        return total
+      }
+    }
+  })
+</script>

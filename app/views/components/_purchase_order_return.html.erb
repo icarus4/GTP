@@ -1,0 +1,79 @@
+<template id="purchase-order-return-component">
+<div class="col-md-9">
+  <div class="row">
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr>
+          <td>品名</td>
+          <td>退貨數量</td>
+          <td>進貨總數量</td>
+          <td>退貨金額</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="return_line_item in purchase_order_return_line_items"
+          is="purchase-order-return-line-item-component"
+          :return_line_item="return_line_item">
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</template>
+
+<%= render 'components/purchase_order_return_line_item' %>
+
+<script type="text/javascript">
+  var PurchaseOrderReturnComponent = Vue.extend({
+    template: '#purchase-order-return-component',
+    components: {
+      'purchase-order-return-line-item-component': PurchaseOrderReturnLineItemComponent,
+    },
+    props: {
+      purchase_order_id:        { type: Number, default: null },
+      purchase_order:           { type: Object, default: null },
+      purchase_order_return_id: { type: Number, default: null },
+      purchase_order_return:    { type: Object, default: null }
+    },
+    data: function() {
+      return {
+        purchase_order_return_line_items: [],
+      }
+    },
+    ready: function() {
+      if (this.purchase_order == null) {
+        this.getPurchaseOrder()
+      }
+      if (this.purchase_order_return == null) {
+        this.getPurchaseOrderReturn()
+      }
+    },
+    methods: {
+      getPurchaseOrder: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/purchase_orders/' + that.purchase_order_id,
+          method: 'GET',
+        }).done(function(data) {
+          that.purchase_order = data.purchase_order
+        }).fail(function(err) {
+          window.location.href = '/purchase_orders/' + that.purchase_order_id
+        })
+      },
+      getPurchaseOrderReturn: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/purchase_order_returns/' + that.purchase_order_return_id,
+          method: 'GET',
+        }).done(function(data) {
+          that.purchase_order_return = data.purchase_order_return
+          that.purchase_order_return_line_items = data.purchase_order_return_line_items
+        }).fail(function(err) {
+          window.location.href = '/purchase_orders/' + that.purchase_order_id
+        })
+      },
+    }
+  })
+
+</script>
