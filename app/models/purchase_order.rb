@@ -28,7 +28,7 @@
 #  extra_info             :jsonb
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  return_status          :integer          default(0), not null
+#  return_status          :integer          default("unreturned"), not null
 #
 # Indexes
 #

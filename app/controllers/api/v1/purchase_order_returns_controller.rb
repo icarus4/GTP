@@ -1,4 +1,18 @@
 class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
+  def show
+    purchase_order_return = PurchaseOrderReturn.find_by(company: current_company, id: params[:id])
+    if purchase_order_return.nil?
+      render json: { errors: 'Purchase order return not found' }, status: :not_found and return
+    end
+
+    render json: {
+      purchase_order_return: purchase_order_return.as_json(methods: [:line_item_ids, :purchase_order_line_item_ids]),
+      purchase_order_return_line_items: purchase_order_return.line_items.order(:id).as_json(
+        include: [:purchase_order_line_item, :item ]
+      )
+    }
+  end
+
   # 建立 PurchaseOrderReturn 以及 PurchaseOrderReturnLineItem
   def create
     purchase_order = PurchaseOrder.find_by(company: current_company, id: params[:purchase_order_id])
@@ -15,10 +29,10 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
         quantity = input_line_item[:quantity].to_i
         quantity = line_item.quantity if quantity > line_item.quantity # 退貨數量不可比進貨數量多
         PurchaseOrderReturnLineItem.create!(
-          purchase_order_return: purchase_order_return,
-          line_item:             line_item,
-          quantity:              quantity,
-          item_id:               line_item.item_id
+          purchase_order_return:    purchase_order_return,
+          purchase_order_line_item: line_item,
+          quantity:                 quantity,
+          item_id:                  line_item.item_id
         )
         # 此處利用PurchaseOrderReturnLineItem的callback扣除退貨的庫存數字
         # TODO:

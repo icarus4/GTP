@@ -22,7 +22,7 @@ class PurchaseOrderReturnLineItem < ApplicationRecord
   after_destroy :update_location_variant_after_destroy!
 
   belongs_to :purchase_order_return
-  belongs_to :line_item, class_name: 'Order::LineItem'
+  belongs_to :purchase_order_line_item, class_name: 'Order::LineItem', foreign_key: :line_item_id
   belongs_to :item
 
   validates :purchase_order_return_id, presence: true
@@ -39,7 +39,7 @@ class PurchaseOrderReturnLineItem < ApplicationRecord
     # 未來需要確認產品是否有搬移過
     def update_location_variant!
       on_hand_quantity_increase = (quantity_was || 0) - quantity
-      lv = line_item.location_variant
+      lv = purchase_order_line_item.location_variant
       lv.quantity += on_hand_quantity_increase
       lv.save!
     end
@@ -50,7 +50,7 @@ class PurchaseOrderReturnLineItem < ApplicationRecord
     # 目前先假設沒有搬移，因此直接扣掉 location_variant.quantity
     # 未來需要確認產品是否有搬移過
     def update_location_variant_after_destroy!
-      lv = line_item.location_variant
+      lv = purchase_order_line_item.location_variant
       lv.quantity += quantity
       lv.save!
     end

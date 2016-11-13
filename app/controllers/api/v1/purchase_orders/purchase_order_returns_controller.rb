@@ -5,6 +5,6 @@ class Api::V1::PurchaseOrders::PurchaseOrderReturnsController < Api::V1::BaseCon
       render json: { errors: 'Purchase order not found' }, status: :not_found and return
     end
 
-    render json: { purchase_order_returns: purchase_order.purchase_order_returns }
+    render json: { purchase_order_returns: purchase_order.purchase_order_returns.order(:id) }
   end
 end
