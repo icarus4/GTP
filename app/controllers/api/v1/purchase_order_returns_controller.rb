@@ -20,6 +20,10 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
           quantity:              quantity,
           item_id:               line_item.item_id
         )
+        # 此處利用PurchaseOrderReturnLineItem的callback扣除退貨的庫存數字
+        # TODO:
+        # 目前先假設沒有搬移，因此直接扣掉 location_variant.quantity
+        # 未來需要確認產品是否有搬移過
       end
     end
 
@@ -34,6 +38,12 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
     end
 
     purchase_order_return.destroy!
+    # 此處利用 PurchaseOrderReturn 的 dependent: :destroy 刪除 PurchaseOrderReturnLineItem，
+    # 再利用PurchaseOrderReturnLineItem的callback扣除退貨的庫存數字
+    # TODO:
+    # 目前先假設沒有搬移，因此直接加回 location_variant.quantity
+    # 未來需要確認產品是否有搬移過
+
     render json: { purchase_order_return: purchase_order_return }
   end
 end
