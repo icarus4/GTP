@@ -28,6 +28,7 @@
 #  extra_info             :jsonb
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  return_status          :integer          default(0), not null
 #
 # Indexes
 #
@@ -45,6 +46,8 @@ class PurchaseOrder < Order
                  :goods_declaration_number
 
   after_initialize :setup_defaults
+
+  # TODO: 研究是否有需要把運算邏輯加入 callback
   # before_save :update_total_amount
   # after_save :update_item_available_count!
 
@@ -52,6 +55,7 @@ class PurchaseOrder < Order
   # has_many :items, through: :details, source: :item
   has_many :procurements
   has_many :purchase_order_returns
+  has_many :purchase_order_return_line_items, through: :purchase_order_returns, source: :line_items
 
   # accepts_nested_attributes_for :details, reject_if: :all_blank, allow_destroy: true
   # accepts_nested_attributes_for :items
@@ -75,6 +79,7 @@ class PurchaseOrder < Order
   validates :status, inclusion: { in: VALID_STATUSES }
 
   enum tax_treatment: { exclusive: 0, inclusive: 1 }, _prefix: :tax
+  enum return_status: { unreturned: 0, partial: 1, returned: 2 }, _prefix: :return_status_is
 
   def self.next_number(company_id)
     where(company_id: company_id).maximum(:order_number).try(:next) || 'PO0001'
@@ -178,6 +183,21 @@ class PurchaseOrder < Order
 
   def all_line_items_are_procured?
     line_items.count > 0 && !line_items.where(procurement_id: nil).exists?
+  end
+
+  def update_return_status!
+    return_line_items = purchase_order_return_line_items.pluck(:line_item_id, :quantity).sort
+    _line_items = line_items.pluck(:id, :quantity).sort
+
+    if return_line_items == _line_items # 退貨商品與訂單商品之品項及數量完全相同
+      return_status_is_returned!
+    elsif return_line_items.blank? # 無退貨商品
+      return_status_is_unreturned!
+    elsif return_line_items.present? && return_line_items != _line_items # 部分商品退貨
+      return_status_is_partial!
+    else
+      raise 'Should not happen'
+    end
   end
 
   private

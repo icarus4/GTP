@@ -15,6 +15,7 @@ class CreateOrders < ActiveRecord::Migration[5.0]
       t.string     :state,                   index: true
       t.string     :status,                  index: true
       t.string     :email
+      t.integer    :return_status,           null: false, default: 0
       t.integer    :tax_treatment,           null: false, default: 0
       t.integer    :total_units
       t.decimal    :subtotal,     precision: 12, scale: 2
