@@ -28,10 +28,10 @@
         </ul>
       </div>
     </div>
-    <div class="ibox-footer">
+    <div v-if="show_return_all_button" class="ibox-footer">
       <div class="row">
         <div class="col-md-6"><button class="btn btn-default">部份退貨</button></div>
-        <div class="col-md-6"><button v-if="show_return_all_button" class="btn btn-primary" @click="returnAll">全部退貨</button></div>
+        <div class="col-md-6"><button class="btn btn-primary" @click="returnAll">全部退貨</button></div>
       </div>
     </div>
   </div>
@@ -87,6 +87,7 @@
           data: { purchase_order_id: that.purchase_order.id, purchase_order_return_line_items: returning_line_items }
         }).done(function(data) {
           that.getPurchaseOrderReturnList()
+          that.$dispatch('purchase-order-may-change')
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON)
@@ -100,6 +101,7 @@
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
         }).done(function(data) {
           that.getPurchaseOrderReturnList()
+          that.$dispatch('purchase-order-may-change')
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON)

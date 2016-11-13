@@ -261,7 +261,8 @@
     class="col-md-12"
     is="purchase-order-return-area-component"
     :purchase_order='purchase_order'
-    :procurements='procurements'>
+    :procurements='procurements'
+    v-on:purchase-order-may-change="refreshPurchaseOrder">
   </div>
 </div>
 
@@ -751,6 +752,9 @@ var PurchaseOrderComponent = Vue.extend({
         // Reload page
         window.location.reload(true)
       })
+    },
+    refreshPurchaseOrder: function() {
+      this.getPurchaseOrder()
     }
   }
 })
