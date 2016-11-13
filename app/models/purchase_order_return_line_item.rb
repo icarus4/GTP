@@ -18,8 +18,8 @@
 #
 
 class PurchaseOrderReturnLineItem < ApplicationRecord
-  after_save :update_location_variant!, :update_purchase_order_return_status!
-  after_destroy :update_location_variant_after_destroy!, :update_purchase_order_return_status!
+  after_save :update_location_variant!
+  after_destroy :update_location_variant_after_destroy!
 
   belongs_to :purchase_order_return
   belongs_to :line_item, class_name: 'Order::LineItem'

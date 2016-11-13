@@ -27,6 +27,8 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
       end
     end
 
+    purchase_order.update_return_status!
+
     render json: { purchase_order_return: purchase_order_return.as_json(include: :line_items) }
   end
 
@@ -43,6 +45,8 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
     # TODO:
     # 目前先假設沒有搬移，因此直接加回 location_variant.quantity
     # 未來需要確認產品是否有搬移過
+
+    purchase_order_return.purchase_order.update_return_status!
 
     render json: { purchase_order_return: purchase_order_return }
   end
