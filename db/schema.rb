@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161026101303) do
+ActiveRecord::Schema.define(version: 20161113074938) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -263,6 +263,7 @@ ActiveRecord::Schema.define(version: 20161026101303) do
     t.jsonb    "extra_info"
     t.datetime "created_at",                                                  null: false
     t.datetime "updated_at",                                                  null: false
+    t.integer  "return_status",                                   default: 0, null: false
     t.index ["assignee_id"], name: "index_orders_on_assignee_id", using: :btree
     t.index ["company_id"], name: "index_orders_on_company_id", using: :btree
     t.index ["order_number"], name: "index_orders_on_order_number", using: :btree
@@ -366,6 +367,30 @@ ActiveRecord::Schema.define(version: 20161026101303) do
     t.datetime "updated_at",         null: false
     t.index ["item_id"], name: "index_purchase_order_details_on_item_id", using: :btree
     t.index ["purchase_order_id"], name: "index_purchase_order_details_on_purchase_order_id", using: :btree
+  end
+
+  create_table "purchase_order_return_line_items", force: :cascade do |t|
+    t.integer  "purchase_order_return_id", null: false
+    t.integer  "line_item_id",             null: false
+    t.integer  "item_id",                  null: false
+    t.integer  "quantity",                 null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.index ["item_id"], name: "index_purchase_order_return_line_items_on_item_id", using: :btree
+    t.index ["line_item_id"], name: "index_purchase_order_return_line_items_on_line_item_id", using: :btree
+    t.index ["purchase_order_return_id"], name: "index_por_line_items_on_purchase_order_return_id", using: :btree
+  end
+
+  create_table "purchase_order_returns", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "purchase_order_id"
+    t.string   "order_number"
+    t.text     "notes"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["company_id"], name: "index_purchase_order_returns_on_company_id", using: :btree
+    t.index ["order_number"], name: "index_purchase_order_returns_on_order_number", using: :btree
+    t.index ["purchase_order_id"], name: "index_purchase_order_returns_on_purchase_order_id", using: :btree
   end
 
   create_table "purchase_orders", force: :cascade do |t|
