@@ -90,13 +90,18 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
 
       # Change status to received when all line_items are procured
       purchase_order.receive! if purchase_order.all_line_items_are_procured?
+
+      # FIXME:
+      # 部分情況會導致 procurement 產生，但是卻沒有任何 variant 產生，此時的 procurement 為無效，不應該被產生
+      # 目前先用此笨方法 workaround
+      # 已知情況1: 使用者收貨時沒有選擇 bin_location
+      procurement.destroy unless procurement.variants.exists?
+
+      # 更新退貨狀態
+      # 若原先已收貨商品已經全部退貨，此時再次收貨時，將會變成可以退貨(退貨狀態由returned變為partial)
+      purchase_order.update_return_status!
     end
 
-    # FIXME:
-    # 部分情況會導致 procurement 產生，但是卻沒有任何 variant 產生，此時的 procurement 為無效，不應該被產生
-    # 目前先用此笨方法 workaround
-    # 已知情況1: 使用者收貨時沒有選擇 bin_location
-    procurement.destroy unless procurement.variants.exists?
 
     render json: { procurement: procurement }
   end

@@ -185,6 +185,7 @@ class PurchaseOrder < Order
     line_items.count > 0 && !line_items.where(procurement_id: nil).exists?
   end
 
+  # 商品收貨/退貨時須執行此method
   def update_return_status!
     return_line_items = purchase_order_return_line_items.pluck(:line_item_id, :quantity).sort
     _line_items = line_items.pluck(:id, :quantity).sort

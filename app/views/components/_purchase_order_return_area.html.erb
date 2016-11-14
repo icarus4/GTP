@@ -28,7 +28,7 @@
         </ul>
       </div>
     </div>
-    <div v-if="show_return_all_button" class="ibox-footer">
+    <div v-if="show_return_button" class="ibox-footer">
       <div class="row">
         <div class="col-md-6"><button class="btn btn-default">部份退貨</button></div>
         <div class="col-md-6"><button class="btn btn-primary" @click="returnAll">全部退貨</button></div>
@@ -53,8 +53,8 @@
       this.getPurchaseOrderReturnList()
     },
     computed: {
-      show_return_all_button: function() {
-        return this.purchase_order_returns.length === 0
+      show_return_button: function() {
+        return this.purchase_order.return_status != 'returned'
       }
     },
     methods: {
