@@ -1,0 +1,3 @@
+# foreman start -f Procfile.dev
+browserify: npm install && npm run watchify
+rails: rails server

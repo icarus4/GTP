@@ -61,3 +61,6 @@ public/assets
 
 # Node
 node_modules
+
+# Ignore compiled JS files
+app/assets/javascripts/frontend-bundle.js
