@@ -22,4 +22,5 @@
 //= require moment
 //= require common
 //= require vue/vue
+//= require vue/vuex.min
 //= require purchase_orders
