@@ -26,6 +26,7 @@
         class="btn btn-primary pull-right"
         @click="validate_procurement_inputs_and_show_confirmation_modal">收取貨品</button>
     </div>
+    <p>{{ count }}</p>
   </div>
 
   <div class="row"><hr></div>
@@ -392,7 +393,8 @@ var PurchaseOrderComponent = Vue.extend({
       }
     }
   },
-  computed: {
+  computed: Vuex.mapState({
+    count: 'count',
     editable: function() {
       return this.mode === 'new'
     },
@@ -529,7 +531,7 @@ var PurchaseOrderComponent = Vue.extend({
     show_return_area: function() {
       return this.procurements.length > 0 ? true : false
     }
-  },
+  }),
   ready: function() {
     this.getItemList()
     if (this.editable) {
