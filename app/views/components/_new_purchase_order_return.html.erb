@@ -10,7 +10,7 @@
           <tr>
             <td></td>
             <td colspan="11">
-              <strong><i class="fa fa-check"></i> 已入庫 - {{ procurement.procured_at.substr(0, 10) }}</strong>
+              <strong>入庫時間 - {{ procurement.procured_at.substr(0, 10) }}</strong>
             </td>
           </tr>
         </thead>
@@ -19,8 +19,8 @@
             <td></td>
             <td>品名</td>
             <td>欲退貨數量</td>
-            <td>總數量</td>
-            <td>總價錢</td>
+            <td>可退數量</td>
+            <td>金額</td>
           </tr>
         </thead>
         <tbody>
@@ -43,7 +43,7 @@
             <span class="pull-right">{{ total_units }}</span>
           </li>
           <li class="list-group-item">
-            <span>金額小計</span>
+            <span>總金額</span>
             <span class="pull-right">NT$ {{ subtotal }}</span>
           </li>
         </ul>

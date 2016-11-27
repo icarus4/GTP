@@ -187,14 +187,20 @@ class PurchaseOrder < Order
 
   # 商品收貨/退貨時須執行此method
   def update_return_status!
-    return_line_items = purchase_order_return_line_items.pluck(:line_item_id, :quantity).sort
-    _line_items = line_items.pluck(:id, :quantity).sort
+    # return hash as follows:
+    # {
+    #   line_item_1_id => line_item_1_quantity,
+    #   line_item_2_id => line_item_2_quantity,
+    #   ...
+    # }
+    return_line_items = purchase_order_return_line_items.select(:line_item_id, :quantity).group(:line_item_id).sum(:quantity)
+    _procured_line_items = line_items.procured.pluck(:id, :quantity).to_h
 
-    if return_line_items == _line_items # 退貨商品與訂單商品之品項及數量完全相同
+    if return_line_items == _procured_line_items # 退貨商品與訂單商品之品項及數量完全相同
       return_status_is_returned!
     elsif return_line_items.blank? # 無退貨商品
       return_status_is_unreturned!
-    elsif return_line_items.present? && return_line_items != _line_items # 部分商品退貨
+    elsif return_line_items.present? && return_line_items != _procured_line_items # 部分商品退貨
       return_status_is_partial!
     else
       raise 'Should not happen'
