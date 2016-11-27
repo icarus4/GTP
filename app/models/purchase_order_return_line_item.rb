@@ -19,7 +19,7 @@
 
 class PurchaseOrderReturnLineItem < ApplicationRecord
   after_save :update_location_variant!, :update_returned_quantity!
-  after_destroy :update_location_variant_after_destroy!
+  after_destroy :update_location_variant_after_destroy!, :update_returned_quantity!
 
   belongs_to :purchase_order_return
   belongs_to :purchase_order_line_item, class_name: 'Order::LineItem', foreign_key: :line_item_id
