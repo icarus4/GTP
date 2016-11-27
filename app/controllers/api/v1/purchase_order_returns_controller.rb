@@ -29,7 +29,7 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
         return_quantity = input_line_item[:quantity].to_i
         existing_return_quantity = PurchaseOrderReturnLineItem.where(purchase_order_line_item: po_line_item).sum(:quantity)
         return_quantity = po_line_item.quantity - existing_return_quantity if return_quantity + existing_return_quantity > po_line_item.quantity # 退貨數量(此次退貨數量+過去的退貨數量)不可比進貨數量多
-        next if return_quantity <= 0 # Should not < 0, just in case.
+        next if return_quantity <= 0 # == 0 代表此item已經全退了。 Should not < 0, just in case.
         PurchaseOrderReturnLineItem.create!(
           purchase_order_return:    purchase_order_return,
           purchase_order_line_item: po_line_item,
