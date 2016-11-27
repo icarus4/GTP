@@ -22,18 +22,24 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
 
     purchase_order_return = nil
     ActiveRecord::Base.transaction do
-      purchase_order_return = PurchaseOrderReturn.create!(company: current_company, purchase_order: purchase_order)
+      purchase_order_return = PurchaseOrderReturn.create!(company: current_company, purchase_order: purchase_order, notes: params[:notes])
       params[:purchase_order_return_line_items].each do |_, input_line_item|
-        line_item = Order::LineItem.find_by(id: input_line_item[:id])
-        next if line_item.nil?
-        quantity = input_line_item[:quantity].to_i
-        quantity = line_item.quantity if quantity > line_item.quantity # 退貨數量不可比進貨數量多
+        po_line_item = Order::LineItem.find_by(id: input_line_item[:id])
+        next if po_line_item.nil?
+        return_quantity = input_line_item[:quantity].to_i
+        existing_return_quantity = PurchaseOrderReturnLineItem.where(purchase_order_line_item: po_line_item).sum(:quantity)
+        return_quantity = po_line_item.quantity - existing_return_quantity if return_quantity + existing_return_quantity > po_line_item.quantity # 退貨數量(此次退貨數量+過去的退貨數量)不可比進貨數量多
+        next if return_quantity <= 0 # Should not < 0, just in case.
         PurchaseOrderReturnLineItem.create!(
           purchase_order_return:    purchase_order_return,
-          purchase_order_line_item: line_item,
-          quantity:                 quantity,
-          item_id:                  line_item.item_id
+          purchase_order_line_item: po_line_item,
+          quantity:                 return_quantity,
+          item_id:                  po_line_item.item_id
         )
+
+        # 如果沒有產生任何一個 PurchaseOrderReturnLineItem，則刪除purchase_order_return
+        purchase_order_return.destroy! if !purchase_order_return.line_items.exists?
+
         # 此處利用PurchaseOrderReturnLineItem的callback扣除退貨的庫存數字
         # TODO:
         # 目前先假設沒有搬移，因此直接扣掉 location_variant.quantity
