@@ -1,0 +1,57 @@
+<template id="return-line-item-selector-component">
+  <tr>
+    <td><input type="checkbox" v-model="checked"></td>
+    <td>{{ line_item.item.name }}</td>
+    <td><input type="number" min="0" max="{{ max_return_quantity }}" v-model="return_quantity" Number></td>
+    <td>{{ max_return_quantity }}</td>
+    <td>{{ subtotal }}</td>
+  </tr>
+</template>
+
+<script type="text/javascript">
+  var ReturnLineItemSelectorComponent = Vue.extend({
+    template: "#return-line-item-selector-component",
+    props: {
+      line_item: {},
+    },
+    data: function() {
+      return {
+        checked: true,
+        return_quantity: 0
+      }
+    },
+    ready: function() {
+      this.return_quantity = this.max_return_quantity
+      this.add_to_return_items()
+    },
+    computed: {
+      subtotal: function() {
+        if (!this.checked) { return 0 }
+        return this.line_item.unit_price * this.return_quantity
+      },
+      max_return_quantity: function() {
+        return this.line_item.quantity - this.line_item.returned_quantity
+      }
+    },
+    watch: {
+      checked: function(value) {
+        if (value === true) { this.add_to_return_items() }
+        else { this.remove_from_return_items() }
+      },
+      return_quantity: function(value) {
+        if (this.checked) { this.update_quantity(value) }
+      },
+    },
+    methods: {
+      add_to_return_items: function() {
+        store.commit('add_to_return_items', { id: this.line_item.id, quantity: this.return_quantity, subtotal: this.subtotal })
+      },
+      remove_from_return_items: function() {
+        store.commit('remove_from_return_items', this.line_item.id)
+      },
+      update_quantity: function(value) {
+        store.commit('update_quantity', { id: this.line_item.id, quantity: value, subtotal: this.subtotal })
+      }
+    }
+  })
+</script>

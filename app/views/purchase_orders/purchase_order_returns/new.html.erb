@@ -1,0 +1,74 @@
+<div id="new-purchase-order-return" class="row" :purchase_order_id="<%= @purchase_order.id %>">
+  <new-purchase-order-return-component></new-purchase-order-return-component>
+</div>
+
+<% content_for :js do %>
+<%= render 'components/new_purchase_order_return' %>
+
+<script type="text/javascript">
+  var store = new Vuex.Store({
+    state: {
+      purchase_order: null,
+      procurements: [],
+      return_items: [],
+      notes: "",
+    },
+    mutations: {
+      update_purchase_order(state, purchase_order) {
+        state.purchase_order = purchase_order
+      },
+      update_procurements(state, procurements) {
+        state.procurements = procurements
+      },
+      add_to_return_items(state, item) {
+        state.return_items.push({ id: item.id, quantity: item.quantity, subtotal: item.subtotal })
+      },
+      remove_from_return_items(state, line_item_id) {
+        state.return_items.forEach(function(item) {
+          if (item.id === line_item_id) { state.return_items.$remove(item) }
+        })
+      },
+      update_quantity(state, item) {
+        var index = _.findIndex(state.return_items, { 'id': item.id })
+        state.return_items.$set(index, { id: item.id, quantity: item.quantity, subtotal: item.subtotal })
+      },
+      update_message(state, value) {
+        state.notes = value.trim()
+      }
+    },
+    actions: {
+      fetch_purchase_order(context, id) {
+        $.ajax({
+          url: '/api/v1/purchase_orders/' + id,
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          context.commit('update_purchase_order', data.purchase_order)
+        })
+      },
+      fetch_returnable_procurements(context, purchase_order_id) {
+        $.ajax({
+          url: '/api/v1/purchase_orders/' + purchase_order_id + '/procurements/returnable',
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          context.commit('update_procurements', data.procurements)
+        })
+      }
+    }
+  })
+
+  new Vue({
+    el: '#new-purchase-order-return',
+    store,
+    components: {
+      'new-purchase-order-return-component': NewPurchaseOrderReturnComponent
+    },
+    ready: function() {
+      var purchase_order_id = this.$el.attributes.purchase_order_id.value
+      this.$store.dispatch('fetch_purchase_order', purchase_order_id)
+      this.$store.dispatch('fetch_returnable_procurements', purchase_order_id)
+    }
+  })
+</script>
+<% end %>

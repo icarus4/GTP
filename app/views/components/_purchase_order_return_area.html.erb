@@ -13,7 +13,7 @@
       <div v-if="purchase_order_returns.length > 0">
         <ul class="unstyled">
           <li v-for="return in purchase_order_returns">
-            <div class="ibox-tools">
+            <div class="ibox-tools m-t-xs">
               <a href="/purchase_orders/{{ purchase_order.id }}/purchase_order_returns/{{ return.id }}"><span class="text-success">退貨單 #{{ $index + 1 }}-{{ return.order_number }}</span></a>
               <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                   <i class="fa fa-caret-down"></i>
@@ -30,7 +30,7 @@
     </div>
     <div v-if="show_return_button" class="ibox-footer">
       <div class="row">
-        <div class="col-md-6"><button class="btn btn-default">部份退貨</button></div>
+        <div class="col-md-6"><button class="btn btn-default" @click="redirectToReturnPage">部份退貨</button></div>
         <div class="col-md-6"><button class="btn btn-primary" @click="returnAll">全部退貨</button></div>
       </div>
     </div>
@@ -106,6 +106,9 @@
           console.log(err)
           alert(err.responseJSON)
         })
+      },
+      redirectToReturnPage: function() {
+        window.location.href = '/purchase_orders/' + this.purchase_order.id + '/purchase_order_returns/new'
       }
     }
   })

@@ -1,0 +1,115 @@
+<template id="new-purchase-order-return-component">
+  <div class="col-md-9">
+    <div class="col-md-12">
+      <h3>建立新退貨單</h3>
+      <p>選取欲退商品與數量</p>
+    </div>
+    <div class="row" v-for="procurement in procurements">
+      <table class="table table-condensed table-bordered">
+        <thead>
+          <tr>
+            <td></td>
+            <td colspan="11">
+              <strong><i class="fa fa-check"></i> 已入庫 - {{ procurement.procured_at.substr(0, 10) }}</strong>
+            </td>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <td></td>
+            <td>品名</td>
+            <td>欲退貨數量</td>
+            <td>總數量</td>
+            <td>總價錢</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="line_item in procurement.returnable_purchase_order_line_items"
+            is="return-line-item-selector-component"
+            :line_item="line_item">
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="col-md-6 m-t">
+        <textarea rows="4" class="form-control input-sm" placeholder="備註:" @input="update_notes"></textarea>
+      </div>
+      <div class="col-md-3 col-md-offset-3">
+        <ul class="list-group no-padding">
+          <li class="list-group-item">
+            <span>總數量</span>
+            <span class="pull-right">{{ total_units }}</span>
+          </li>
+          <li class="list-group-item">
+            <span>金額小計</span>
+            <span class="pull-right">NT$ {{ subtotal }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row m-t"><hr></div>
+    <div class="row">
+      <div class="pull-right">
+        <button class="btn btn-default" @click="redirect_to_purchase_order_page">取消</button>
+        <button class="btn btn-primary" @click="create_purchase_order_return">建立退貨單</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<%= render 'components/return_line_item_selector' %>
+
+<script type="text/javascript">
+  var NewPurchaseOrderReturnComponent = Vue.extend({
+    template: "#new-purchase-order-return-component",
+    components: {
+      'return-line-item-selector-component': ReturnLineItemSelectorComponent
+    },
+    computed: {
+      procurements: function() {
+        return store.state.procurements
+      },
+      return_items: function() {
+        return store.state.return_items
+      },
+      total_units: function() {
+        return _.sumBy(store.state.return_items, 'quantity')
+      },
+      subtotal: function() {
+        return _.sumBy(store.state.return_items, 'subtotal')
+      }
+    },
+    methods: {
+      update_notes: function(e) {
+        this.$store.commit('update_message', e.target.value)
+      },
+      redirect_to_purchase_order_page: function() {
+        window.location.href = '/purchase_orders/' + store.state.purchase_order.id
+      },
+      create_purchase_order_return: function() {
+        var return_items = _.remove(store.state.return_items, function(item) {
+          return item.quantity > 0
+        })
+        var post_data = {
+          purchase_order_id: store.state.purchase_order.id,
+          purchase_order_return_line_items: return_items,
+          notes: store.state.notes
+        }
+
+        $.ajax({
+          url: '/api/v1/purchase_order_returns',
+          method: 'POST',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: post_data
+        }).done(function(data) {
+          window.location.href = '/purchase_orders/' + store.state.purchase_order.id + '/purchase_order_returns/' + data.purchase_order_return.id
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON)
+        })
+      }
+    }
+  })
+</script>

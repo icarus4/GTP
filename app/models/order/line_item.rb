@@ -36,6 +36,8 @@ class Order::LineItem < ApplicationRecord
   belongs_to :bin_location
   belongs_to :location_variant
 
+  has_many :purchase_order_return_line_items
+
   validates :order_id, presence: true
   validates :item_id,  presence: true
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 1 }
@@ -45,6 +47,14 @@ class Order::LineItem < ApplicationRecord
   before_save :calculate_total
 
   scope :unprocured, -> { where(procurement_id: nil) }
+  scope :procured, -> { where.not(procurement_id: nil) }
+  scope :returnable, -> { where("quantity > returned_quantity") }
+
+  # 當 PurchaseOrderReturnLineItem 產生時執行此 method
+  def update_returned_quantity!
+    self.returned_quantity = purchase_order_return_line_items.sum(:quantity)
+    save!
+  end
 
   private
 
