@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161113074938) do
+ActiveRecord::Schema.define(version: 20161127080400) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -216,19 +216,20 @@ ActiveRecord::Schema.define(version: 20161113074938) do
   end
 
   create_table "order_line_items", force: :cascade do |t|
-    t.integer  "order_id",                                     null: false
+    t.integer  "order_id",                                                 null: false
     t.integer  "procurement_id"
-    t.integer  "item_id",                                      null: false
+    t.integer  "item_id",                                                  null: false
     t.integer  "variant_id"
     t.integer  "bin_location_id"
     t.integer  "location_variant_id"
-    t.integer  "quantity",                                     null: false
-    t.decimal  "unit_price",          precision: 10, scale: 2, null: false
+    t.integer  "quantity",                                                 null: false
+    t.decimal  "unit_price",          precision: 10, scale: 2,             null: false
     t.decimal  "tax_rate",            precision: 4,  scale: 1
     t.decimal  "tax",                 precision: 10, scale: 2
-    t.decimal  "total",               precision: 12, scale: 2, null: false
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.decimal  "total",               precision: 12, scale: 2,             null: false
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.integer  "returned_quantity",                            default: 0, null: false
     t.index ["bin_location_id"], name: "index_order_line_items_on_bin_location_id", using: :btree
     t.index ["item_id"], name: "index_order_line_items_on_item_id", using: :btree
     t.index ["location_variant_id"], name: "index_order_line_items_on_location_variant_id", using: :btree

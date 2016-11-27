@@ -8,6 +8,20 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
     render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant, :bin_location] } }, methods: :purchase_order_line_item_ids) }
   end
 
+  def returnable
+    # purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant, :bin_location] }).find_by(company: current_company, id: params[:purchase_order_id])
+    purchase_order = PurchaseOrder.find_by(company: current_company, id: params[:purchase_order_id])
+    if purchase_order.nil?
+      render json: { errors: 'Purchase order not found' }, status: :not_found and return
+    end
+
+    # TODO: Fix N+1 query
+    # Get procurements
+    procurements = purchase_order.procurements.includes(returnable_purchase_order_line_items: [:item, :variant, :bin_location]).joins(:returnable_purchase_order_line_items).distinct
+
+    render json: { procurements: procurements.order(:procured_at, :id).as_json(include: { returnable_purchase_order_line_items: { include: [:item, :variant, :bin_location] } }, methods: :returnable_purchase_order_line_item_ids) }
+  end
+
   def create
     p = params.require(:procurement)
     purchase_order = PurchaseOrder.find_by(company: current_company, id: p[:purchase_order_id])
@@ -101,7 +115,6 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       # 若原先已收貨商品已經全部退貨，此時再次收貨時，將會變成可以退貨(退貨狀態由returned變為partial)
       purchase_order.update_return_status!
     end
-
 
     render json: { procurement: procurement }
   end

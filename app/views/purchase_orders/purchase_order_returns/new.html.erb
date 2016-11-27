@@ -8,7 +8,6 @@
 <script type="text/javascript">
   var store = new Vuex.Store({
     state: {
-      purchase_order_id: null,
       purchase_order: null,
       procurements: [],
       return_items: [],
@@ -47,9 +46,9 @@
           context.commit('update_purchase_order', data.purchase_order)
         })
       },
-      fetch_procurements(context, purchase_order_id) {
+      fetch_returnable_procurements(context, purchase_order_id) {
         $.ajax({
-          url: '/api/v1/purchase_orders/' + purchase_order_id + '/procurements',
+          url: '/api/v1/purchase_orders/' + purchase_order_id + '/procurements/returnable',
           method: 'GET',
           dataType: 'json'
         }).done(function(data) {
@@ -68,7 +67,7 @@
     ready: function() {
       var purchase_order_id = this.$el.attributes.purchase_order_id.value
       this.$store.dispatch('fetch_purchase_order', purchase_order_id)
-      this.$store.dispatch('fetch_procurements', purchase_order_id)
+      this.$store.dispatch('fetch_returnable_procurements', purchase_order_id)
     }
   })
 </script>

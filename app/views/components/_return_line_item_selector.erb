@@ -2,8 +2,8 @@
   <tr>
     <td><input type="checkbox" v-model="checked"></td>
     <td>{{ line_item.item.name }}</td>
-    <td><input type="number" min="0" max="{{ line_item.quantity }}" v-model="return_quantity" Number></td>
-    <td>{{ line_item.quantity }}</td>
+    <td><input type="number" min="0" max="{{ max_return_quantity }}" v-model="return_quantity" Number></td>
+    <td>{{ max_return_quantity }}</td>
     <td>{{ subtotal }}</td>
   </tr>
 </template>
@@ -21,13 +21,16 @@
       }
     },
     ready: function() {
-      this.return_quantity = this.line_item.quantity
+      this.return_quantity = this.max_return_quantity
       this.add_to_return_items()
     },
     computed: {
       subtotal: function() {
         if (!this.checked) { return 0 }
         return this.line_item.unit_price * this.return_quantity
+      },
+      max_return_quantity: function() {
+        return this.line_item.quantity - this.line_item.returned_quantity
       }
     },
     watch: {

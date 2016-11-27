@@ -18,7 +18,7 @@
 #
 
 class PurchaseOrderReturnLineItem < ApplicationRecord
-  after_save :update_location_variant!
+  after_save :update_location_variant!, :update_returned_quantity!
   after_destroy :update_location_variant_after_destroy!
 
   belongs_to :purchase_order_return
@@ -57,5 +57,9 @@ class PurchaseOrderReturnLineItem < ApplicationRecord
 
     def update_purchase_order_return_status!
       purchase_order_return.purchase_order.update_return_status!
+    end
+
+    def update_returned_quantity!
+      purchase_order_line_item.update_returned_quantity!
     end
 end

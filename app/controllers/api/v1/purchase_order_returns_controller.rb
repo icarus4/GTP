@@ -22,7 +22,7 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
 
     purchase_order_return = nil
     ActiveRecord::Base.transaction do
-      purchase_order_return = PurchaseOrderReturn.create!(company: current_company, purchase_order: purchase_order)
+      purchase_order_return = PurchaseOrderReturn.create!(company: current_company, purchase_order: purchase_order, notes: params[:notes])
       params[:purchase_order_return_line_items].each do |_, input_line_item|
         po_line_item = Order::LineItem.find_by(id: input_line_item[:id])
         next if po_line_item.nil?
