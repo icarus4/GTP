@@ -1,0 +1,81 @@
+<template id="new-purchase-order-return-component">
+  <h3>建立新退貨單</h3>
+  <p>選取欲退商品與數量</p>
+  <div class="col-md-9">
+    <div class="row" v-for="procurement in procurements">
+      <table class="table table-condensed table-bordered">
+        <thead>
+          <tr>
+            <td></td>
+            <td colspan="11">
+              <strong><i class="fa fa-check"></i> 已入庫 - {{ procurement.procured_at.substr(0, 10) }}</strong>
+            </td>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <td></td>
+            <td>品名</td>
+            <td>欲退貨數量</td>
+            <td>總數量</td>
+            <td>總價錢</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="line_item in procurement.purchase_order_line_items"
+            is="return-line-item-selector-component"
+            :line_item="line_item">
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="col-md-6 m-t">
+        <textarea rows="4" class="form-control input-sm" placeholder="備註:" @input="update_notes"></textarea>
+      </div>
+      <div class="col-md-3 col-md-offset-3">
+        <ul class="list-group no-padding">
+          <li class="list-group-item">
+            <span>總數量</span>
+            <span class="pull-right">{{ total_units }}</span>
+          </li>
+          <li class="list-group-item">
+            <span>金額小計</span>
+            <span class="pull-right">NT$ {{ subtotal }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<%= render 'components/return_line_item_selector' %>
+
+<script type="text/javascript">
+  var NewPurchaseOrderReturnComponent = Vue.extend({
+    template: "#new-purchase-order-return-component",
+    components: {
+      'return-line-item-selector-component': ReturnLineItemSelectorComponent
+    },
+    computed: {
+      procurements: function() {
+        return store.state.procurements
+      },
+      return_items: function() {
+        return store.state.return_items
+      },
+      total_units: function() {
+        return _.sumBy(store.state.return_items, 'quantity')
+      },
+      subtotal: function() {
+        return _.sumBy(store.state.return_items, 'subtotal')
+      }
+    },
+    methods: {
+      update_notes: function(e) {
+        this.$store.commit('update_message', e.target.value)
+      }
+    }
+  })
+</script>

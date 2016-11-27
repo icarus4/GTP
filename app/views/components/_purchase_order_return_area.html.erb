@@ -30,7 +30,7 @@
     </div>
     <div v-if="show_return_button" class="ibox-footer">
       <div class="row">
-        <div class="col-md-6"><button class="btn btn-default">部份退貨</button></div>
+        <div class="col-md-6"><button class="btn btn-default" @click="redirectToReturnPage">部份退貨</button></div>
         <div class="col-md-6"><button class="btn btn-primary" @click="returnAll">全部退貨</button></div>
       </div>
     </div>
@@ -106,6 +106,9 @@
           console.log(err)
           alert(err.responseJSON)
         })
+      },
+      redirectToReturnPage: function() {
+        window.location.href = '/purchase_orders/' + this.purchase_order.id + '/purchase_order_returns/new'
       }
     }
   })

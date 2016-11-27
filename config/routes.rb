@@ -27,7 +27,7 @@ Rails.application.routes.draw do
     put :approve, on: :member
     get :prepare_to_receive, on: :member
     post :receive, on: :member
-    resources :purchase_order_returns, only: [:show], controller: 'purchase_orders/purchase_order_returns'
+    resources :purchase_order_returns, only: [:show, :new], controller: 'purchase_orders/purchase_order_returns'
   end
 
 
