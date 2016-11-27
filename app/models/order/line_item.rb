@@ -28,6 +28,10 @@
 #
 
 class Order::LineItem < ApplicationRecord
+  before_save :calculate_total
+  after_save :update_purchase_order_return_status!, if: :procurement_id_changed?
+  after_destroy :update_purchase_order_return_status!, if: :procurement_id_changed?
+
   belongs_to :order, counter_cache: true
   belongs_to :purchase_order, foreign_key: :order_id
   belongs_to :procurement
@@ -44,8 +48,6 @@ class Order::LineItem < ApplicationRecord
   validates :tax_rate, numericality: { greater_than_or_equal_to: 0 }
   validates :unit_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  before_save :calculate_total
-
   scope :unprocured, -> { where(procurement_id: nil) }
   scope :procured, -> { where.not(procurement_id: nil) }
   scope :returnable, -> { where("quantity > returned_quantity") }
@@ -60,5 +62,9 @@ class Order::LineItem < ApplicationRecord
 
     def calculate_total
       self.total = quantity * unit_price
+    end
+
+    def update_purchase_order_return_status!
+      purchase_order.update_return_status!
     end
 end
