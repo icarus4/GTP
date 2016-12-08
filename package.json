@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "globify": "globify -vd -p browserify-hmr \"./frontend/entries/**/*.js\" -o \"app/assets/javascripts/entries/*-bundle.js\" -w",
     "watchify": "watchify -vd -p browserify-hmr -e frontend/app.js -o app/assets/javascripts/frontend-bundle.js",
     "serve": "./bin/rails server",
     "dev": "npm-run-all --parallel watchify serve",
-    "build": "cross-env NODE_ENV=production browserify -g envify frontend/app.js | uglifyjs -c warnings=false -m > app/assets/javascripts/frontend-bundle.js"
+    "build": "cross-env NODE_ENV=production browserify -g envify frontend/app.js | uglifyjs -c warnings=false -m > app/assets/javascripts/frontend-bundle.js",
+    "build": "*"
   },
   "dependencies": {
     "axios": "^0.15.2",
@@ -26,7 +28,8 @@
     "npm-run-all": "^2.1.2",
     "uglify-js": "^2.5.0",
     "vueify": "8.5.2",
-    "watchify": "^3.4.0"
+    "watchify": "^3.4.0",
+    "globify": "^1.2.2"
   },
   "browserify": {
     "transform": [
