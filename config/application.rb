@@ -33,5 +33,8 @@ module Gtp
     config.active_record.raise_in_transactional_callbacks = true
 
     Dir[File.join("lib", "monky_patches", "**/*.rb")].each  { |path| require(path.split('lib/').last) }
+
+    # Configure Browserify to use babelify to compile ES6
+    config.browserify_rails.commandline_options = "-t [ babelify --presets [ es2015 ] --extensions .es6]"
   end
 end

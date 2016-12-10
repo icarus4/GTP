@@ -1,3 +1,7 @@
-<div class="wrapper wrapper-content">
-  <%= react_component('SalesOrderForm', {}, {class: 'row', id: 'new-sales-order-form'}) %>
+<div id="sales-order" class="row">
+  <sales-order-component></sales-order-component>
 </div>
+
+<% content_for :js do %>
+<%= javascript_include_tag 'sales_orders' %>
+<% end %>
