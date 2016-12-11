@@ -1,27 +1,15 @@
 <div id="purchase-order" class="row">
-  <button class="btn btn-primary" @click="increment">+</button>
-  <button class="btn btn-primary" @click="decrement">-</button>
   <purchase-order-component mode="show" :purchase_order_id="<%= @purchase_order.id %>"></purchase-order-component>
 </div>
 
 <% content_for :js do %>
-  <%= render 'components/purchase_order_store' %>
-  <%= render 'components/purchase_order' %>
+  <%= render 'components/purchase_order/purchase_order' %>
 
   <script type="text/javascript">
     new Vue({
       el: '#purchase-order',
-      store,
       components: {
         'purchase-order-component': PurchaseOrderComponent
-      },
-      methods: {
-        increment: function() {
-          this.$store.commit('increment')
-        },
-        decrement: function() {
-          this.$store.commit('decrement')
-        }
       },
     })
   </script>

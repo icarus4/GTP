@@ -310,9 +310,9 @@
 </div>
 </template>
 
-<%= render 'components/line_item_selector' %>
-<%= render 'components/edit_procurement_modal' %>
-<%= render 'components/purchase_order_return_area' %>
+<%= render 'components/purchase_order/line_item_selector' %>
+<%= render 'components/purchase_order/edit_procurement_modal' %>
+<%= render 'components/purchase_order/purchase_order_return_area' %>
 
 <script type="text/javascript">
 var PurchaseOrderComponent = Vue.extend({
@@ -393,8 +393,7 @@ var PurchaseOrderComponent = Vue.extend({
       }
     }
   },
-  computed: Vuex.mapState({
-    count: 'count',
+  computed: {
     editable: function() {
       return this.mode === 'new'
     },
@@ -531,7 +530,7 @@ var PurchaseOrderComponent = Vue.extend({
     show_return_area: function() {
       return this.procurements.length > 0 ? true : false
     }
-  }),
+  },
   ready: function() {
     this.getItemList()
     if (this.editable) {
