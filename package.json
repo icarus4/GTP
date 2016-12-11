@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "axios": "^0.15.2",
-    "vue": "^1.0.0"
+    "vue": "^1.0.0",
+    "vuex": "^2.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",
