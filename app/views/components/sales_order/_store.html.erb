@@ -1,0 +1,161 @@
+<script type="text/javascript">
+  var store = new Vuex.Store({
+    state: {
+      mode: null,
+      tax_treatment: null,
+      options: {
+        customers: [],
+        customer_locations: [],
+        items: [],
+        price_lists: [],
+        stockable_locations: [],
+      },
+      sales_order: {
+        customer_id: null,
+        bill_to_location_id: null,
+        ship_to_location_id: null,
+        ship_from_location_id: null,
+        shipment_date: null,
+        issue_date: null,
+        email: null,
+        phone: null,
+      },
+      sales_order_line_items: [],
+      sales_order_line_item_template: {
+        id: null,
+        item_id: null,
+        item: {},
+        quantity: 1,
+      }
+    },
+    mutations: {
+      setupMode: function(state, mode) {
+        state.mode = mode
+      },
+      setupCustomers: function(state, customers) {
+        state.options.customers = customers
+      },
+      setupSelectedCustomer: function(state, customer_id) {
+        state.sales_order.customer_id = customer_id
+      },
+      setupCustomerLocations: function(state, locations) {
+        state.options.customer_locations = locations
+      },
+      setupSelectedBillToLocation: function(state, location_id) {
+        state.sales_order.bill_to_location_id = location_id
+      },
+      setupSelectedShipToLocation: function(state, location_id) {
+        state.sales_order.ship_to_location_id = location_id
+      },
+      updateIssueDate: function(state, date) {
+        state.sales_order.issue_date = date
+      },
+      updateShipmentDate: function(state, date) {
+        state.sales_order.shipment_date = date
+      },
+      updateEmail: function(state, email) {
+        state.sales_order.email = email
+      },
+      updatePhone: function(state, phone) {
+        state.sales_order.phone = phone
+      },
+      updatePriceLists: function(state, price_lists) {
+        state.options.price_lists = price_lists
+      },
+      updateTaxTreatment: function(state, tax_treatment) {
+        state.tax_treatment = tax_treatment
+      },
+      updateStockableLocationList: function(state, locations) {
+        state.options.stockable_locations = locations
+      },
+      setupShipFromLocation: function(state, location_id) {
+        state.sales_order.ship_from_location_id = location_id
+      },
+      updateItemList: function(state, items) {
+        state.options.items = items
+      },
+      addNewLineItem: function(state) {
+        state.sales_order_line_items.push(_.cloneDeep(state.sales_order_line_item_template))
+      },
+      itemSelected: function(state) {
+
+      },
+      removeLineItemByIndex: function(state, line_item_index) {
+        state.sales_order_line_items.$remove(state.sales_order_line_items[line_item_index])
+      }
+    },
+    actions: {
+      billToLocationSelected: function(context, location_id) {
+        context.commit('setupSelectedBillToLocation', location_id)
+      },
+      shipToLocationSelected: function(context, location_id) {
+        context.commit('setupSelectedShipToLocation', location_id)
+      },
+      shipFromLocationSelected: function(context, location_id) {
+        context.commit('setupShipFromLocation', location_id)
+      },
+      customerSelected: function(context, customer_id) {
+        context.commit('setupSelectedCustomer', customer_id)
+        context.dispatch('getCustomerLocationList', customer_id)
+      },
+      itemSelected: function(context, item_id) {
+        context.commit('itemSelected', item_id)
+      },
+      getCustomerList: function(context) {
+        $.ajax({
+          url: '/api/v1/customers',
+          method: 'GET',
+          dataType: 'json',
+        }).done(function(data) {
+          context.commit('setupCustomers', data.customers)
+        })
+      },
+      getCustomerLocationList: function(context, customer_id) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/partners/" + customer_id + "/locations",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('setupCustomerLocations', data.locations)
+        })
+      },
+      getPriceList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/price_lists/sales",
+          method: "GET",
+          dataType: 'json'
+        }).done(function(data) {
+          context.commit('updatePriceLists', data.price_lists)
+        })
+      },
+      getStockableLocationList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/locations/holds_stock",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('updateStockableLocationList', data.locations)
+        })
+      },
+      getItemList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/items",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('updateItemList', data.items)
+        })
+      },
+      addNewLineItem: function(context) {
+        context.commit('addNewLineItem')
+      },
+      removeLineItemByIndex: function(context, line_item_index) {
+        context.commit('removeLineItemByIndex', line_item_index)
+      }
+    }
+  })
+</script>

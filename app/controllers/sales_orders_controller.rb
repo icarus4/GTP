@@ -33,7 +33,6 @@ class SalesOrdersController < ApplicationController
   end
 
   def new
-    @sales_order = SalesOrder.new(company: current_company)
   end
 
   def create
