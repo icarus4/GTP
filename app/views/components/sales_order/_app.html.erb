@@ -35,6 +35,33 @@
         :line_items="$store.state.sales_order_line_items">
       </line-item-selection-area>
     </div>
+
+    <div class="row m-t">
+      <div class="col-md-6 m-t">
+        <!-- <textarea v-if="editable" v-model="purchase_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+        <div v-if="!editable && purchase_order.notes" class="bg-warning"><label>備註:</label><p v-else>{{ purchase_order.notes }}</p></div> -->
+      </div>
+      <div class="col-md-3 col-md-offset-3">
+        <ul class="list-group no-padding">
+          <li class="list-group-item">
+            <span>總數量</span>
+            <span class="pull-right">{{ $store.getters.total_units }}</span>
+          </li>
+          <li class="list-group-item">
+            <span>金額小計</span>
+            <span class="pull-right">NT$ {{ $store.getters.subtotal }}</span>
+          </li>
+          <li class="list-group-item">
+            <span>稅額</span>
+            <span class="pull-right">NT$ {{ $store.getters.total_tax }}</span>
+          </li>
+          <li class="list-group-item">
+            <span>總金額</span>
+            <span class="pull-right">NT$ {{ $store.getters.total_amount }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 

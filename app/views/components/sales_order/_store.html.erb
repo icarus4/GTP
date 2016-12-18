@@ -2,7 +2,6 @@
   var store = new Vuex.Store({
     state: {
       mode: null,
-      tax_treatment: null,
       options: {
         customers: [],
         customer_locations: [],
@@ -19,13 +18,70 @@
         issue_date: null,
         email: null,
         phone: null,
+        tax_treatment: 'exclusive'
       },
       sales_order_line_items: [],
       sales_order_line_item_template: {
         id: null,
         item_id: null,
-        item: {},
         quantity: 1,
+        unit_price: null,
+        tax_rate: null,
+        total: null,
+      }
+    },
+    getters: {
+      total_units: function(state) {
+        return _.sumBy(state.sales_order_line_items, function(o) {
+          return (o.item_id && o.quantity) ? o.quantity : 0 // 選定商品 & quantity 時才計算
+        })
+      },
+      subtotal: function(state) {
+        return _.sumBy(state.sales_order_line_items, function(o) {
+          return (o.item_id && o.quantity && o.unit_price) ? o.quantity * o.unit_price : 0
+        })
+      },
+      total_tax: function(state) {
+        var total_tax = 0
+        state.sales_order_line_items.forEach(function(line_item) {
+          var line_item_total = parseFloat(line_item.total)
+          var line_item_tax_rate = parseFloat(line_item.tax_rate)
+          if (_.isInteger(line_item.item_id) && _.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isNumber(line_item_tax_rate) && !_.isNaN(line_item_tax_rate)) {
+            console.log('enter getters.total_tax')
+            if (state.sales_order.tax_treatment === 'exclusive') {
+              total_tax += line_item_total * line_item_tax_rate / 100
+            }
+            else {
+              // 推導
+              // total_without_tax * (100 + tax_rate) / 100 = total
+              // total_without_tax * (100 + tax_rate) / 100 = total_without_tax + tax
+              // total_without_tax * (100 + tax_rate) / 100 - total_without_tax = tax
+              // total_without_tax * ((100 + tax_rate) / 100 - 1) = tax
+              // (total - tax) * ((100 + tax_rate) / 100 - 1) = tax
+              // total * ((100 + tax_rate) / 100 - 1) - tax * ((100 + tax_rate) / 100 - 1) = tax
+              // total * ((100 + tax_rate) / 100 - 1) = tax + tax * ((100 + tax_rate) / 100 - 1)
+              // total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
+              // total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
+              // total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
+              total_tax += line_item_total / (1 / ((100 + line_item_tax_rate) / 100 - 1) + 1)
+            }
+          }
+        })
+        // state.purchase_order.total_tax = total_tax
+        return _.round(total_tax, 2)
+      },
+      total_amount: function(state, getters) {
+        var total_amount = 0
+        if (_.isNumber(getters.subtotal) && _.isNumber(getters.total_tax)) {
+          if (state.sales_order.tax_treatment === 'exclusive') {
+            total_amount = getters.subtotal + getters.total_tax
+          }
+          else if (state.sales_order.tax_treatment === 'inclusive') {
+            total_amount = getters.subtotal
+          }
+        }
+        state.sales_order.total_amount = total_amount
+        return total_amount
       }
     },
     mutations: {
@@ -63,7 +119,7 @@
         state.options.price_lists = price_lists
       },
       updateTaxTreatment: function(state, tax_treatment) {
-        state.tax_treatment = tax_treatment
+        state.sales_order.tax_treatment = tax_treatment
       },
       updateStockableLocationList: function(state, locations) {
         state.options.stockable_locations = locations
@@ -77,11 +133,23 @@
       addNewLineItem: function(state) {
         state.sales_order_line_items.push(_.cloneDeep(state.sales_order_line_item_template))
       },
-      itemSelected: function(state) {
-
+      setupSelectedItem: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].item_id = obj.item_id
       },
       removeLineItemByIndex: function(state, line_item_index) {
         state.sales_order_line_items.$remove(state.sales_order_line_items[line_item_index])
+      },
+      updateQuantity: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].quantity = obj.quantity
+      },
+      updateUnitPrice: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].unit_price = obj.unit_price
+      },
+      updateTaxRate: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].tax_rate = obj.tax_rate
+      },
+      updateLineItemTotal: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].total = obj.total
       }
     },
     actions: {
@@ -98,8 +166,8 @@
         context.commit('setupSelectedCustomer', customer_id)
         context.dispatch('getCustomerLocationList', customer_id)
       },
-      itemSelected: function(context, item_id) {
-        context.commit('itemSelected', item_id)
+      itemSelected: function(context, obj) {
+        context.commit('setupSelectedItem', { line_item_index: obj.line_item_index, item_id: obj.item_id })
       },
       getCustomerList: function(context) {
         $.ajax({
@@ -155,7 +223,16 @@
       },
       removeLineItemByIndex: function(context, line_item_index) {
         context.commit('removeLineItemByIndex', line_item_index)
-      }
+      },
+      updateQuantity: function(context, obj) {
+        context.commit('updateQuantity', { line_item_index: obj.line_item_index, quantity: obj.quantity })
+      },
+      updateUnitPrice: function(context, obj) {
+        context.commit('updateUnitPrice', { line_item_index: obj.line_item_index, unit_price: obj.unit_price })
+      },
+      updateTaxRate: function(context, obj) {
+        context.commit('updateTaxRate', { line_item_index: obj.line_item_index, tax_rate: obj.tax_rate })
+      },
     }
   })
 </script>
