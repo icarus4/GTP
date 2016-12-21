@@ -1,11 +1,15 @@
 <template id="location-selector">
-  <label>{{ label }}</label>
-  <select @change="updateSelectedLocation">
-    <option selected disabled value="">-- 選取地點 --</option>
-    <option
-      v-for="location in locations"
-      v-bind:value="location.id">{{ location.name }}</option>
-  </select>
+  <div class="col-md-4 form-group p-xxs">
+    <label class="pull-right">{{ label }}</label>
+  </div>
+  <div class="col-md-8 form-group p-xxs">
+    <select @change="updateSelectedLocation" class="form-control input-sm">
+      <option selected disabled value="">-- 選取地點 --</option>
+      <option
+        v-for="location in locations"
+        v-bind:value="location.id">{{ location.name }}</option>
+    </select>
+  </div>
 </template>
 
 <script type="text/javascript">

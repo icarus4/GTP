@@ -4,9 +4,9 @@
       <customer-selector :customers="$store.state.options.customers"></customer-selector>
       <hr>
       <div class="col-md-4">
-        <div><bill-to-location-selector :locations="$store.state.options.customer_locations" after-selected-dispatch-event="billToLocationSelected" label="單據寄送至"></bill-to-location-selector></div>
-        <div><ship-to-location-selector :locations="$store.state.options.customer_locations" after-selected-dispatch-event="shipToLocationSelected" label="貨品寄送至"></ship-to-location-selector></div>
-        <div><ship-from-location-selector :locations="$store.state.options.stockable_locations" after-selected-dispatch-event="shipFromLocationSelected" label="出貨倉庫"></ship-from-location-selector></div>
+        <div class="row"><bill-to-location-selector :locations="$store.state.options.customer_locations" after-selected-dispatch-event="billToLocationSelected" label="單據寄送至"></bill-to-location-selector></div>
+        <div class="row"><ship-to-location-selector :locations="$store.state.options.customer_locations" after-selected-dispatch-event="shipToLocationSelected" label="貨品寄送至"></ship-to-location-selector></div>
+        <div class="row"><ship-from-location-selector :locations="$store.state.options.stockable_locations" after-selected-dispatch-event="shipFromLocationSelected" label="出貨倉庫"></ship-from-location-selector></div>
       </div>
       <div class="col-md-4">
         <label>訂單日期</label><div><input type="date" @change="updateIssueDate"></div>
