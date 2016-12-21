@@ -18,7 +18,8 @@
         issue_date: null,
         email: null,
         phone: null,
-        tax_treatment: 'exclusive'
+        tax_treatment: 'exclusive',
+        notes: null,
       },
       sales_order_line_items: [],
       sales_order_line_item_template: {
@@ -150,7 +151,10 @@
       },
       updateLineItemTotal: function(state, obj) {
         state.sales_order_line_items[obj.line_item_index].total = obj.total
-      }
+      },
+      updateNotes: function(state, notes) {
+        state.sales_order.notes = notes.trim()
+      },
     },
     actions: {
       billToLocationSelected: function(context, location_id) {
