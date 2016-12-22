@@ -20,6 +20,7 @@
         phone: null,
         tax_treatment: 'exclusive',
         notes: null,
+        status: 'active',
       },
       sales_order_line_items: [],
       sales_order_line_item_template: {
@@ -48,7 +49,6 @@
           var line_item_total = parseFloat(line_item.total)
           var line_item_tax_rate = parseFloat(line_item.tax_rate)
           if (_.isInteger(line_item.item_id) && _.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isNumber(line_item_tax_rate) && !_.isNaN(line_item_tax_rate)) {
-            console.log('enter getters.total_tax')
             if (state.sales_order.tax_treatment === 'exclusive') {
               total_tax += line_item_total * line_item_tax_rate / 100
             }
@@ -155,6 +155,9 @@
       updateNotes: function(state, notes) {
         state.sales_order.notes = notes.trim()
       },
+      updateStatus: function(state, status) {
+        state.sales_order.status = status
+      }
     },
     actions: {
       billToLocationSelected: function(context, location_id) {
@@ -237,6 +240,19 @@
       updateTaxRate: function(context, obj) {
         context.commit('updateTaxRate', { line_item_index: obj.line_item_index, tax_rate: obj.tax_rate })
       },
+      createOrder: function(context, status) {
+        $.ajax({
+          url: '/api/v1/sales_orders',
+          method: 'POST',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { sales_order: context.state.sales_order, sales_order_line_items: context.state.sales_order_line_items }
+        }).done(function(data) {
+
+        }).fail(function(err) {
+
+        })
+      }
     }
   })
 </script>

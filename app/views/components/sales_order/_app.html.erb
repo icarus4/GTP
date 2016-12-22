@@ -63,6 +63,17 @@
         </ul>
       </div>
     </div>
+
+    <div class="row"><hr class="m-t-xs"></div>
+
+    <div class="row m-t">
+      <div class="pull-right">
+        <button class="btn btn-default">取消</button>
+        <button class="btn btn-default" @click="createOrder('draft')">存為草稿</button>
+        <button class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -116,7 +127,10 @@
       },
       updateNotes: function(e) {
         this.$store.commit('updateNotes', e.target.value)
-      }
+      },
+      createOrder: function(status) {
+        this.$store.dispatch('createOrder', status)
+      },
     }
   })
 </script>
