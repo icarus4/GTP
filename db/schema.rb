@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161127080400) do
+ActiveRecord::Schema.define(version: 20161222023838) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -423,6 +423,26 @@ ActiveRecord::Schema.define(version: 20161127080400) do
     t.text     "notes"
     t.index ["sales_order_id"], name: "index_sales_order_details_on_sales_order_id", using: :btree
     t.index ["variant_id"], name: "index_sales_order_details_on_variant_id", using: :btree
+  end
+
+  create_table "sales_order_line_items", force: :cascade do |t|
+    t.integer  "sales_order_id",                               null: false
+    t.integer  "shipment_id"
+    t.integer  "item_id",                                      null: false
+    t.integer  "variant_id"
+    t.integer  "bin_location_id"
+    t.integer  "location_variant_id"
+    t.integer  "quantity",                                     null: false
+    t.decimal  "unit_price",          precision: 10, scale: 2, null: false
+    t.decimal  "tax_rate",            precision: 4,  scale: 1
+    t.decimal  "tax",                 precision: 10, scale: 2
+    t.decimal  "total",               precision: 12, scale: 2, null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+    t.index ["item_id"], name: "index_sales_order_line_items_on_item_id", using: :btree
+    t.index ["sales_order_id"], name: "index_sales_order_line_items_on_sales_order_id", using: :btree
+    t.index ["shipment_id"], name: "index_sales_order_line_items_on_shipment_id", using: :btree
+    t.index ["variant_id"], name: "index_sales_order_line_items_on_variant_id", using: :btree
   end
 
   create_table "sales_orders", force: :cascade do |t|
