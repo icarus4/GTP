@@ -253,6 +253,7 @@ ActiveRecord::Schema.define(version: 20161127080400) do
     t.string   "state"
     t.string   "status"
     t.string   "email"
+    t.integer  "return_status",                                   default: 0, null: false
     t.integer  "tax_treatment",                                   default: 0, null: false
     t.integer  "total_units"
     t.decimal  "subtotal",               precision: 12, scale: 2
@@ -264,7 +265,6 @@ ActiveRecord::Schema.define(version: 20161127080400) do
     t.jsonb    "extra_info"
     t.datetime "created_at",                                                  null: false
     t.datetime "updated_at",                                                  null: false
-    t.integer  "return_status",                                   default: 0, null: false
     t.index ["assignee_id"], name: "index_orders_on_assignee_id", using: :btree
     t.index ["company_id"], name: "index_orders_on_company_id", using: :btree
     t.index ["order_number"], name: "index_orders_on_order_number", using: :btree
@@ -427,21 +427,29 @@ ActiveRecord::Schema.define(version: 20161127080400) do
 
   create_table "sales_orders", force: :cascade do |t|
     t.integer  "company_id"
-    t.integer  "customer_id"
+    t.integer  "partner_id"
     t.integer  "bill_to_location_id"
     t.integer  "ship_to_location_id"
     t.integer  "ship_from_location_id"
     t.integer  "assignee_id"
-    t.string   "status"
-    t.integer  "total_amount"
+    t.integer  "payment_method_id"
+    t.integer  "status",                                          default: 0, null: false
+    t.integer  "tax_treatment",                                   default: 0, null: false
+    t.integer  "line_items_count",                                default: 0, null: false
+    t.integer  "total_units",                                     default: 0, null: false
+    t.decimal  "subtotal",               precision: 12, scale: 2
+    t.decimal  "total_tax",              precision: 12, scale: 2
+    t.decimal  "total_amount",           precision: 12, scale: 2
     t.date     "issued_on"
-    t.date     "shipped_on"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "order_number",          limit: 64
-    t.string   "contact_email",         limit: 64
+    t.date     "expected_delivery_date"
+    t.string   "order_number"
+    t.string   "email"
     t.text     "notes"
-    t.index ["company_id", "customer_id"], name: "index_sales_orders_on_company_id_and_customer_id", using: :btree
+    t.jsonb    "extra_info"
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+    t.index ["company_id", "partner_id"], name: "index_sales_orders_on_company_id_and_partner_id", using: :btree
+    t.index ["order_number"], name: "index_sales_orders_on_order_number", using: :btree
     t.index ["status"], name: "index_sales_orders_on_status", using: :btree
   end
 

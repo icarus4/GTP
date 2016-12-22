@@ -16,6 +16,7 @@
 #  total               :decimal(12, 2)   not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  returned_quantity   :integer          default(0), not null
 #
 # Indexes
 #

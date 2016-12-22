@@ -17,6 +17,7 @@
 #  state                  :string
 #  status                 :string
 #  email                  :string
+#  return_status          :integer          default("unreturned"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
 #  total_units            :integer
 #  subtotal               :decimal(12, 2)
@@ -28,7 +29,6 @@
 #  extra_info             :jsonb
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  return_status          :integer          default(0), not null
 #
 # Indexes
 #
