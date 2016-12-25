@@ -215,29 +215,6 @@ ActiveRecord::Schema.define(version: 20161222023838) do
     t.index ["locationable_type", "locationable_id"], name: "index_locations_on_locationable_type_and_locationable_id", using: :btree
   end
 
-  create_table "order_line_items", force: :cascade do |t|
-    t.integer  "order_id",                                                 null: false
-    t.integer  "procurement_id"
-    t.integer  "item_id",                                                  null: false
-    t.integer  "variant_id"
-    t.integer  "bin_location_id"
-    t.integer  "location_variant_id"
-    t.integer  "quantity",                                                 null: false
-    t.decimal  "unit_price",          precision: 10, scale: 2,             null: false
-    t.decimal  "tax_rate",            precision: 4,  scale: 1
-    t.decimal  "tax",                 precision: 10, scale: 2
-    t.decimal  "total",               precision: 12, scale: 2,             null: false
-    t.datetime "created_at",                                               null: false
-    t.datetime "updated_at",                                               null: false
-    t.integer  "returned_quantity",                            default: 0, null: false
-    t.index ["bin_location_id"], name: "index_order_line_items_on_bin_location_id", using: :btree
-    t.index ["item_id"], name: "index_order_line_items_on_item_id", using: :btree
-    t.index ["location_variant_id"], name: "index_order_line_items_on_location_variant_id", using: :btree
-    t.index ["order_id"], name: "index_order_line_items_on_order_id", using: :btree
-    t.index ["procurement_id"], name: "index_order_line_items_on_procurement_id", using: :btree
-    t.index ["variant_id"], name: "index_order_line_items_on_variant_id", using: :btree
-  end
-
   create_table "packaging_types", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "name"
@@ -332,6 +309,29 @@ ActiveRecord::Schema.define(version: 20161222023838) do
     t.datetime "updated_at",         null: false
     t.index ["item_id"], name: "index_purchase_order_details_on_item_id", using: :btree
     t.index ["purchase_order_id"], name: "index_purchase_order_details_on_purchase_order_id", using: :btree
+  end
+
+  create_table "purchase_order_line_items", force: :cascade do |t|
+    t.integer  "purchase_order_id",                                        null: false
+    t.integer  "procurement_id"
+    t.integer  "item_id",                                                  null: false
+    t.integer  "variant_id"
+    t.integer  "bin_location_id"
+    t.integer  "location_variant_id"
+    t.integer  "quantity",                                                 null: false
+    t.decimal  "unit_price",          precision: 10, scale: 2,             null: false
+    t.decimal  "tax_rate",            precision: 4,  scale: 1
+    t.decimal  "tax",                 precision: 10, scale: 2
+    t.decimal  "total",               precision: 12, scale: 2,             null: false
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.integer  "returned_quantity",                            default: 0, null: false
+    t.index ["bin_location_id"], name: "index_purchase_order_line_items_on_bin_location_id", using: :btree
+    t.index ["item_id"], name: "index_purchase_order_line_items_on_item_id", using: :btree
+    t.index ["location_variant_id"], name: "index_purchase_order_line_items_on_location_variant_id", using: :btree
+    t.index ["procurement_id"], name: "index_purchase_order_line_items_on_procurement_id", using: :btree
+    t.index ["purchase_order_id"], name: "index_purchase_order_line_items_on_purchase_order_id", using: :btree
+    t.index ["variant_id"], name: "index_purchase_order_line_items_on_variant_id", using: :btree
   end
 
   create_table "purchase_order_return_line_items", force: :cascade do |t|

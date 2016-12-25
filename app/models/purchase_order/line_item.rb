@@ -1,9 +1,9 @@
 # == Schema Information
 #
-# Table name: order_line_items
+# Table name: purchase_order_line_items
 #
 #  id                  :integer          not null, primary key
-#  order_id            :integer          not null
+#  purchase_order_id   :integer          not null
 #  procurement_id      :integer
 #  item_id             :integer          not null
 #  variant_id          :integer
@@ -20,20 +20,20 @@
 #
 # Indexes
 #
-#  index_order_line_items_on_bin_location_id      (bin_location_id)
-#  index_order_line_items_on_item_id              (item_id)
-#  index_order_line_items_on_location_variant_id  (location_variant_id)
-#  index_order_line_items_on_order_id             (order_id)
-#  index_order_line_items_on_procurement_id       (procurement_id)
-#  index_order_line_items_on_variant_id           (variant_id)
+#  index_purchase_order_line_items_on_bin_location_id      (bin_location_id)
+#  index_purchase_order_line_items_on_item_id              (item_id)
+#  index_purchase_order_line_items_on_location_variant_id  (location_variant_id)
+#  index_purchase_order_line_items_on_procurement_id       (procurement_id)
+#  index_purchase_order_line_items_on_purchase_order_id    (purchase_order_id)
+#  index_purchase_order_line_items_on_variant_id           (variant_id)
 #
 
-class Order::LineItem < ApplicationRecord
+class PurchaseOrder::LineItem < ApplicationRecord
   before_save :calculate_total
   after_save :update_purchase_order_return_status!, if: :procurement_id_changed?
   after_destroy :update_purchase_order_return_status!, if: :procurement_id_changed?
 
-  belongs_to :purchase_order, foreign_key: :order_id, counter_cache: :line_items_count
+  belongs_to :purchase_order, counter_cache: :line_items_count
   belongs_to :procurement
   belongs_to :item
   belongs_to :variant
@@ -42,7 +42,7 @@ class Order::LineItem < ApplicationRecord
 
   has_many :purchase_order_return_line_items
 
-  validates :order_id, presence: true
+  validates :purchase_order_id, presence: true
   validates :item_id,  presence: true
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 1 }
   validates :tax_rate, numericality: { greater_than_or_equal_to: 0 }

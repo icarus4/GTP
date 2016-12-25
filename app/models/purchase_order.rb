@@ -13,7 +13,7 @@
 #  ship_to_location_id    :integer
 #  line_items_count       :integer          default(0), not null
 #  order_number           :string
-#  status                 :integer          default(0), not null
+#  status                 :integer          default("draft"), not null
 #  email                  :string
 #  return_status          :integer          default("unreturned"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
@@ -53,7 +53,7 @@ class PurchaseOrder < ApplicationRecord
   belongs_to :payment_method
   belongs_to :assignee, class_name: 'User'
 
-  has_many :line_items, class_name: 'Order::LineItem', foreign_key: :order_id
+  has_many :line_items
   has_many :items,    through: :line_items
   has_many :variants, through: :line_items
   has_many :procurements

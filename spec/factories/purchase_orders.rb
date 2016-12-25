@@ -13,7 +13,7 @@
 #  ship_to_location_id    :integer
 #  line_items_count       :integer          default(0), not null
 #  order_number           :string
-#  status                 :integer          default(0), not null
+#  status                 :integer          default("draft"), not null
 #  email                  :string
 #  return_status          :integer          default("unreturned"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
