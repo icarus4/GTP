@@ -14,7 +14,7 @@
     </td>
 
     <!-- 可用量 -->
-    <td>{{ available_count }}</td>
+    <td>{{ sellable_count }}</td>
 
     <td><!-- 單價 -->
       <input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
@@ -39,18 +39,23 @@
       line_item: Object,
       line_item_index: Number,
       items: Array,
+      ship_from_location_id: {}
     },
     data: function() {
       return {
-        // unit_price: null
+        location_on_hand_count: null
       }
     },
     computed: {
+      // 此 item 不分 location 的整體 available_count
       available_count: function() {
         if (_.isNil(this.line_item.item_id)) { return null }
         var that = this
         var item = _.find(this.items, function(item) { return item.id == that.line_item.item_id })
         return item.available_count
+      },
+      sellable_count: function() {
+        return this.location_on_hand_count
       },
       total: function() {
         var total = 0
@@ -67,11 +72,30 @@
         if (_.isNumber(value) && !_.isNaN(value)) {
           this.$store.commit('updateLineItemTotal', { line_item_index: this.line_item_index, total: value })
         }
+      },
+      ship_from_location_id: function(value, old_value) {
+        this.updateOnHandCount()
       }
     },
     methods: {
       itemSelected: function(e) {
-        this.$store.dispatch('itemSelected', { line_item_index: this.line_item_index, item_id: parseInt(e.target.value) })
+        var item_id = parseInt(e.target.value)
+        this.$store.dispatch('itemSelected', { line_item_index: this.line_item_index, item_id: item_id })
+        this.updateOnHandCount()
+      },
+      updateOnHandCount: function() {
+        if (_.isNil(this.ship_from_location_id) || _.isNil(this.line_item.item_id)) { return }
+
+        var that = this
+        $.ajax({
+          url: "/api/v1/locations/" + that.$store.state.sales_order.ship_from_location_id + "/items/" + that.line_item.item_id,
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          that.location_on_hand_count = data.item.location.on_hand_count
+        }).fail(function(err) {
+          console.log(err)
+        })
       },
       pressDeleteButton: function() {
         this.$store.dispatch('removeLineItemByIndex', this.line_item_index)
