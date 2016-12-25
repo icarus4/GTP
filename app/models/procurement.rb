@@ -15,8 +15,8 @@
 
 class Procurement < ApplicationRecord
   belongs_to :purchase_order
-  has_many :purchase_order_line_items, class_name: 'Order::LineItem', foreign_key: :procurement_id
-  has_many :returnable_purchase_order_line_items, -> { returnable }, class_name: 'Order::LineItem', foreign_key: :procurement_id
+  has_many :purchase_order_line_items, class_name: 'PurchaseOrder::LineItem', foreign_key: :procurement_id
+  has_many :returnable_purchase_order_line_items, -> { returnable }, class_name: 'PurchaseOrder::LineItem', foreign_key: :procurement_id
   has_many :variants
 
   validates :purchase_order_id, presence: true

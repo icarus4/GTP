@@ -1,7 +1,7 @@
-class CreateOrderLineItems < ActiveRecord::Migration[5.0]
+class CreatePurchaseOrderLineItems < ActiveRecord::Migration[5.0]
   def change
-    create_table :order_line_items do |t|
-      t.references :order,      null: false, index: true
+    create_table :purchase_order_line_items do |t|
+      t.references :purchase_order,          null: false, index: true
       t.references :procurement,             index: true
       t.references :item,       null: false, index: true
       t.references :variant,                 index: true

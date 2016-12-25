@@ -24,7 +24,7 @@ class Api::V1::PurchaseOrderReturnsController < Api::V1::BaseController
     ActiveRecord::Base.transaction do
       purchase_order_return = PurchaseOrderReturn.create!(company: current_company, purchase_order: purchase_order, notes: params[:notes])
       params[:purchase_order_return_line_items].each do |_, input_line_item|
-        po_line_item = Order::LineItem.find_by(id: input_line_item[:id])
+        po_line_item = PurchaseOrder::LineItem.find_by(id: input_line_item[:id])
         next if po_line_item.nil?
         return_quantity = input_line_item[:quantity].to_i
         existing_return_quantity = PurchaseOrderReturnLineItem.where(purchase_order_line_item: po_line_item).sum(:quantity)

@@ -44,7 +44,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       # 3. Setup LocationVariant
       # 4. Update variant and location_variant info to procured line_item
       p[:purchase_order_line_items].each do |_, input_line_item|
-        line_item = Order::LineItem.find_by(id: input_line_item[:id], order_id: purchase_order.id)
+        line_item = PurchaseOrder::LineItem.find_by(id: input_line_item[:id], purchase_order_id: purchase_order.id)
         next if line_item.nil?
         quantity_to_procure = input_line_item[:quantity_to_procure]&.to_i
         next if quantity_to_procure.nil? || quantity_to_procure <= 0
@@ -56,8 +56,8 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         # 若原先line_item.quantity為10個，此次收取3個
         # 則另外產生一個新的line_item，quantity為3，並將原先的line_item.quantity變為7
         if line_item.quantity > quantity_to_procure
-          procured_line_item = Order::LineItem.create!(
-            order_id:    purchase_order.id,
+          procured_line_item = PurchaseOrder::LineItem.create!(
+            purchase_order_id: purchase_order.id,
             procurement: procurement,
             item_id:     line_item.item_id,
             variant_id:  line_item.variant_id,
@@ -103,7 +103,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       end
 
       # Change status to received when all line_items are procured
-      purchase_order.receive! if purchase_order.all_line_items_are_procured?
+      purchase_order.received! if purchase_order.all_line_items_are_procured?
 
       # FIXME:
       # 部分情況會導致 procurement 產生，但是卻沒有任何 variant 產生，此時的 procurement 為無效，不應該被產生

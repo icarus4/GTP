@@ -1,6 +1,6 @@
 class Api::V1::ProcurementsController < Api::V1::BaseController
   def update
-    procurement = Procurement.joins(:purchase_order).find_by(orders: { company_id: current_company.id }, id: params[:id])
+    procurement = Procurement.joins(:purchase_order).find_by(purchase_orders: { company_id: current_company.id }, id: params[:id])
     if procurement.nil?
       render json: { errors: 'Procurement not found' }, status: :bad_request and return
     end
@@ -15,7 +15,7 @@ class Api::V1::ProcurementsController < Api::V1::BaseController
   end
 
   def destroy
-    procurement = Procurement.joins(:purchase_order).find_by(orders: { company_id: current_company.id }, id: params[:id])
+    procurement = Procurement.joins(:purchase_order).find_by(purchase_orders: { company_id: current_company.id }, id: params[:id])
     if procurement.nil?
       render json: { errors: 'Procurement not found' }, status: :bad_request and return
     end
