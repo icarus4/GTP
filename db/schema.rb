@@ -454,6 +454,10 @@ ActiveRecord::Schema.define(version: 20161222023838) do
     t.integer  "assignee_id"
     t.integer  "payment_method_id"
     t.integer  "status",                                          default: 0, null: false
+    t.integer  "invoice_status",                                  default: 0, null: false
+    t.integer  "packing_status",                                  default: 0, null: false
+    t.integer  "shipment_status",                                 default: 0, null: false
+    t.integer  "payment_status",                                  default: 0, null: false
     t.integer  "tax_treatment",                                   default: 0, null: false
     t.integer  "line_items_count",                                default: 0, null: false
     t.integer  "total_units",                                     default: 0, null: false
@@ -470,7 +474,6 @@ ActiveRecord::Schema.define(version: 20161222023838) do
     t.datetime "updated_at",                                                  null: false
     t.index ["company_id", "partner_id"], name: "index_sales_orders_on_company_id_and_partner_id", using: :btree
     t.index ["order_number"], name: "index_sales_orders_on_order_number", using: :btree
-    t.index ["status"], name: "index_sales_orders_on_status", using: :btree
   end
 
   create_table "stock_transfer_details", force: :cascade do |t|

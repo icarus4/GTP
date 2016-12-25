@@ -11,6 +11,10 @@
 #  assignee_id            :integer
 #  payment_method_id      :integer
 #  status                 :integer          default(0), not null
+#  invoice_status         :integer          default(0), not null
+#  packing_status         :integer          default(0), not null
+#  shipment_status        :integer          default(0), not null
+#  payment_status         :integer          default(0), not null
 #  tax_treatment          :integer          default(0), not null
 #  line_items_count       :integer          default(0), not null
 #  total_units            :integer          default(0), not null
@@ -30,7 +34,6 @@
 #
 #  index_sales_orders_on_company_id_and_partner_id  (company_id,partner_id)
 #  index_sales_orders_on_order_number               (order_number)
-#  index_sales_orders_on_status                     (status)
 #
 
 class SalesOrder < ActiveRecord::Base
