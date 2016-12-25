@@ -103,7 +103,7 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       end
 
       # Change status to received when all line_items are procured
-      purchase_order.receive! if purchase_order.all_line_items_are_procured?
+      purchase_order.received! if purchase_order.all_line_items_are_procured?
 
       # FIXME:
       # 部分情況會導致 procurement 產生，但是卻沒有任何 variant 產生，此時的 procurement 為無效，不應該被產生

@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: orders
+# Table name: purchase_orders
 #
 #  id                     :integer          not null, primary key
 #  company_id             :integer          not null
@@ -12,11 +12,10 @@
 #  ship_from_location_id  :integer
 #  ship_to_location_id    :integer
 #  line_items_count       :integer          default(0), not null
-#  type                   :string
 #  order_number           :string
-#  state                  :string
-#  status                 :string
+#  status                 :integer          default(0), not null
 #  email                  :string
+#  return_status          :integer          default("unreturned"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
 #  total_units            :integer
 #  subtotal               :decimal(12, 2)
@@ -28,20 +27,14 @@
 #  extra_info             :jsonb
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  return_status          :integer          default("unreturned"), not null
 #
 # Indexes
 #
-#  index_orders_on_assignee_id   (assignee_id)
-#  index_orders_on_company_id    (company_id)
-#  index_orders_on_order_number  (order_number)
-#  index_orders_on_partner_id    (partner_id)
-#  index_orders_on_state         (state)
-#  index_orders_on_status        (status)
-#  index_orders_on_type          (type)
+#  index_purchase_orders_on_company_id_and_partner_id  (company_id,partner_id)
+#  index_purchase_orders_on_order_number               (order_number)
 #
 
-class PurchaseOrder < Order
+class PurchaseOrder < ApplicationRecord
   store_accessor :extra_info,
                  :goods_declaration_number
 
@@ -51,8 +44,18 @@ class PurchaseOrder < Order
   # before_save :update_total_amount
   # after_save :update_item_available_count!
 
-  # has_many :details, class_name: 'PurchaseOrderDetail'
-  # has_many :items, through: :details, source: :item
+
+  belongs_to :company
+  belongs_to :partner
+  belongs_to :bill_to_location, class_name: 'Location', foreign_key: :bill_to_location_id
+  belongs_to :ship_to_location, class_name: 'Location', foreign_key: :ship_to_location_id
+  belongs_to :currency
+  belongs_to :payment_method
+  belongs_to :assignee, class_name: 'User'
+
+  has_many :line_items, class_name: 'Order::LineItem', foreign_key: :order_id
+  has_many :items,    through: :line_items
+  has_many :variants, through: :line_items
   has_many :procurements
   has_many :purchase_order_returns
   has_many :purchase_order_return_line_items, through: :purchase_order_returns, source: :line_items
@@ -67,7 +70,7 @@ class PurchaseOrder < Order
             :ship_to_location_id,
             presence: true
 
-  validates :order_number, presence: true, uniqueness: { scope: [:company_id, :type] }
+  validates :order_number, presence: true, uniqueness: { scope: :company_id }
   validates :total_units,  numericality: { only_integer: true }, allow_nil: true
   validates :subtotal,     numericality: true, allow_nil: true
   validates :total_tax,    numericality: true, allow_nil: true
@@ -75,9 +78,7 @@ class PurchaseOrder < Order
 
   auto_strip_attributes :email, :notes, :order_number
 
-  VALID_STATUSES = %w(draft active received)
-  validates :status, inclusion: { in: VALID_STATUSES }
-
+  enum status: { draft: 0, active: 1, received: 2 }
   enum tax_treatment: { exclusive: 0, inclusive: 1 }, _prefix: :tax
   enum return_status: { unreturned: 0, partial: 1, returned: 2 }, _prefix: :return_status_is
 
@@ -93,32 +94,12 @@ class PurchaseOrder < Order
   #   items.each(&:update_available_count!)
   # end
 
-  def active?
-    status == 'active'
-  end
-
-  def active!
-    update!(status: 'active')
-  end
-
   # def approve!
   #   # raise "Only draft order can be approved." unless draft?
   #   # self.status = 'active'
   #   # save!
   #   raise NotImplementedError
   # end
-
-  def draft?
-    status == 'draft'
-  end
-
-  def received?
-    status == 'received'
-  end
-
-  def receive!
-    update!(status: 'received')
-  end
 
   # def receive!
   #   raise "Only active order can receive." unless active?

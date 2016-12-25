@@ -33,8 +33,7 @@ class Order::LineItem < ApplicationRecord
   after_save :update_purchase_order_return_status!, if: :procurement_id_changed?
   after_destroy :update_purchase_order_return_status!, if: :procurement_id_changed?
 
-  belongs_to :order, counter_cache: true
-  belongs_to :purchase_order, foreign_key: :order_id
+  belongs_to :purchase_order, foreign_key: :order_id, counter_cache: :line_items_count
   belongs_to :procurement
   belongs_to :item
   belongs_to :variant
