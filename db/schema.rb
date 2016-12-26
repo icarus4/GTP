@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161226074252) do
+ActiveRecord::Schema.define(version: 20161226083824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -191,9 +191,14 @@ ActiveRecord::Schema.define(version: 20161226074252) do
     t.integer  "company_id"
     t.integer  "bin_location_id"
     t.integer  "variant_id"
-    t.integer  "quantity",        default: 0, null: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.integer  "quantity",           default: 0, null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.integer  "location_id"
+    t.integer  "item_id"
+    t.date     "expiry_date"
+    t.integer  "committed_quantity",             null: false
+    t.integer  "sellable_quantity"
     t.index ["bin_location_id"], name: "index_location_variants_on_bin_location_id", using: :btree
     t.index ["company_id"], name: "index_location_variants_on_company_id", using: :btree
     t.index ["quantity"], name: "index_location_variants_on_quantity", where: "(quantity > 0)", using: :btree
@@ -406,6 +411,7 @@ ActiveRecord::Schema.define(version: 20161226074252) do
     t.integer  "location_variant_id"
     t.integer  "variant_id"
     t.integer  "item_id"
+    t.integer  "shipment_id"
     t.integer  "quantity",            default: 0, null: false
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
@@ -414,27 +420,22 @@ ActiveRecord::Schema.define(version: 20161226074252) do
     t.index ["line_item_id"], name: "index_sales_order_line_item_commitments_on_line_item_id", using: :btree
     t.index ["location_id"], name: "index_sales_order_line_item_commitments_on_location_id", using: :btree
     t.index ["location_variant_id"], name: "index_line_item_commitments_on_location_variant_id", using: :btree
+    t.index ["shipment_id"], name: "index_sales_order_line_item_commitments_on_shipment_id", using: :btree
     t.index ["variant_id"], name: "index_sales_order_line_item_commitments_on_variant_id", using: :btree
   end
 
   create_table "sales_order_line_items", force: :cascade do |t|
-    t.integer  "sales_order_id",                               null: false
-    t.integer  "shipment_id"
-    t.integer  "item_id",                                      null: false
-    t.integer  "variant_id"
-    t.integer  "bin_location_id"
-    t.integer  "location_variant_id"
-    t.integer  "quantity",                                     null: false
-    t.decimal  "unit_price",          precision: 10, scale: 2, null: false
-    t.decimal  "tax_rate",            precision: 4,  scale: 1
-    t.decimal  "tax",                 precision: 10, scale: 2
-    t.decimal  "total",               precision: 12, scale: 2, null: false
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.integer  "sales_order_id",                          null: false
+    t.integer  "item_id",                                 null: false
+    t.integer  "quantity",                                null: false
+    t.decimal  "unit_price",     precision: 10, scale: 2, null: false
+    t.decimal  "tax_rate",       precision: 4,  scale: 1
+    t.decimal  "tax",            precision: 10, scale: 2
+    t.decimal  "total",          precision: 12, scale: 2, null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.index ["item_id"], name: "index_sales_order_line_items_on_item_id", using: :btree
     t.index ["sales_order_id"], name: "index_sales_order_line_items_on_sales_order_id", using: :btree
-    t.index ["shipment_id"], name: "index_sales_order_line_items_on_shipment_id", using: :btree
-    t.index ["variant_id"], name: "index_sales_order_line_items_on_variant_id", using: :btree
   end
 
   create_table "sales_orders", force: :cascade do |t|

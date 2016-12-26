@@ -9,6 +9,7 @@
 #  location_variant_id :integer
 #  variant_id          :integer
 #  item_id             :integer
+#  shipment_id         :integer
 #  quantity            :integer          default(0), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -20,6 +21,7 @@
 #  index_sales_order_line_item_commitments_on_item_id          (item_id)
 #  index_sales_order_line_item_commitments_on_line_item_id     (line_item_id)
 #  index_sales_order_line_item_commitments_on_location_id      (location_id)
+#  index_sales_order_line_item_commitments_on_shipment_id      (shipment_id)
 #  index_sales_order_line_item_commitments_on_variant_id       (variant_id)
 #
 

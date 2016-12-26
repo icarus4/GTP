@@ -4,34 +4,57 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
   end
 
   def create
-    partner = Partner.find_by(company: current_company, id: params[:sales_order][:partner_id])
+    partner = Partner.select(:id).find_by(company: current_company, id: params[:sales_order][:partner_id])
     render json: { errors: 'Partner not found' }, status: :bad_request and return if partner.nil?
 
-    sales_order = current_company.sales_orders.build(sales_order_params)
-    sales_order.partner = partner
+    ship_from_location = Location.select(:id).find_by(locationable: current_company, id: params[:sales_order][:ship_from_location])
+    render json: { errors: 'Ship from location not found' }, status: :bad_request and return if ship_from_location.nil?
 
-    line_items = []
+    sales_order                    = current_company.sales_orders.build(sales_order_params)
+    sales_order.partner            = partner
+    sales_order.ship_from_location = ship_from_location
+
     ActiveRecord::Base.transaction do
       sales_order.save!
 
       params[:sales_order_line_items].each do |_, input_line_item|
-        item = Item.find_by(company: current_company, id: input_line_item[:item_id])
+        item = Item.select(:id).find_by(company: current_company, id: input_line_item[:item_id])
         next if item.nil?
 
-        # TODO: 讓user可選擇已存在的任何一個variant
+        line_item = SalesOrder::LineItem.create!(
+          sales_order: sales_order,
+          item_id:     input_line_item[:item_id],
+          quantity:    input_line_item[:quantity],
+          unit_price:  input_line_item[:unit_price],
+          tax_rate:    input_line_item[:tax_rate],
+        )
 
-        # 找尋
-        # 優先從有 expiry_date 的 variant 選取
-        variant = Variant.where(item: item).where.not(expiry_date: nil).order(:expiry_date).first || Variant.where(item: item).where(expiry_date: nil).order(:created_at).first
-        next if variant.nil?
 
-        raise "Invalid quantity: #{item[:quantity]}" if item_params[:quantity].blank? || item_params[:quantity]&.is_not_integer?
-        note = item_params[:note].present? ? item_params[:note].strip : nil
-        sales_order.details.create!(variant: variant, quantity: item_params[:quantity].to_i, unit_price: item_params[:unitPrice].to_i, note: note)
+        # 從庫存中尋找適當的貨品保留作為出貨用
+        # 找到的 location_variant 的數量不一定足夠，因此用迴圈逐一找尋，直到總數量符合出貨量
+        remaining_quantity = line_item.quantity
+        offset = 0
+        loop do
+          # 找出最快過期的出貨
+          chosen_lv = LocationVariant.where(company: current_company, location: ship_from_location, item: item)
+                                     .default_sales_committed_sequence
+                                     .offset(offset).first
+          break if chosen_lv.nil?
+          committed_quantity = chosen_lv.sellable_quantity >= remaining_quantity ? remaining_quantity : chosen_lv.sellable_quantity
+          commitment = SalesOrder::LineItemCommitment.create!(
+            line_item:        line_item,
+            location_variant: location_variant,
+            quantity:         committed_quantity
+          )
+          remaining_quantity -= committed_quantity
+          if remaining_quantity == 0
+            break
+          elsif remaining_quantity < 0
+            raise "Should not be here"
+          end
+          offset += 1
+        end
       end
-
-      sales_order.update_total_amount!
-      sales_order.update_item_available_count!
     end
 
     render json: { sales_order: sales_order }
@@ -43,7 +66,6 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
       params.require(:sales_order).permit(
         :bill_to_location_id,
         :ship_to_location_id,
-        :ship_from_location_id,
         :assignee_id,
         :status,
         :tax_treatment,
