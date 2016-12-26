@@ -26,4 +26,9 @@
 #
 
 class SalesOrder::LineItem < ApplicationRecord
+  belongs_to :sales_order
+  belongs_to :item
+  belongs_to :variant
+  belongs_to :bin_location
+  belongs_to :location_variant
 end

@@ -10,7 +10,7 @@
 #  ship_from_location_id  :integer
 #  assignee_id            :integer
 #  payment_method_id      :integer
-#  status                 :integer          default(0), not null
+#  status                 :integer          default("draft"), not null
 #  invoice_status         :integer          default(0), not null
 #  packing_status         :integer          default(0), not null
 #  shipment_status        :integer          default(0), not null
