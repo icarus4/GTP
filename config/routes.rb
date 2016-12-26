@@ -56,12 +56,13 @@ Rails.application.routes.draw do
       resources :locations, only: [:index, :update] do
         get :holds_stock, on: :collection
         resources :bin_locations, only: [:create, :index], controller: 'locations/bin_locations'
+        resources :items, only: [:show], controller: 'locations/items'
       end
       resources :item_series, only: [:create] do
         resources :items, only: [:index, :create], controller: 'item_series/items'
       end
       resources :items, only: [:index, :update] do
-        get :stock_info_by_location, on: :member
+        get :stock_info_by_location, on: :member # 列出特定item的庫存資訊
         resources :price_lists, only: [:index], controller: 'items/price_lists'
       end
       resources :brands, only: [:index, :create]

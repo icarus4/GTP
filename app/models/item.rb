@@ -118,8 +118,9 @@ class Item < ActiveRecord::Base
     end
 
     def setup_defaults
-      self.weight_unit ||= 'g'
-      self.sellable    = true if sellable.nil?    # Don't use ||= for boolean
-      self.purchasable = true if purchasable.nil? # Don't use ||= for boolean
+      # 用 #has_attribute? 檢查欄位是否有被select
+      self.weight_unit ||= 'g' if has_attribute?(:weight_unit)
+      self.sellable    = true if has_attribute?(:sellable) && sellable.nil?    # Don't use ||= for boolean
+      self.purchasable = true if has_attribute?(:purchasable) && purchasable.nil? # Don't use ||= for boolean
     end
 end

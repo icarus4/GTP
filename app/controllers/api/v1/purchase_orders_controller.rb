@@ -26,9 +26,9 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
         # Assign attributes to line items then save
         params[:purchase_order_line_items].each do |_, input_line_item|
           line_item = if input_line_item[:id].present?
-                        Order::LineItem.find_by(id: input_line_item[:id], purchase_order: purchase_order) || Order::LineItem.new(purchase_order: purchase_order)
+                        PurchaseOrder::LineItem.find_by(id: input_line_item[:id], purchase_order: purchase_order) || PurchaseOrder::LineItem.new(purchase_order: purchase_order)
                       else
-                        Order::LineItem.new(purchase_order: purchase_order)
+                        PurchaseOrder::LineItem.new(purchase_order: purchase_order)
                       end
           line_item.attributes = {
             item_id:    input_line_item[:item_id],

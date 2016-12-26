@@ -1,10 +1,10 @@
 # == Schema Information
 #
-# Table name: order_line_items
+# Table name: sales_order_line_items
 #
 #  id                  :integer          not null, primary key
-#  order_id            :integer          not null
-#  procurement_id      :integer
+#  sales_order_id      :integer          not null
+#  shipment_id         :integer
 #  item_id             :integer          not null
 #  variant_id          :integer
 #  bin_location_id     :integer
@@ -19,16 +19,14 @@
 #
 # Indexes
 #
-#  index_order_line_items_on_bin_location_id      (bin_location_id)
-#  index_order_line_items_on_item_id              (item_id)
-#  index_order_line_items_on_location_variant_id  (location_variant_id)
-#  index_order_line_items_on_order_id             (order_id)
-#  index_order_line_items_on_procurement_id       (procurement_id)
-#  index_order_line_items_on_variant_id           (variant_id)
+#  index_sales_order_line_items_on_item_id         (item_id)
+#  index_sales_order_line_items_on_sales_order_id  (sales_order_id)
+#  index_sales_order_line_items_on_shipment_id     (shipment_id)
+#  index_sales_order_line_items_on_variant_id      (variant_id)
 #
 
 require 'rails_helper'
 
-RSpec.describe Order::LineItem, type: :model do
+RSpec.describe SalesOrder::LineItem, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end

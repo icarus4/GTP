@@ -1,0 +1,258 @@
+<script type="text/javascript">
+  var store = new Vuex.Store({
+    state: {
+      mode: null,
+      options: {
+        customers: [],
+        customer_locations: [],
+        items: [],
+        price_lists: [],
+        stockable_locations: [],
+      },
+      sales_order: {
+        customer_id: null,
+        bill_to_location_id: null,
+        ship_to_location_id: null,
+        ship_from_location_id: null,
+        shipment_date: null,
+        issue_date: null,
+        email: null,
+        phone: null,
+        tax_treatment: 'exclusive',
+        notes: null,
+        status: 'active',
+      },
+      sales_order_line_items: [],
+      sales_order_line_item_template: {
+        id: null,
+        item_id: null,
+        quantity: 1,
+        unit_price: null,
+        tax_rate: null,
+        total: null,
+      }
+    },
+    getters: {
+      total_units: function(state) {
+        return _.sumBy(state.sales_order_line_items, function(o) {
+          return (o.item_id && o.quantity) ? o.quantity : 0 // 選定商品 & quantity 時才計算
+        })
+      },
+      subtotal: function(state) {
+        return _.sumBy(state.sales_order_line_items, function(o) {
+          return (o.item_id && o.quantity && o.unit_price) ? o.quantity * o.unit_price : 0
+        })
+      },
+      total_tax: function(state) {
+        var total_tax = 0
+        state.sales_order_line_items.forEach(function(line_item) {
+          var line_item_total = parseFloat(line_item.total)
+          var line_item_tax_rate = parseFloat(line_item.tax_rate)
+          if (_.isInteger(line_item.item_id) && _.isNumber(line_item_total) && !_.isNaN(line_item_total) && _.isNumber(line_item_tax_rate) && !_.isNaN(line_item_tax_rate)) {
+            if (state.sales_order.tax_treatment === 'exclusive') {
+              total_tax += line_item_total * line_item_tax_rate / 100
+            }
+            else {
+              // 推導
+              // total_without_tax * (100 + tax_rate) / 100 = total
+              // total_without_tax * (100 + tax_rate) / 100 = total_without_tax + tax
+              // total_without_tax * (100 + tax_rate) / 100 - total_without_tax = tax
+              // total_without_tax * ((100 + tax_rate) / 100 - 1) = tax
+              // (total - tax) * ((100 + tax_rate) / 100 - 1) = tax
+              // total * ((100 + tax_rate) / 100 - 1) - tax * ((100 + tax_rate) / 100 - 1) = tax
+              // total * ((100 + tax_rate) / 100 - 1) = tax + tax * ((100 + tax_rate) / 100 - 1)
+              // total * ((100 + tax_rate) / 100 - 1) = tax * (1 + ((100 + tax_rate) / 100 - 1))
+              // total * ((100 + tax_rate) / 100 - 1) / (1 + ((100 + tax_rate) / 100 - 1)) = tax
+              // total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
+              total_tax += line_item_total / (1 / ((100 + line_item_tax_rate) / 100 - 1) + 1)
+            }
+          }
+        })
+        // state.purchase_order.total_tax = total_tax
+        return _.round(total_tax, 2)
+      },
+      total_amount: function(state, getters) {
+        var total_amount = 0
+        if (_.isNumber(getters.subtotal) && _.isNumber(getters.total_tax)) {
+          if (state.sales_order.tax_treatment === 'exclusive') {
+            total_amount = getters.subtotal + getters.total_tax
+          }
+          else if (state.sales_order.tax_treatment === 'inclusive') {
+            total_amount = getters.subtotal
+          }
+        }
+        state.sales_order.total_amount = total_amount
+        return total_amount
+      }
+    },
+    mutations: {
+      setupMode: function(state, mode) {
+        state.mode = mode
+      },
+      setupCustomers: function(state, customers) {
+        state.options.customers = customers
+      },
+      setupSelectedCustomer: function(state, customer_id) {
+        state.sales_order.customer_id = customer_id
+      },
+      setupCustomerLocations: function(state, locations) {
+        state.options.customer_locations = locations
+      },
+      setupSelectedBillToLocation: function(state, location_id) {
+        state.sales_order.bill_to_location_id = location_id
+      },
+      setupSelectedShipToLocation: function(state, location_id) {
+        state.sales_order.ship_to_location_id = location_id
+      },
+      updateIssueDate: function(state, date) {
+        state.sales_order.issue_date = date
+      },
+      updateShipmentDate: function(state, date) {
+        state.sales_order.shipment_date = date
+      },
+      updateEmail: function(state, email) {
+        state.sales_order.email = email
+      },
+      updatePhone: function(state, phone) {
+        state.sales_order.phone = phone
+      },
+      updatePriceLists: function(state, price_lists) {
+        state.options.price_lists = price_lists
+      },
+      updateTaxTreatment: function(state, tax_treatment) {
+        state.sales_order.tax_treatment = tax_treatment
+      },
+      updateStockableLocationList: function(state, locations) {
+        state.options.stockable_locations = locations
+      },
+      setupShipFromLocation: function(state, location_id) {
+        state.sales_order.ship_from_location_id = location_id
+      },
+      updateItemList: function(state, items) {
+        state.options.items = items
+      },
+      addNewLineItem: function(state) {
+        state.sales_order_line_items.push(_.cloneDeep(state.sales_order_line_item_template))
+      },
+      setupSelectedItem: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].item_id = obj.item_id
+      },
+      removeLineItemByIndex: function(state, line_item_index) {
+        state.sales_order_line_items.$remove(state.sales_order_line_items[line_item_index])
+      },
+      updateQuantity: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].quantity = obj.quantity
+      },
+      updateUnitPrice: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].unit_price = obj.unit_price
+      },
+      updateTaxRate: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].tax_rate = obj.tax_rate
+      },
+      updateLineItemTotal: function(state, obj) {
+        state.sales_order_line_items[obj.line_item_index].total = obj.total
+      },
+      updateNotes: function(state, notes) {
+        state.sales_order.notes = notes.trim()
+      },
+      updateStatus: function(state, status) {
+        state.sales_order.status = status
+      }
+    },
+    actions: {
+      billToLocationSelected: function(context, location_id) {
+        context.commit('setupSelectedBillToLocation', location_id)
+      },
+      shipToLocationSelected: function(context, location_id) {
+        context.commit('setupSelectedShipToLocation', location_id)
+      },
+      shipFromLocationSelected: function(context, location_id) {
+        context.commit('setupShipFromLocation', location_id)
+      },
+      customerSelected: function(context, customer_id) {
+        context.commit('setupSelectedCustomer', customer_id)
+        context.dispatch('getCustomerLocationList', customer_id)
+      },
+      itemSelected: function(context, obj) {
+        context.commit('setupSelectedItem', { line_item_index: obj.line_item_index, item_id: obj.item_id })
+      },
+      getCustomerList: function(context) {
+        $.ajax({
+          url: '/api/v1/customers',
+          method: 'GET',
+          dataType: 'json',
+        }).done(function(data) {
+          context.commit('setupCustomers', data.customers)
+        })
+      },
+      getCustomerLocationList: function(context, customer_id) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/partners/" + customer_id + "/locations",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('setupCustomerLocations', data.locations)
+        })
+      },
+      getPriceList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/price_lists/sales",
+          method: "GET",
+          dataType: 'json'
+        }).done(function(data) {
+          context.commit('updatePriceLists', data.price_lists)
+        })
+      },
+      getStockableLocationList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/locations/holds_stock",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('updateStockableLocationList', data.locations)
+        })
+      },
+      getItemList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/items",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('updateItemList', data.items)
+        })
+      },
+      addNewLineItem: function(context) {
+        context.commit('addNewLineItem')
+      },
+      removeLineItemByIndex: function(context, line_item_index) {
+        context.commit('removeLineItemByIndex', line_item_index)
+      },
+      updateQuantity: function(context, obj) {
+        context.commit('updateQuantity', { line_item_index: obj.line_item_index, quantity: obj.quantity })
+      },
+      updateUnitPrice: function(context, obj) {
+        context.commit('updateUnitPrice', { line_item_index: obj.line_item_index, unit_price: obj.unit_price })
+      },
+      updateTaxRate: function(context, obj) {
+        context.commit('updateTaxRate', { line_item_index: obj.line_item_index, tax_rate: obj.tax_rate })
+      },
+      createOrder: function(context, status) {
+        $.ajax({
+          url: '/api/v1/sales_orders',
+          method: 'POST',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { sales_order: context.state.sales_order, sales_order_line_items: context.state.sales_order_line_items }
+        }).done(function(data) {
+
+        }).fail(function(err) {
+
+        })
+      }
+    }
+  })
+</script>

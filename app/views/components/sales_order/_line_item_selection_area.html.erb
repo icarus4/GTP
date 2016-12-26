@@ -1,0 +1,47 @@
+<template id="line-item-selection-area">
+  <table class="table table-condensed table-bordered">
+    <thead>
+      <tr>
+        <td></td><!-- pic -->
+        <td>品名</td>
+        <td>出貨量</td>
+        <td>在庫量</td>
+        <td>單價</td>
+        <td>稅率</td>
+        <td>金額</td>
+        <td></td><!-- delete button -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="line_item in line_items"
+        is="line-item-selector"
+        :line_item="line_item"
+        :line_item_index="$index"
+        :ship_from_location_id="$store.state.sales_order.ship_from_location_id"
+        :items="items">
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+</template>
+
+<%= render 'components/sales_order/line_item_selector' %>
+
+<script type="text/javascript">
+  var LineItemSelectionArea = Vue.extend({
+    template: '#line-item-selection-area',
+    components: {
+      'line-item-selector': LineItemSelector,
+    },
+    props: {
+      items: Array,
+      line_items: Array,
+    },
+    methods: {
+      addNewLineItem: function() {
+        this.$store.dispatch('addNewLineItem')
+      }
+    }
+  })
+</script>
