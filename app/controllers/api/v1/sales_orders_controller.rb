@@ -4,33 +4,27 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
   end
 
   def create
-    # Check the specified customer exists and is belongs to current company
-    customer = current_company.customers.find_by(id: params[:customer][:id])
-    render json: nil, status: :bad_request and return if customer.blank?
+    partner = Partner.find_by(company: current_company, id: params[:sales_order][:partner_id])
+    render json: { errors: 'Partner not found' }, status: :bad_request and return if partner.nil?
 
-    # Check order number exists or not
-    render json: nil, status: :bad_request and return if SalesOrder.where(order_number: params[:orderNumber]).exists?
+    sales_order = current_company.sales_orders.build(sales_order_params)
+    sales_order.partner = partner
 
-    # TODO: check ship_to, ship_from and receipt location is valid or not
-
-    sales_order = nil
+    line_items = []
     ActiveRecord::Base.transaction do
-      sales_order = SalesOrder.create!(
-        company: current_company,
-        customer: customer,
-        bill_to_location_id:   params[:billToLocation][:id],
-        ship_to_location_id:   params[:shipToLocation][:id],
-        ship_from_location_id: params[:shipFromLocation][:id],
-        issued_on: Time.zone.today,
-        shipped_on: params[:shippedOn],
-        order_number: params[:orderNumber]
-      )
-      params[:items].each do |_, item_params|
-        item = current_company.items.find_by(id: item_params[:itemId])
+      sales_order.save!
+
+      params[:sales_order_line_items].each do |_, input_line_item|
+        item = Item.find_by(company: current_company, id: input_line_item[:item_id])
         next if item.nil?
+
         # TODO: 讓user可選擇已存在的任何一個variant
-        variant = Variant.where(item: item).order(:expiry_date).limit(1).first
+
+        # 找尋
+        # 優先從有 expiry_date 的 variant 選取
+        variant = Variant.where(item: item).where.not(expiry_date: nil).order(:expiry_date).first || Variant.where(item: item).where(expiry_date: nil).order(:created_at).first
         next if variant.nil?
+
         raise "Invalid quantity: #{item[:quantity]}" if item_params[:quantity].blank? || item_params[:quantity]&.is_not_integer?
         note = item_params[:note].present? ? item_params[:note].strip : nil
         sales_order.details.create!(variant: variant, quantity: item_params[:quantity].to_i, unit_price: item_params[:unitPrice].to_i, note: note)
@@ -42,4 +36,21 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
 
     render json: { sales_order: sales_order }
   end
+
+  private
+
+    def sales_order_params
+      params.require(:sales_order).permit(
+        :bill_to_location_id,
+        :ship_to_location_id,
+        :ship_from_location_id,
+        :assignee_id,
+        :status,
+        :tax_treatment,
+        :issued_on,
+        :expected_delivery_date,
+        :email,
+        :notes
+      )
+    end
 end
