@@ -26,11 +26,15 @@
 #
 
 class SalesOrder::LineItemCommitment < ApplicationRecord
-  before_save :setup_denormalized_columns
-  after_save :update_location_variant!
+  # NOTICE:
+  # 此 model 的 foreign key 只需要 assign location_variant_id 與 line_item_id，其餘 foreign_key
+  # 其餘 foreign_key 交由 setup_denormalized_columns 設置，請勿手動設置
+
+  before_validation :setup_denormalized_columns
+  after_save :update_associations_quantities!
 
   belongs_to :line_item
-  belongs_to :location_variant, foreign_key: :bin_location_id
+  belongs_to :location_variant
   belongs_to :location
   belongs_to :variant
   belongs_to :item
@@ -50,13 +54,14 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   private
 
     def setup_denormalized_columns
-      self.bin_location_id = location_variant.bin_location_id
-      self.location_id     = location_variant.bin_location.location_id
-      self.variant_id      = location_variant.variant_id
-      self.item_id         = line_item.item_id
+      self.bin_location_id = location_variant.bin_location_id          if location_variant_id_changed?
+      self.location_id     = location_variant.bin_location.location_id if location_variant_id_changed?
+      self.variant_id      = location_variant.variant_id               if location_variant_id_changed?
+      self.item_id         = line_item.item_id                         if line_item_id_changed?
     end
 
-    def update_location_variant!
+    def update_associations_quantities!
       location_variant.update_quantities!
+      line_item.update_quantities!
     end
 end

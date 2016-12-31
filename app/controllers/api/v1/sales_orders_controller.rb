@@ -7,7 +7,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     partner = Partner.select(:id).find_by(company: current_company, id: params[:sales_order][:partner_id])
     render json: { errors: 'Partner not found' }, status: :bad_request and return if partner.nil?
 
-    ship_from_location = Location.select(:id).find_by(locationable: current_company, id: params[:sales_order][:ship_from_location])
+    ship_from_location = Location.select(:id).find_by(locationable: current_company, id: params[:sales_order][:ship_from_location_id])
     render json: { errors: 'Ship from location not found' }, status: :bad_request and return if ship_from_location.nil?
 
     sales_order                    = current_company.sales_orders.build(sales_order_params)
@@ -29,7 +29,6 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
           tax_rate:    input_line_item[:tax_rate],
         )
 
-
         # 從庫存中尋找適當的貨品保留作為出貨用
         # 找到的 location_variant 的數量不一定足夠，因此用迴圈逐一找尋，直到總數量符合出貨量
         remaining_quantity = line_item.quantity
@@ -43,7 +42,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
           committed_quantity = chosen_lv.sellable_quantity >= remaining_quantity ? remaining_quantity : chosen_lv.sellable_quantity
           commitment = SalesOrder::LineItemCommitment.create!(
             line_item:        line_item,
-            location_variant: location_variant,
+            location_variant: chosen_lv,
             quantity:         committed_quantity
           )
           remaining_quantity -= committed_quantity
@@ -55,9 +54,11 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
           offset += 1
         end
       end
+
+      sales_order.calculate!
     end
 
-    render json: { sales_order: sales_order }
+    render json: { sales_order: sales_order, sales_order_line_items: sales_order.line_items }
   end
 
   private

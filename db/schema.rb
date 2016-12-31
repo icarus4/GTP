@@ -425,15 +425,17 @@ ActiveRecord::Schema.define(version: 20161226083824) do
   end
 
   create_table "sales_order_line_items", force: :cascade do |t|
-    t.integer  "sales_order_id",                          null: false
-    t.integer  "item_id",                                 null: false
-    t.integer  "quantity",                                null: false
-    t.decimal  "unit_price",     precision: 10, scale: 2, null: false
-    t.decimal  "tax_rate",       precision: 4,  scale: 1
-    t.decimal  "tax",            precision: 10, scale: 2
-    t.decimal  "total",          precision: 12, scale: 2, null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.integer  "sales_order_id",                                null: false
+    t.integer  "item_id",                                       null: false
+    t.integer  "quantity",                                      null: false
+    t.integer  "committed_quantity",                            null: false
+    t.integer  "uncommitted_quantity",                          null: false
+    t.decimal  "unit_price",           precision: 10, scale: 2, null: false
+    t.decimal  "tax_rate",             precision: 4,  scale: 1
+    t.decimal  "tax",                  precision: 10, scale: 2
+    t.decimal  "total",                precision: 12, scale: 2, null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
     t.index ["item_id"], name: "index_sales_order_line_items_on_item_id", using: :btree
     t.index ["sales_order_id"], name: "index_sales_order_line_items_on_sales_order_id", using: :btree
   end

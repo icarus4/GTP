@@ -24,17 +24,27 @@
 #
 
 class LocationVariant < ActiveRecord::Base
+  # NOTICE:
+  # 1.
+  # 此 model 的 foreign key 只需要 assign bin_location_id 與 variant_id
+  # 其餘 foreign_key 交由 setup_denormalized_columns 設置，請勿手動設置
+  #
+  # 2.
   # column 解釋
   # quantity: 倉庫目前的數量
   # committed_quantity: 準備未來要出貨的數量 (被尚未出貨的 sales order 所保留下來的數量)
   # sellable_quantity: 可被新的出貨單所出貨的數量 (sellable_quantity = quantity - committed_quantity)
 
-  before_save :setup_denormalized_columns, :calculate_quantities
+
+  before_validation :setup_denormalized_columns
+  before_save :calculate_quantities, if: :quantity_changed?
   after_save :update_variant_cache_columns!
   after_initialize :setup_defaults
 
   belongs_to :company
+  belongs_to :location
   belongs_to :bin_location
+  belongs_to :item
   belongs_to :variant
 
   has_many :sales_order_line_item_commitments, class_name: 'SalesOrder::LineItemCommitment'

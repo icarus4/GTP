@@ -37,73 +37,42 @@
 #
 
 class SalesOrder < ActiveRecord::Base
+  include Taxable
+
   after_initialize :setup_defaults
 
   belongs_to :company
   belongs_to :partner
-  belongs_to :bill_to_locaiton, class_name: 'Location', foreign_key: :bill_to_location_id
-  belongs_to :ship_to_locaiton, class_name: 'Location', foreign_key: :ship_to_location_id
+  belongs_to :bill_to_location, class_name: 'Location', foreign_key: :bill_to_location_id
+  belongs_to :ship_to_location, class_name: 'Location', foreign_key: :ship_to_location_id
   belongs_to :ship_from_location, class_name: 'Location', foreign_key: :ship_from_location_id
+
+  has_many :line_items
+  has_many :line_item_commitments, through: :line_items
 
   validates :status,
             :company_id,
-            :customer_id,
             :bill_to_location_id,
             :ship_to_location_id,
-            :ship_from_location_id,
-            :shipped_on, presence: true
-
+            :ship_from_location_id, presence: true
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
 
-  enum status: {
-    draft: 0,
-    active: 1,
-    finalized: 2,
-    fulfilled: 3
-  }
+  enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3 }
 
   auto_strip_attributes :email, :notes
-
-
-  # def update_total_amount
-  #   self.total_amount = details.inject(0) { |total_amount, detail| total_amount + detail.unit_price * detail.quantity }
-  # end
-  #
-  # def update_total_amount!
-  #   update_total_amount
-  #   save!
-  # end
-  #
-  # def update_item_available_count!
-  #   items = variants.map { |v| v.item }.uniq
-  #   items.each(&:update_available_count!)
-  # end
 
   def self.next_number(company_id)
     where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001'
   end
 
-  # def ship!
-  #   raise "Only active order can ship." unless active?
-  #   ActiveRecord::Base.transaction do
-  #     details.each do |detail|
-  #       variant = detail.variant
-  #       variant.with_lock do
-  #         variant.quantity -= detail.quantity
-  #         variant.save!
-  #       end
-  #
-  #       lv = LocationVariant.find_or_initialize_by(company_id: company_id, location_id: ship_from_location_id, variant_id: variant.id)
-  #       lv.with_lock do
-  #         lv.quantity -= detail.quantity
-  #         lv.save!
-  #       end
-  #     end
-  #
-  #     self.status = 'fulfilled'
-  #     save!
-  #   end
-  # end
+  def calculate!
+    # See Taxable
+    calcualte_subtotal
+    calcualte_total_units
+    calculate_total_tax
+    calculate_total_amount
+    save!
+  end
 
   private
 
