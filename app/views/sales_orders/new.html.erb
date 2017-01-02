@@ -1,3 +1,18 @@
-<div class="wrapper wrapper-content">
-  <%= react_component('SalesOrderForm', {}, {class: 'row', id: 'new-sales-order-form'}) %>
+<div id="new-sales-order" class="row">
+  <app mode="new"></app>
 </div>
+
+<% content_for :js do %>
+<%= render 'components/sales_order/store' %>
+<%= render 'components/sales_order/app' %>
+
+<script type="text/javascript">
+  new Vue({
+    el: '#new-sales-order',
+    store,
+    components: {
+      'app': App
+    },
+  })
+</script>
+<% end %>

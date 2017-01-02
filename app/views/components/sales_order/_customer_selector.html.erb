@@ -1,0 +1,26 @@
+<template id="customer-selector">
+  <label>客戶</label>
+  <select v-if="editable" @change="updateSelectedCustomer" class="m-l">
+    <option selected disabled value="">-- 選取客戶 --</option>
+    <option
+      v-for="customer in customers"
+      v-bind:value="customer.id">{{ customer.name }}</option>
+  </select>
+  <span v-else class="m-l">{{ customer && customer.name }}</span>
+</template>
+
+<script type="text/javascript">
+  var CustomerSelector = Vue.extend({
+    template: '#customer-selector',
+    props: {
+      customers: Array,
+      customer: Object,
+      editable: Boolean
+    },
+    methods: {
+      updateSelectedCustomer: function(e) {
+        this.$store.dispatch('customerSelected', e.target.value)
+      }
+    }
+  })
+</script>

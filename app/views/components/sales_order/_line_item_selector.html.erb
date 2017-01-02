@@ -1,0 +1,122 @@
+<template id="line-item-selector">
+  <tr>
+    <td></td>
+
+    <td><!-- 品名 -->
+      <select v-if="editable" class="input-sm form-control" @input="itemSelected">
+        <option selected disabled value="">-- 請選取商品 --</option>
+        <option v-for="i in items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
+      </select>
+      <span v-else>{{ line_item.item.name }}</span>
+    </td>
+
+    <td><!-- 出貨量 -->
+      <input v-if="editable" class="no-border no-outline" type="number" min="1" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
+      <span v-else>{{ line_item.quantity }}</span>
+    </td>
+
+    <!-- 可用量 -->
+    <td>{{ sellable_count }}</td>
+
+    <td><!-- 單價 -->
+      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
+      <span v-else>{{ line_item.unit_price }}</span>
+    </td>
+
+    <td><!-- 稅率 -->
+      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
+      <span v-else>{{ line_item.tax_rate }}</span>
+    </td>
+
+    <td>{{ total }}</td><!-- 金額 -->
+
+    <td v-if="editable">
+      <div @click="pressDeleteButton" class="cursor-pointer"><i class="fa fa-trash-o"></i></div>
+    </td>
+  </tr>
+</template>
+
+<script type="text/javascript">
+  var LineItemSelector = Vue.extend({
+    template: '#line-item-selector',
+    props: {
+      line_item: Object,
+      line_item_index: Number,
+      items: Array,
+      ship_from_location_id: {}, // {} for defining nothing
+      editable: Boolean,
+    },
+    data: function() {
+      return {
+        location_on_hand_count: null
+      }
+    },
+    computed: {
+      // 此 item 不分 location 的整體 available_count
+      available_count: function() {
+        if (_.isNil(this.line_item.item_id)) { return null }
+        var that = this
+        var item = _.find(this.items, function(item) { return item.id == that.line_item.item_id })
+        return item.available_count
+      },
+      sellable_count: function() {
+        return this.location_on_hand_count
+      },
+      total: function() {
+        var total = 0
+        var unit_price = parseFloat(this.line_item.unit_price)
+        if (this.line_item.item_id && _.isInteger(this.line_item.quantity) && _.isNumber(unit_price)) {
+          total = this.line_item.quantity * unit_price
+        }
+        total = _.isNumber(total) && !_.isNaN(total) ? total : 0
+        return total
+      },
+    },
+    watch: {
+      total: function(value) {
+        if (_.isNumber(value) && !_.isNaN(value)) {
+          this.$store.commit('updateLineItemTotal', { line_item_index: this.line_item_index, total: value })
+        }
+      },
+      ship_from_location_id: function(value, old_value) {
+        this.updateOnHandCount()
+      }
+    },
+    methods: {
+      itemSelected: function(e) {
+        var item_id = parseInt(e.target.value)
+        this.$store.dispatch('itemSelected', { line_item_index: this.line_item_index, item_id: item_id })
+        this.updateOnHandCount()
+      },
+      updateOnHandCount: function() {
+        if (_.isNil(this.ship_from_location_id) || _.isNil(this.line_item.item_id)) { return }
+
+        var that = this
+        $.ajax({
+          url: "/api/v1/locations/" + that.$store.state.sales_order.ship_from_location_id + "/items/" + that.line_item.item_id,
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          that.location_on_hand_count = data.item.location.on_hand_count
+        }).fail(function(err) {
+          console.log(err)
+        })
+      },
+      pressDeleteButton: function() {
+        this.$store.dispatch('removeLineItemByIndex', this.line_item_index)
+      },
+      updateQuantity: function(e) {
+        var quantity = parseInt(e.target.value)
+        this.$store.dispatch('updateQuantity', { line_item_index: this.line_item_index, quantity: quantity })
+      },
+      updateUnitPrice: function(e) {
+        var unit_price = parseInt(e.target.value)
+        this.$store.dispatch('updateUnitPrice', { line_item_index: this.line_item_index, unit_price: unit_price })
+      },
+      updateTaxRate: function(e) {
+        var tax_rate = parseInt(e.target.value)
+        this.$store.dispatch('updateTaxRate', { line_item_index: this.line_item_index, tax_rate: tax_rate })
+      },
+    }
+  })
+</script>

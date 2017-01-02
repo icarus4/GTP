@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: orders
+# Table name: purchase_orders
 #
 #  id                     :integer          not null, primary key
 #  company_id             :integer          not null
@@ -12,11 +12,10 @@
 #  ship_from_location_id  :integer
 #  ship_to_location_id    :integer
 #  line_items_count       :integer          default(0), not null
-#  type                   :string
 #  order_number           :string
-#  state                  :string
-#  status                 :string
+#  status                 :integer          default("draft"), not null
 #  email                  :string
+#  return_status          :integer          default("unreturned"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
 #  total_units            :integer
 #  subtotal               :decimal(12, 2)
@@ -28,17 +27,11 @@
 #  extra_info             :jsonb
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  return_status          :integer          default(0), not null
 #
 # Indexes
 #
-#  index_orders_on_assignee_id   (assignee_id)
-#  index_orders_on_company_id    (company_id)
-#  index_orders_on_order_number  (order_number)
-#  index_orders_on_partner_id    (partner_id)
-#  index_orders_on_state         (state)
-#  index_orders_on_status        (status)
-#  index_orders_on_type          (type)
+#  index_purchase_orders_on_company_id_and_partner_id  (company_id,partner_id)
+#  index_purchase_orders_on_order_number               (order_number)
 #
 
 require 'rails_helper'
