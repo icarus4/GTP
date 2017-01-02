@@ -160,6 +160,9 @@
       },
       setupSalesOrder: function(state, obj) {
         state.sales_order = obj.sales_order
+      },
+      setupSalesOrderLineItems: function(state, obj) {
+        state.sales_order_line_items = obj.sales_order_line_items
       }
     },
     actions: {
@@ -257,19 +260,6 @@
           alert('Cannot create sales order')
         })
       },
-      // Fetch specific sales order
-      getSalesOrder: function(context, id) {
-        $.ajax({
-          url: '/api/v1/sales_orders/' + id,
-          method: 'GET',
-          dataType: 'json',
-        }).done(function(data) {
-          context.commit('setupSalesOrder', { sales_order: data.sales_order })
-        }).fail(function(err) {
-          console.log(err)
-          alert('Cannot get sales order')
-        })
-      }
     }
   })
 </script>

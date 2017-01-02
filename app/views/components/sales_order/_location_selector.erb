@@ -1,15 +1,15 @@
 <template id="location-selector">
-  <div class="col-md-4 form-group p-xxs">
+  <div class="col-md-4 form-group">
     <label class="pull-right">{{ label }}</label>
   </div>
-  <div class="col-md-8 form-group p-xxs">
+  <div class="col-md-8 form-group">
     <select v-if="editable" @change="updateSelectedLocation" class="form-control input-sm">
       <option selected disabled value="">-- 選取地點 --</option>
       <option
         v-for="location in locations"
         v-bind:value="location.id">{{ location.name }}</option>
     </select>
-    <span v-else>{{ location.name }}</span>
+    <span v-else>{{ location && location.name }}</span>
   </div>
 </template>
 

@@ -2,11 +2,13 @@
   <div class="col-md-9">
     <div class="row">
       <!-- 客戶 -->
-      <customer-selector
-        :customers="$store.state.options.customers"
-        :customer="sales_order.partner"
-        :editable="editable">
-      </customer-selector>
+      <div class="col-md-offset-1">
+        <customer-selector
+          :customers="$store.state.options.customers"
+          :customer="sales_order && sales_order.partner"
+          :editable="editable">
+        </customer-selector>
+      </div>
 
       <hr>
 
@@ -15,7 +17,7 @@
           <!-- 客戶單據寄送至 -->
           <bill-to-location-selector
             :locations="$store.state.options.customer_locations"
-            :location="sales_order.bill_to_location"
+            :location="sales_order && sales_order.bill_to_location"
             after-selected-dispatch-event="billToLocationSelected"
             label="單據寄送至"
             :editable="editable">
@@ -25,7 +27,7 @@
           <!-- 客戶貨品寄送至 -->
           <ship-to-location-selector
             :locations="$store.state.options.customer_locations"
-            :location="sales_order.ship_to_location"
+            :location="sales_order && sales_order.ship_to_location"
             after-selected-dispatch-event="shipToLocationSelected"
             label="貨品寄送至"
             :editable="editable">
@@ -35,7 +37,7 @@
           <!-- 出貨倉庫 -->
           <ship-from-location-selector
             :locations="$store.state.options.stockable_locations"
-            :location="sales_order.ship_to_location"
+            :location="sales_order && sales_order.ship_from_location"
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
             :editable="editable">
@@ -46,7 +48,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label>訂單日期</label>
-          <span>
+          <span class="m-l">
             <input v-if="editable" type="date" @change="updateIssueDate">
             <span v-else>{{ sales_order.issued_on }}</span>
           </span>
@@ -54,7 +56,7 @@
 
         <div class="form-group">
           <label>送貨日期</label>
-          <span>
+          <span class="m-l">
             <input v-if="editable" type="date" @change="updateShipmentDate">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
@@ -62,7 +64,7 @@
 
         <div class="form-group">
           <label>Email</label>
-          <span>
+          <span class="m-l">
             <input v-if="editable" type="text" @input="updateEmail">
             <span v-else>{{ sales_order.email }}</span>
           </span>
@@ -70,7 +72,7 @@
 
         <div class="form-group">
           <label>電話</label>
-          <span>
+          <span class="m-l">
             <input v-if="editable" type="text" @input="updatePhone">
             <span v-else>{{ sales_order.phone }}</span>
           </span>
@@ -80,7 +82,7 @@
         <div class="form-group">
           <label>價別</label>
           <select v-if="editable"><option disabled selected value="">-- WIP --</option></select>
-          <span v-else>{{ "WIP" }}</span>
+          <span class="m-l" v-else>{{ "WIP" }}</span>
         </div>
         <div>
           <label>總金額</label>
@@ -88,7 +90,7 @@
             <option selected value="exclusive">稅外</option>
             <option value="inclusive">稅入</option>
           </select>
-          <span v-else>{{ tax_treatment }}</span>
+          <span class="m-l" v-else>{{ tax_treatment }}</span>
         </div>
       </div>
 
@@ -99,7 +101,8 @@
     <div class="row">
       <line-item-selection-area
         :items="$store.state.options.items"
-        :line_items="$store.state.sales_order_line_items">
+        :line_items="$store.state.sales_order_line_items"
+        :editable="editable">
       </line-item-selection-area>
     </div>
 
@@ -190,7 +193,7 @@
         this.$store.dispatch('addNewLineItem')
       }
       if (this.mode === 'show') {
-        this.$store.dispatch('getSalesOrder', this.sales_order_id)
+        this.getSalesOrder(this.sales_order_id)
       }
     },
     methods: {
@@ -215,6 +218,31 @@
       createOrder: function(status) {
         this.$store.dispatch('createOrder', status)
       },
+      // Fetch specific sales order
+      getSalesOrder: function(id) {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + id,
+          method: 'GET',
+          dataType: 'json',
+        }).done(function(data) {
+          that.$store.commit('setupSalesOrder', { sales_order: data.sales_order })
+          that.getSalesOrderLineItems(data.sales_order.id)
+        }).fail(function(err) {
+          console.log(err)
+          alert('Cannot get sales order')
+        })
+      },
+      getSalesOrderLineItems: function(sales_order_id) {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + sales_order_id + '/line_items',
+          method: 'GET',
+          dataType: 'json',
+        }).done(function(data) {
+          that.$store.commit('setupSalesOrderLineItems', { sales_order_line_items: data.sales_order_line_items })
+        })
+      }
     }
   })
 </script>

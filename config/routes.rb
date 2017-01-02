@@ -49,6 +49,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :sales_orders, only: [:create, :show] do
         get :next_number, on: :collection
+        resources :line_items, only: [:index], controller: 'sales_orders/line_items'
       end
       resources :customers, only: [:index] do
         get :locations, on: :member
