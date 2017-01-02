@@ -14,6 +14,7 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
 
   def create
     partner = Partner.find_by(company: current_company, id: params[:purchase_order][:partner_id])
+    render json: { errors: 'Partner not found' }, status: :bad_request and return if partner.nil?
 
     purchase_order = current_company.purchase_orders.build(purchase_order_params)
     purchase_order.partner = partner

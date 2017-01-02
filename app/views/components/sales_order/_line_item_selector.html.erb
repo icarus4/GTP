@@ -3,30 +3,34 @@
     <td></td>
 
     <td><!-- 品名 -->
-      <select class="input-sm form-control" @input="itemSelected">
+      <select v-if="editable" class="input-sm form-control" @input="itemSelected">
         <option selected disabled value="">-- 請選取商品 --</option>
         <option v-for="i in items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
       </select>
+      <span v-else>{{ line_item.item.name }}</span>
     </td>
 
     <td><!-- 出貨量 -->
-      <input class="no-border no-outline" type="number" min="1" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
+      <input v-if="editable" class="no-border no-outline" type="number" min="1" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
+      <span v-else>{{ line_item.quantity }}</span>
     </td>
 
     <!-- 可用量 -->
     <td>{{ sellable_count }}</td>
 
     <td><!-- 單價 -->
-      <input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
+      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
+      <span v-else>{{ line_item.unit_price }}</span>
     </td>
 
     <td><!-- 稅率 -->
-      <input class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
+      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
+      <span v-else>{{ line_item.tax_rate }}</span>
     </td>
 
     <td>{{ total }}</td><!-- 金額 -->
 
-    <td>
+    <td v-if="editable">
       <div @click="pressDeleteButton" class="cursor-pointer"><i class="fa fa-trash-o"></i></div>
     </td>
   </tr>
@@ -39,7 +43,8 @@
       line_item: Object,
       line_item_index: Number,
       items: Array,
-      ship_from_location_id: {}
+      ship_from_location_id: {}, // {} for defining nothing
+      editable: Boolean,
     },
     data: function() {
       return {

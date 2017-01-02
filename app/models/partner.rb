@@ -154,8 +154,8 @@ class Partner < ActiveRecord::Base
   private
 
     def setup_defaults
-      self.partner_type ||= self.class.partner_types['domestic_company']
-      self.receipt_type ||= self.class.receipt_types['receipt_free']
-      self.status ||= self.class.statuses['active']
+      self.partner_type ||= self.class.partner_types['domestic_company'] if has_attribute?(:partner_type)
+      self.receipt_type ||= self.class.receipt_types['receipt_free'] if has_attribute?(:receipt_type)
+      self.status ||= self.class.statuses['active'] if has_attribute?(:status)
     end
 end
