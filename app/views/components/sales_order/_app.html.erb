@@ -1,27 +1,94 @@
 <template id="app">
   <div class="col-md-9">
     <div class="row">
-      <customer-selector :customers="$store.state.options.customers"></customer-selector>
+      <!-- 客戶 -->
+      <customer-selector
+        :customers="$store.state.options.customers"
+        :customer="sales_order.partner"
+        :editable="editable">
+      </customer-selector>
+
       <hr>
+
       <div class="col-md-4">
-        <div class="row"><bill-to-location-selector :locations="$store.state.options.customer_locations" after-selected-dispatch-event="billToLocationSelected" label="單據寄送至"></bill-to-location-selector></div>
-        <div class="row"><ship-to-location-selector :locations="$store.state.options.customer_locations" after-selected-dispatch-event="shipToLocationSelected" label="貨品寄送至"></ship-to-location-selector></div>
-        <div class="row"><ship-from-location-selector :locations="$store.state.options.stockable_locations" after-selected-dispatch-event="shipFromLocationSelected" label="出貨倉庫"></ship-from-location-selector></div>
+        <div class="row">
+          <!-- 客戶單據寄送至 -->
+          <bill-to-location-selector
+            :locations="$store.state.options.customer_locations"
+            :location="sales_order.bill_to_location"
+            after-selected-dispatch-event="billToLocationSelected"
+            label="單據寄送至"
+            :editable="editable">
+          </bill-to-location-selector>
+        </div>
+        <div class="row">
+          <!-- 客戶貨品寄送至 -->
+          <ship-to-location-selector
+            :locations="$store.state.options.customer_locations"
+            :location="sales_order.ship_to_location"
+            after-selected-dispatch-event="shipToLocationSelected"
+            label="貨品寄送至"
+            :editable="editable">
+          </ship-to-location-selector>
+        </div>
+        <div class="row">
+          <!-- 出貨倉庫 -->
+          <ship-from-location-selector
+            :locations="$store.state.options.stockable_locations"
+            :location="sales_order.ship_to_location"
+            after-selected-dispatch-event="shipFromLocationSelected"
+            label="出貨倉庫"
+            :editable="editable">
+          </ship-from-location-selector>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="form-group">
+          <label>訂單日期</label>
+          <span>
+            <input v-if="editable" type="date" @change="updateIssueDate">
+            <span v-else>{{ sales_order.issued_on }}</span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>送貨日期</label>
+          <span>
+            <input v-if="editable" type="date" @change="updateShipmentDate">
+            <span v-else>{{ sales_order.expected_delivery_date }}</span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <span>
+            <input v-if="editable" type="text" @input="updateEmail">
+            <span v-else>{{ sales_order.email }}</span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>電話</label>
+          <span>
+            <input v-if="editable" type="text" @input="updatePhone">
+            <span v-else>{{ sales_order.phone }}</span>
+          </span>
+        </div>
       </div>
       <div class="col-md-4">
-        <label>訂單日期</label><div><input type="date" @change="updateIssueDate"></div>
-        <label>送貨日期</label><div><input type="date" @change="updateShipmentDate"></div>
-        <label>Email</label><div><input type="text" @input="updateEmail"></div>
-        <label>電話</label><div><input type="text" @input="updatePhone"></div>
-      </div>
-      <div class="col-md-4">
-        <div><label>價別</label><select><option disabled selected value="">-- WIP --</option></select></div>
+        <div class="form-group">
+          <label>價別</label>
+          <select v-if="editable"><option disabled selected value="">-- WIP --</option></select>
+          <span v-else>{{ "WIP" }}</span>
+        </div>
         <div>
           <label>總金額</label>
-          <select @change="updateTaxTreatment">
+          <select v-if="editable" @change="updateTaxTreatment">
             <option selected value="exclusive">稅外</option>
             <option value="inclusive">稅入</option>
           </select>
+          <span v-else>{{ tax_treatment }}</span>
         </div>
       </div>
 
@@ -40,7 +107,10 @@
 
     <div class="row m-t">
       <div class="col-md-6 m-t">
-        <textarea @input="updateNotes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+        <textarea v-if="editable" @input="updateNotes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+        <div v-if="!editable && sales_order.notes" class="bg-warning">
+          <label>備註:</label><p>{{ sales_order.notes }}</p>
+        </div>
       </div>
       <div class="col-md-3 col-md-offset-3">
         <ul class="list-group no-padding">
@@ -92,7 +162,18 @@
       'line-item-selection-area': LineItemSelectionArea,
     },
     props: {
-      mode: String
+      mode: String,
+      sales_order_id: Number,
+      sales_order: Object,
+    },
+    computed: {
+      editable: function() {
+        return this.mode === 'new' || this.mode === 'edit'
+      },
+      tax_treatment: function() {
+        if (this.sales_order.tax_treatment === 'exclusive') { return '稅外' }
+        else { return '稅外' }
+      }
     },
     data: function() {
       return {}
@@ -101,12 +182,15 @@
       this.$store.commit('setupMode', this.mode)
     },
     ready: function() {
-      if (this.$store.state.mode === 'new' || this.$store.state.mode === 'edit') {
+      if (this.mode === 'new' || this.mode === 'edit') {
         this.$store.dispatch('getCustomerList')
         this.$store.dispatch('getPriceList')
         this.$store.dispatch('getStockableLocationList')
         this.$store.dispatch('getItemList')
         this.$store.dispatch('addNewLineItem')
+      }
+      if (this.mode === 'show') {
+        this.$store.dispatch('getSalesOrder', this.sales_order_id)
       }
     },
     methods: {

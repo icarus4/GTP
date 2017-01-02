@@ -59,7 +59,7 @@ class SalesOrder < ActiveRecord::Base
 
   enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3 }
 
-  auto_strip_attributes :email, :notes
+  auto_strip_attributes :email, :phone, :notes
 
   def self.next_number(company_id)
     where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001'

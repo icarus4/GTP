@@ -3,6 +3,13 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     render json: { next_number: SalesOrder.next_number(current_company.id) }
   end
 
+  def show
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
+    render json: { errors: "Sales order not found" }, status: :not_found and return if sales_order.nil?
+
+    render json: { sales_order: sales_order.as_json(include: [:partner, :ship_to_location, :ship_from_location, :bill_to_location]) }
+  end
+
   def create
     partner = Partner.select(:id).find_by(company: current_company, id: params[:sales_order][:partner_id])
     render json: { errors: 'Partner not found' }, status: :bad_request and return if partner.nil?
@@ -73,6 +80,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
         :issued_on,
         :expected_delivery_date,
         :email,
+        :phone,
         :notes
       )
     end

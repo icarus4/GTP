@@ -1,66 +1,18 @@
-<div class="row">
-  <div class="col-md-4">
-    <dl class="dl-horizontal">
-      <dt>訂單編號</dt><dd><%= @sales_order.order_number %></dd>
-      <dt>狀態</dt><dd><%= render_status(@sales_order.status) %></dd>
-      <dt>客戶</dt><dd><%= @sales_order.customer.name %></dd>
-      <dt>寄貨至</dt><dd><%= @sales_order.ship_to.name %></dd>
-      <dt>發票寄送至</dt><dd><%= @sales_order.bill_to.name %></dd>
-      <dt>發票寄送地點</dt><dd><%= @sales_order.ship_from.name %></dd>
-    </dl>
-  </div>
-
-  <div class="col-md-4">
-    <dl class="dl-horizontal">
-      <dt>寄送日</dt><dd><%= @sales_order.shipped_on %></dd>
-    </dl>
-  </div>
-
-  <div class="col-md-4">
-    <dl class="dl-horizontal">
-      <dt>聯絡email</dt><dd><%= @sales_order.contact_email %></dd>
-    </dl>
-  </div>
+<div id="show-sales-order" class="row">
+  <app mode="show" :sales_order_id="<%= @sales_order.id %>" :sales_order="$store.state.sales_order"> </app>
 </div>
 
-<div class="row">
-<% if @sales_order.draft? %>
-  <%= link_to "批准出貨單", approve_sales_order_path(@sales_order), class: 'btn btn-success', method: :put %>
-<% elsif @sales_order.active? %>
-  <%= link_to "確認已出貨", ship_sales_order_path(@sales_order), class: 'btn btn-success', method: :put %>
+<% content_for :js do %>
+<%= render 'components/sales_order/store' %>
+<%= render 'components/sales_order/app' %>
+
+<script type="text/javascript">
+  new Vue({
+    el: '#show-sales-order',
+    store,
+    components: {
+      'app': App
+    },
+  })
+</script>
 <% end %>
-</div>
-
-<div class="row table-container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>名稱</th>
-        <th>訂購數量</th>
-        <%= "<th>出貨後剩餘數量</th>".html_safe unless @sales_order.fulfilled? %>
-        <th>進貨單價</th>
-        <th>總價</th>
-        <th>備註</th>
-      </tr>
-    </thead>
-    <tbody>
-    <% @sales_order.details.each do |detail| %>
-      <tr>
-        <td><%= detail.variant.sku_name %></td>
-        <td><%= detail.quantity %></td>
-        <%= "<td>#{detail.quantity_after_shipping}</td>".html_safe unless @sales_order.fulfilled? %>
-        <td><%= detail.unit_price %></td>
-        <td><%= detail.amount %></td>
-        <td><%= detail.note %></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-</div>
-
-<div class="row">
-  <ul>
-    <li>總數量：<%= @sales_order.details.inject(0) { |sum, detail| sum + detail.quantity }.to_s(:delimited) %></li>
-    <li>總費用：<%= @sales_order.total_amount.to_s(:currency, precision: 0) %></li>
-  </ul>
-</div>
