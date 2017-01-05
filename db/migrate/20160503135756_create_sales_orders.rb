@@ -23,6 +23,7 @@ class CreateSalesOrders < ActiveRecord::Migration
       t.date    :expected_delivery_date
       t.string  :order_number
       t.string  :email
+      t.string  :phone
       t.text    :notes
       t.jsonb   :extra_info
 
