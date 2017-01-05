@@ -254,7 +254,7 @@
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
           data: { sales_order: context.state.sales_order, sales_order_line_items: context.state.sales_order_line_items }
         }).done(function(data) {
-          window.locaiton.href = '/sales_orders/' + data.sales_order.id
+          window.location.href = '/sales_orders/' + data.sales_order.id
         }).fail(function(err) {
           console.log(err)
           alert('Cannot create sales order')
