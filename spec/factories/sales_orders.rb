@@ -15,7 +15,7 @@
 #  packing_status         :integer          default(0), not null
 #  shipment_status        :integer          default(0), not null
 #  payment_status         :integer          default(0), not null
-#  tax_treatment          :integer          default(0), not null
+#  tax_treatment          :integer          default("exclusive"), not null
 #  line_items_count       :integer          default(0), not null
 #  total_units            :integer          default(0), not null
 #  subtotal               :decimal(12, 2)
@@ -29,6 +29,7 @@
 #  extra_info             :jsonb
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  phone                  :string
 #
 # Indexes
 #

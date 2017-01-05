@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161226083824) do
+ActiveRecord::Schema.define(version: 20170105101947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -467,6 +467,7 @@ ActiveRecord::Schema.define(version: 20161226083824) do
     t.jsonb    "extra_info"
     t.datetime "created_at",                                                  null: false
     t.datetime "updated_at",                                                  null: false
+    t.string   "phone"
     t.index ["company_id", "partner_id"], name: "index_sales_orders_on_company_id_and_partner_id", using: :btree
     t.index ["order_number"], name: "index_sales_orders_on_order_number", using: :btree
   end
