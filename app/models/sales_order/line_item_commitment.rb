@@ -36,6 +36,7 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   belongs_to :line_item
   belongs_to :location_variant
   belongs_to :location
+  belongs_to :bin_location
   belongs_to :variant
   belongs_to :item
   belongs_to :shipment
