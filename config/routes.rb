@@ -50,6 +50,8 @@ Rails.application.routes.draw do
       resources :sales_orders, only: [:create, :show] do
         get :next_number, on: :collection
         resources :line_items, only: [:index], controller: 'sales_orders/line_items'
+        patch :finalize, on: :member
+        resources :shipments, only: [:create], controller: 'sales_orders/shipments'
       end
       resources :customers, only: [:index] do
         get :locations, on: :member

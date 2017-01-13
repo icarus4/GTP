@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170105101947) do
+ActiveRecord::Schema.define(version: 20170113071515) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -438,6 +438,15 @@ ActiveRecord::Schema.define(version: 20170105101947) do
     t.datetime "updated_at",                                    null: false
     t.index ["item_id"], name: "index_sales_order_line_items_on_item_id", using: :btree
     t.index ["sales_order_id"], name: "index_sales_order_line_items_on_sales_order_id", using: :btree
+  end
+
+  create_table "sales_order_shipments", force: :cascade do |t|
+    t.integer  "sales_order_id"
+    t.datetime "shipped_at"
+    t.date     "shipped_on"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.index ["sales_order_id"], name: "index_sales_order_shipments_on_sales_order_id", using: :btree
   end
 
   create_table "sales_orders", force: :cascade do |t|
