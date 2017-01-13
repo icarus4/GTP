@@ -68,6 +68,14 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     render json: { sales_order: sales_order, sales_order_line_items: sales_order.line_items }
   end
 
+  def finalize
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
+    render json: { errors: 'Sales order not found' }, status: :bad_request and return if sales_order.nil?
+
+    sales_order.finalized!
+    render json: { sales_order: sales_order }
+  end
+
   private
 
     def sales_order_params

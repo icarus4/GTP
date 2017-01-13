@@ -50,6 +50,7 @@ class SalesOrder < ActiveRecord::Base
 
   has_many :line_items
   has_many :line_item_commitments, through: :line_items
+  has_many :shipments
 
   validates :status,
             :company_id,
@@ -59,6 +60,9 @@ class SalesOrder < ActiveRecord::Base
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
 
   enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3 }
+  enum invoice_status:  { uninvoiced: 0, partial: 1, invoiced: 2 }, _prefix: :invoice_status_is
+  enum shipment_status: { unshipped: 0,  partial: 1, shipped: 2 },  _prefix: :shipment_status_is
+  enum payment_status:  { unpaid: 0,     partial: 1, paid: 2 },     _prefix: :payment_status_is
 
   auto_strip_attributes :email, :phone, :notes
 
@@ -73,6 +77,14 @@ class SalesOrder < ActiveRecord::Base
     calculate_total_tax
     calculate_total_amount
     save!
+  end
+
+  def update_status!
+    if finalized?
+      if line_item_commitments.exists? && !line_item_commitments.where(shipment_id: nil).exists?
+        fulfilled!
+      end
+    end
   end
 
   private

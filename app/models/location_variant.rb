@@ -67,6 +67,12 @@ class LocationVariant < ActiveRecord::Base
     save!
   end
 
+  # Ship sales order committed line items 時，須根據 committed line item 的數量來扣減 quantity
+  def change_quantity_by_shipping_committed_line_item!(sales_order_line_item_commitment)
+    self.quantity -= sales_order_line_item_commitment.quantity
+    save!
+  end
+
   private
 
     def update_variant_cache_columns!

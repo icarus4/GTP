@@ -7,6 +7,8 @@ module ApplicationHelper
       '已成立'
     when 'received'
       '已收貨'
+    when 'finalized'
+      'Finalized'
     when 'fulfilled'
       '已送貨'
     else
