@@ -13,6 +13,12 @@ Rails.application.routes.draw do
     resources :registrations, only: [:create]
   end
 
+  namespace :papers do
+    namespace :sales_orders do
+      resources :pick_lists, only: [:show]
+    end
+  end
+
   # Company
   resources :companies, only: [:index]
   resources :partners, only: [:new, :index, :show, :edit]
@@ -32,7 +38,7 @@ Rails.application.routes.draw do
 
 
   resources :sales_orders, only: [:index, :new, :create, :show] do
-    put :ship, on: :member
+    put :ship, on: :member # FIXME: deprecated?
   end
 
   resources :stock_transfers, only: [:index, :new, :create, :show]
