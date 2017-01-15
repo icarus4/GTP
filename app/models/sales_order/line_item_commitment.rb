@@ -41,6 +41,9 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   belongs_to :item
   belongs_to :shipment
 
+  delegate :unit_price, :tax_rate, :total, to: :line_item
+  delegate :sku, :name, to: :item
+
   validates :line_item_id,
             :bin_location_id,
             :location_id,

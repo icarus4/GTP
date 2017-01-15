@@ -1,0 +1,109 @@
+<div class="row p-w-xl">
+  <div class="m">
+      <div class="row">
+        <div class="m">
+          <h1>Invoice</h1>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="m-l">
+          <div class="col-xs-4">
+            <div class="m-t-xs"><%= current_company.name %></div>
+            <div class="m-t-xs"><%= @sales_order.ship_from_location.address %></div>
+            <div class="m-t-xs">電話：<%= current_company.phone %></div>
+            <div class="m-t-xs">Email：<%= current_company.email %></div>
+          </div>
+          <div class="col-xs-4 col-xs-offset-4">
+            <div><label>訂單編號</label><span class="m-l"><%= @sales_order.order_number %></span></div>
+            <div><label>訂單時間</label><span class="m-l"><%= @sales_order.issued_on %></span></div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="m-l">
+          <div class="col-xs-3">
+            <p><strong>單據送至：</strong></p>
+            <p><%= @sales_order.bill_to_location.name %></p>
+            <p><%= @sales_order.bill_to_location.address %></p>
+          </div>
+          <div class="col-xs-3">
+            <p><strong>貨品送至：</strong></p>
+            <p><%= @sales_order.ship_to_location.name %></p>
+            <p><%= @sales_order.ship_to_location.address %></p>
+          </div>
+          <div class="col-xs-4 col-xs-offset-2">
+            <p><strong>Email：</strong></p>
+            <p><%= @sales_order.email %></p>
+            <p><strong>電話：</strong></p>
+            <p><%= @sales_order.phone %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="m">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th></th>
+                <th>SKU</th>
+                <th>品名</th>
+                <th>數量</th>
+                <th>有效期限</th>
+                <th>單價</th>
+                <th>稅率</th>
+                <th>金額</th>
+              </tr>
+            </thead>
+            <tbody>
+            <% @sales_order.line_item_commitments.each do |commitment| %>
+              <tr>
+                <td></td>
+                <td><%= commitment.sku %></td>
+                <td><%= commitment.name %></td>
+                <td><%= commitment.quantity %></td>
+                <td><%= commitment.variant.expiry_date %></td>
+                <td><%= commitment.unit_price %></td>
+                <td><%= commitment.tax_rate %></td>
+                <td><%= commitment.total %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-6 m-t">
+          <label>備註:</label>
+        </div>
+        <div class="col-xs-3 col-xs-offset-3">
+          <ul class="list-group no-padding">
+            <li class="list-group-item">
+              <span>總數量</span>
+              <span class="pull-right"><%= @sales_order.total_units %></span>
+            </li>
+            <li class="list-group-item">
+              <span>金額小計</span>
+              <span class="pull-right">NT$ <%= @sales_order.subtotal %></span>
+            </li>
+            <li class="list-group-item">
+              <span>稅額</span>
+              <span class="pull-right">NT$ <%= @sales_order.total_tax %></span>
+            </li>
+            <li class="list-group-item">
+              <span>總金額</span>
+              <span class="pull-right">NT$ <%= @sales_order.total_amount %></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+  </div>
+</div>

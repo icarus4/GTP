@@ -18,6 +18,7 @@
         </div>
 
         <div class="pull-right">
+          <button @click="openInvoicePage" class="btn btn-default">顯示 Invoice</button>
           <button @click="openPickListPage" class="btn btn-default">顯示撿貨單</button>
           <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary">Finalize</button>
           <button v-if="sales_order.status === 'finalized'" @click="shipAll" class="btn btn-primary">Ship all</button>
@@ -282,6 +283,9 @@
       },
       openPickListPage: function() {
         window.open('/papers/sales_orders/pick_lists/' + this.sales_order.id)
+      },
+      openInvoicePage: function() {
+        window.open('/papers/sales_orders/invoices/' + this.sales_order.id)
       }
     }
   })
