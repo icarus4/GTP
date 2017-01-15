@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   namespace :papers do
     namespace :sales_orders do
       resources :pick_lists, only: [:show]
+      resources :invoices, only: [:show]
     end
   end
 
