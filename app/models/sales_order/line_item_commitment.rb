@@ -41,6 +41,9 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   belongs_to :item
   belongs_to :shipment
 
+  delegate :unit_price, :tax_rate, :total, to: :line_item
+  delegate :sku, :name, to: :item
+
   validates :line_item_id,
             :bin_location_id,
             :location_id,
@@ -60,8 +63,17 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
     raise ArgumentError, 'Wrong shipment type' if !shipment.is_a?(SalesOrder::Shipment)
     raise 'Sales order not matched' if shipment.sales_order_id != line_item.sales_order_id
     raise 'Shipment should be persisted' if !shipment.persisted?
-    update_columns(shipment_id: shipment.id, updated_at: Time.zone.now) # Use #update_columns to avoid triggering callbacks
-    location_variant.change_quantity_by_shipping_committed_line_item!(self)
+
+    # LocationVariant#change_quantity_by_shipping_committed_line_item會檢查line_item_commitment是否已經ship(透過檢查shipment_id)
+    # 因此要先執行LocationVariant#change_quantity_by_shipping_committed_line_item, 再執行update_columns(shipment_id: shipment.id, updated_at: Time.zone.now)
+    ActiveRecord::Base.transaction do
+      location_variant.change_quantity_by_shipping_committed_line_item!(self)
+      update_columns(shipment_id: shipment.id, updated_at: Time.zone.now) # Use #update_columns to avoid triggering callbacks
+    end
+  end
+
+  def shipped?
+    shipment_id.present?
   end
 
   private

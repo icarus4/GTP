@@ -18,9 +18,9 @@ module Taxable
   # total / (1 / ((100 + tax_rate) / 100 - 1) + 1) = tax
   def calculate_total_tax
     self.total_tax = if tax_exclusive?
-                       line_items.reduce(0) { |total_tax, line_item| line_item.total * line_item.tax_rate / 100 }.round(2)
+                       line_items.reduce(0) { |total_tax, line_item| total_tax + line_item.total * line_item.tax_rate / 100 }.round(2)
                      else
-                       line_items.reduce(0) { |total_tax, line_item| line_item.total / (1 / ((100 + line_item.tax_rate) / 100 - 1) + 1) }.round(2)
+                       line_items.reduce(0) { |total_tax, line_item| total_tax + line_item.total / (1 / ((100 + line_item.tax_rate) / 100 - 1) + 1) }.round(2)
                      end
   end
 
