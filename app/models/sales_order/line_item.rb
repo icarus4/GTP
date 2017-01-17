@@ -14,6 +14,8 @@
 #  total                :decimal(12, 2)   not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  shipment_status      :integer          default("unshipped"), not null
+#  shipped_quantity     :integer          default(0), not null
 #
 # Indexes
 #
@@ -22,9 +24,17 @@
 #
 
 class SalesOrder::LineItem < ApplicationRecord
+  # Column notes
+  # quantity:             user 指定的出貨數量
+  # committed_quantity:   尚未出貨但已經在line_item_commitments中指定出貨貨源的數量
+  # uncommitted_quantity: 尚未出貨也尚未指定出貨貨源的數量
+  # shipped_quantity:     已出貨的數量
+  # quantity = shipped_quantity + committed_quantity + uncommitted_quantity
+
   after_initialize :setup_defaults
   before_save :calculate_total
   before_save :calculate_quantities, if: :quantity_changed?
+  after_save :update_sales_order_shipment_status!
 
   belongs_to :sales_order
   belongs_to :item
@@ -39,9 +49,33 @@ class SalesOrder::LineItem < ApplicationRecord
   validates :committed_quantity,   numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :uncommitted_quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
+  enum shipment_status: { unshipped: 0,  partial: 1, shipped: 2 },  _prefix: :shipment_status_is
+
   def update_quantities!
     calculate_quantities
     save!
+  end
+
+  def update_shipment_status!
+    if committed_quantity == quantity
+      if !line_item_commitments.shipped.exists?
+        shipment_status_is_unshipped!
+      elsif !line_item_commitments.unshipped.exists?
+        shipment_status_is_shipped!
+      else
+        shipment_status_is_partial!
+      end
+    else
+      if line_item_commitments.shipped.exists?
+        shipment_status_is_partial!
+      else
+        shipment_status_is_unshipped!
+      end
+    end
+  end
+
+  def update_sales_order_shipment_status!
+    sales_order.update_shipment_status!
   end
 
   private
@@ -51,8 +85,9 @@ class SalesOrder::LineItem < ApplicationRecord
     end
 
     def calculate_quantities
+      self.shipped_quantity = line_item_commitments.shipped.sum(:quantity)
       self.committed_quantity = line_item_commitments.unshipped.sum(:quantity)
-      self.uncommitted_quantity = quantity - committed_quantity
+      self.uncommitted_quantity = quantity - shipped_quantity - committed_quantity
     end
 
     def setup_defaults

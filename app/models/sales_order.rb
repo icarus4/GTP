@@ -11,10 +11,10 @@
 #  assignee_id            :integer
 #  payment_method_id      :integer
 #  status                 :integer          default("draft"), not null
-#  invoice_status         :integer          default(0), not null
+#  invoice_status         :integer          default("uninvoiced"), not null
 #  packing_status         :integer          default(0), not null
-#  shipment_status        :integer          default(0), not null
-#  payment_status         :integer          default(0), not null
+#  shipment_status        :integer          default("unshipped"), not null
+#  payment_status         :integer          default("unpaid"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
 #  line_items_count       :integer          default(0), not null
 #  total_units            :integer          default(0), not null
@@ -84,6 +84,18 @@ class SalesOrder < ActiveRecord::Base
       if line_item_commitments.exists? && !line_item_commitments.where(shipment_id: nil).exists?
         fulfilled!
       end
+    end
+  end
+
+  def update_shipment_status!
+    if line_items.shipment_status_is_partial.exists?
+      shipment_status_is_partial!
+    elsif !line_items.shipment_status_is_shipped.exists?
+      shipment_status_is_unshipped!
+    elsif !line_items.shipment_status_is_unshipped.exists?
+      shipment_status_is_shipped!
+    else
+      raise "Should not be here"
     end
   end
 

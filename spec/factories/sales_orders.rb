@@ -11,10 +11,10 @@
 #  assignee_id            :integer
 #  payment_method_id      :integer
 #  status                 :integer          default("draft"), not null
-#  invoice_status         :integer          default(0), not null
+#  invoice_status         :integer          default("uninvoiced"), not null
 #  packing_status         :integer          default(0), not null
-#  shipment_status        :integer          default(0), not null
-#  payment_status         :integer          default(0), not null
+#  shipment_status        :integer          default("unshipped"), not null
+#  payment_status         :integer          default("unpaid"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
 #  line_items_count       :integer          default(0), not null
 #  total_units            :integer          default(0), not null

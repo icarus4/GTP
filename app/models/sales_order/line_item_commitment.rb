@@ -31,7 +31,7 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   # 其餘 foreign_key 交由 setup_denormalized_columns 設置，請勿手動設置
 
   before_validation :setup_denormalized_columns
-  after_save :update_associations_quantities!
+  after_save :update_associations_quantities!, :update_line_item_shipment_status!
 
   belongs_to :line_item
   belongs_to :location_variant
@@ -55,6 +55,7 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
 
   scope :unshipped, -> { where(shipment_id: nil) }
+  scope :shipped,   -> { where.not(shipment_id: nil) }
 
   # Ship item
   # 執行此 method 會讓對應的 location variant 改變數量
@@ -74,6 +75,10 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
 
   def shipped?
     shipment_id.present?
+  end
+
+  def update_line_item_shipment_status!
+    line_item.update_shipment_status!
   end
 
   private
