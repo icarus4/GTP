@@ -76,6 +76,21 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     render json: { sales_order: sales_order }
   end
 
+  def delete_shipments
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
+    render json: { errors: 'Sales order not found' }, status: :bad_request and return if sales_order.nil?
+
+    begin
+      ActiveRecord::Base.transaction do
+        sales_order.shipments.destroy_all
+      end
+    rescue => e
+      render json: { errors: e.message }, status: :bad_request and return
+    end
+
+    render json: { sales_order: sales_order }
+  end
+
   private
 
     def sales_order_params

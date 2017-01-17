@@ -65,20 +65,30 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
     raise 'Sales order not matched' if shipment.sales_order_id != line_item.sales_order_id
     raise 'Shipment should be persisted' if !shipment.persisted?
 
-    # LocationVariant#change_quantity_by_shipping_committed_line_item會檢查line_item_commitment是否已經ship(透過檢查shipment_id)
-    # 因此要先執行LocationVariant#change_quantity_by_shipping_committed_line_item, 再執行update_columns(shipment_id: shipment.id, updated_at: Time.zone.now)
+    # LocationVariant#change_quantity_by_shipping_committed_line_item! 會檢查 line_item_commitment 是否已經ship(透過檢查shipment_id)
+    # 因此要先執行LocationVariant#decrease_quantity_by_shipping_committed_line_item!, 再執行update_columns(shipment_id: shipment.id, updated_at: Time.zone.now)
     ActiveRecord::Base.transaction do
-      location_variant.change_quantity_by_shipping_committed_line_item!(self)
-      update_columns(shipment_id: shipment.id, updated_at: Time.zone.now) # Use #update_columns to avoid triggering callbacks
+      # FIXME: location variant的quanity計算方式目前為針對現有commitment的數量做加減
+      #        此方法有一個潛在缺點就是若此method執行數次，會導致location variant的quantity被重複扣減，然而理應只被扣減一次
+      #        目前利用檢查 shipment_id.present? 來避免被重複扣減。
+      #        之後應改為透過加減各項相關數據得到的一個deterministic的quantity(不管被執行幾次，都應該算出正確的quantity)
+      location_variant.decrease_quantity_by_shipping_committed_line_item!(self)
+
+      update!(shipment_id: shipment.id) # Use #update_columns to avoid triggering callbacks
     end
+  end
+
+  def revert_shipping!
+    location_variant.increase_quantity_by_reverting_shipping_committed_line_item!(self)
+    update!(shipment_id: nil)
   end
 
   def shipped?
     shipment_id.present?
   end
 
-  def update_line_item_shipment_status!
-    line_item.update_shipment_status!
+  def unshipped?
+    shipment_id.nil?
   end
 
   private
@@ -88,6 +98,10 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
       self.location_id     = location_variant.bin_location.location_id if location_variant_id_changed?
       self.variant_id      = location_variant.variant_id               if location_variant_id_changed?
       self.item_id         = line_item.item_id                         if line_item_id_changed?
+    end
+
+    def update_line_item_shipment_status!
+      line_item.update_shipment_status! if shipment_id_changed?
     end
 
     def update_associations_quantities!

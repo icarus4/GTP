@@ -17,5 +17,11 @@
 require 'rails_helper'
 
 RSpec.describe SalesOrder::Shipment, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'when destroyed' do
+    xit '回復庫存' do
+    end
+
+    xit "changes sales order's shipment_status to unshipped" do
+    end
+  end
 end
