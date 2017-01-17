@@ -16,8 +16,6 @@ class Api::V1::SalesOrders::ShipmentsController < Api::V1::BaseController
       render json: { errors: e.message }, status: :bad_request and return
     end
 
-    sales_order.update_status!
-
     render json: { shipment: shipment }
   end
 end

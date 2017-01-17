@@ -41,6 +41,7 @@ class SalesOrder < ActiveRecord::Base
   include Taxable
 
   after_initialize :setup_defaults
+  after_save :update_status!, if: :shipment_status_changed?
 
   belongs_to :company
   belongs_to :partner
@@ -80,9 +81,14 @@ class SalesOrder < ActiveRecord::Base
   end
 
   def update_status!
+    # TODO: Refine
     if finalized?
       if line_item_commitments.exists? && !line_item_commitments.where(shipment_id: nil).exists?
         fulfilled!
+      end
+    elsif fulfilled?
+      if !shipment_status_is_shipped?
+        finalized!
       end
     end
   end

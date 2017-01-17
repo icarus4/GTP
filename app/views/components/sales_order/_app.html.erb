@@ -18,10 +18,11 @@
         </div>
 
         <div class="pull-right">
-          <button @click="openInvoicePage" class="btn btn-default">顯示 Invoice</button>
-          <button @click="openPickListPage" class="btn btn-default">顯示撿貨單</button>
-          <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary">Finalize</button>
-          <button v-if="sales_order.status === 'finalized'" @click="shipAll" class="btn btn-primary">Ship all</button>
+          <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
+          <button @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
+          <button @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
+          <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary m-l-xs">Finalize</button>
+          <button v-if="sales_order.status === 'finalized' && sales_order.shipment_status === 'unshipped'" @click="shipAll" class="btn btn-primary m-l-xs">Ship all</button>
         </div>
       </div>
 
@@ -269,6 +270,9 @@
         })
       },
       shipAll: function() {
+        r = confirm('確定出貨?')
+        if (r === false) { return }
+
         var that = this
         $.ajax({
           url: '/api/v1/sales_orders/' + that.sales_order.id + '/shipments',
@@ -286,6 +290,23 @@
       },
       openInvoicePage: function() {
         window.open('/papers/sales_orders/invoices/' + this.sales_order.id)
+      },
+      deleteShipment: function() {
+        r = confirm('商品數量將會回復，確定刪除出貨?')
+        if (r === false) { return }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id + '/shipments',
+          method: 'DELETE',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        }).done(function(data) {
+          window.location.href = '/sales_orders/' + that.sales_order.id
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+          alert(err.responseJSON.errors)
+        })
       }
     }
   })

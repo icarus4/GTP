@@ -34,7 +34,7 @@ class SalesOrder::LineItem < ApplicationRecord
   after_initialize :setup_defaults
   before_save :calculate_total
   before_save :calculate_quantities, if: :quantity_changed?
-  after_save :update_sales_order_shipment_status!
+  after_save :update_sales_order_shipment_status!, if: :shipment_status_changed?
 
   belongs_to :sales_order
   belongs_to :item
@@ -57,21 +57,15 @@ class SalesOrder::LineItem < ApplicationRecord
   end
 
   def update_shipment_status!
-    if committed_quantity == quantity
-      if !line_item_commitments.shipped.exists?
-        shipment_status_is_unshipped!
-      elsif !line_item_commitments.unshipped.exists?
-        shipment_status_is_shipped!
-      else
-        shipment_status_is_partial!
-      end
+    if shipped_quantity == quantity
+      shipment_status_is_shipped!
+    elsif shipped_quantity == 0
+      shipment_status_is_unshipped!
     else
-      if line_item_commitments.shipped.exists?
-        shipment_status_is_partial!
-      else
-        shipment_status_is_unshipped!
-      end
+      shipment_status_is_partial!
     end
+
+    sales_order.update_status!
   end
 
   def update_sales_order_shipment_status!

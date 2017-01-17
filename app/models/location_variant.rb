@@ -68,9 +68,16 @@ class LocationVariant < ActiveRecord::Base
   end
 
   # Ship sales order committed line items 時，須根據 committed line item 的數量來扣減 quantity
-  def change_quantity_by_shipping_committed_line_item!(sales_order_line_item_commitment)
+  def decrease_quantity_by_shipping_committed_line_item!(sales_order_line_item_commitment)
     raise "Already shipped" if sales_order_line_item_commitment.shipped?
     self.quantity -= sales_order_line_item_commitment.quantity
+    save!
+  end
+
+  # Revert version of #decrease_quantity_by_shipping_committed_line_item!
+  def increase_quantity_by_reverting_shipping_committed_line_item!(sales_order_line_item_commitment)
+    raise "Not shipped" if sales_order_line_item_commitment.unshipped?
+    self.quantity += sales_order_line_item_commitment.quantity
     save!
   end
 

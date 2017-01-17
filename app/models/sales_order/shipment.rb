@@ -15,12 +15,19 @@
 #
 
 class SalesOrder::Shipment < ApplicationRecord
-  belongs_to :sales_order
   before_save :setup_shipped_on
+  before_destroy :revert_line_item_commitments_shipping!
+
+  belongs_to :sales_order
+  has_many :line_item_commitments
 
   validates :sales_order_id, presence: true
 
   private
+
+    def revert_line_item_commitments_shipping!
+      line_item_commitments.each(&:revert_shipping!)
+    end
 
     def setup_shipped_on
       self.shipped_on = shipped_at.to_date if shipped_at
