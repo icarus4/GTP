@@ -13,7 +13,7 @@
 #  index_bin_locations_on_location_id  (location_id)
 #
 
-class BinLocation < ActiveRecord::Base
+class BinLocation < ApplicationRecord
   belongs_to :location
 
   has_many :location_variants, foreign_key: :bin_location_id

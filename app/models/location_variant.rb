@@ -23,7 +23,7 @@
 #  index_location_variants_on_variant_id       (variant_id)
 #
 
-class LocationVariant < ActiveRecord::Base
+class LocationVariant < ApplicationRecord
   # NOTICE:
   # 1.
   # 此 model 的 foreign key 只需要 assign bin_location_id 與 variant_id

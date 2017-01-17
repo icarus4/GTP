@@ -29,7 +29,7 @@
 #  index_partners_on_name        (name)
 #
 
-class Partner < ActiveRecord::Base
+class Partner < ApplicationRecord
   after_initialize :setup_defaults
 
   store_accessor :settings,

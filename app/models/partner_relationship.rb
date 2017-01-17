@@ -13,7 +13,7 @@
 #  index_partner_relationships_on_partner_id_and_partner_role_id  (partner_id,partner_role_id) UNIQUE
 #
 
-class PartnerRelationship < ActiveRecord::Base
+class PartnerRelationship < ApplicationRecord
   belongs_to :partner
   belongs_to :role, class_name: 'PartnerRole', foreign_key: 'partner_role_id'
 

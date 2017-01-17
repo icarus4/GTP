@@ -17,7 +17,7 @@
 #  index_sales_order_details_on_variant_id      (variant_id)
 #
 
-class SalesOrderDetail < ActiveRecord::Base
+class SalesOrderDetail < ApplicationRecord
   belongs_to :variant
   belongs_to :sales_order
 

@@ -9,7 +9,7 @@
 #  updated_at   :datetime         not null
 #
 
-class PartnerRole < ActiveRecord::Base
+class PartnerRole < ApplicationRecord
   has_many :partner_relationships
   has_many :partners, through: :partner_relationships
 

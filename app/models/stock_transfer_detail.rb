@@ -14,7 +14,7 @@
 #  index_stock_transfer_details_on_stock_transfer_id  (stock_transfer_id)
 #
 
-class StockTransferDetail < ActiveRecord::Base
+class StockTransferDetail < ApplicationRecord
   belongs_to :stock_transfer
   belongs_to :variant
   

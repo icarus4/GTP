@@ -24,7 +24,7 @@
 #  index_variants_on_procurement_id                 (procurement_id)
 #
 
-class Variant < ActiveRecord::Base
+class Variant < ApplicationRecord
   after_save :update_item_on_hand_count!
   after_destroy :update_item_on_hand_count!
 

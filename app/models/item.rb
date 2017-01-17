@@ -36,7 +36,7 @@
 #  index_items_on_sku             (sku)
 #
 
-class Item < ActiveRecord::Base
+class Item < ApplicationRecord
   mount_uploader :image, ImageUploader
 
   after_initialize :setup_defaults

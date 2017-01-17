@@ -11,7 +11,7 @@
 #  index_cities_on_name  (name)
 #
 
-class City < ActiveRecord::Base
+class City < ApplicationRecord
   has_many :locations
 
   validates :name, presence: true, uniqueness: true
