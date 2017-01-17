@@ -49,6 +49,7 @@ group :development do
   gem 'annotate', '2.7.1'
   gem 'guard-rspec', '4.7.2', require: false
   # gem 'rails_admin', '1.0.0.rc'
+  gem 'meta_request'
 end
 
 group :development, :production do
