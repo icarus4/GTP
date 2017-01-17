@@ -11,7 +11,7 @@
     </td>
 
     <td><!-- 出貨量 -->
-      <input v-if="editable" class="no-border no-outline" type="number" min="1" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
+      <input v-if="editable" class="no-border no-outline" type="number" min="1" max="{{ sellable_count }}" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
 
