@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170113071515) do
+ActiveRecord::Schema.define(version: 20170117051740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -425,17 +425,19 @@ ActiveRecord::Schema.define(version: 20170113071515) do
   end
 
   create_table "sales_order_line_items", force: :cascade do |t|
-    t.integer  "sales_order_id",                                null: false
-    t.integer  "item_id",                                       null: false
-    t.integer  "quantity",                                      null: false
-    t.integer  "committed_quantity",                            null: false
-    t.integer  "uncommitted_quantity",                          null: false
-    t.decimal  "unit_price",           precision: 10, scale: 2, null: false
+    t.integer  "sales_order_id",                                            null: false
+    t.integer  "item_id",                                                   null: false
+    t.integer  "quantity",                                                  null: false
+    t.integer  "committed_quantity",                                        null: false
+    t.integer  "uncommitted_quantity",                                      null: false
+    t.decimal  "unit_price",           precision: 10, scale: 2,             null: false
     t.decimal  "tax_rate",             precision: 4,  scale: 1
     t.decimal  "tax",                  precision: 10, scale: 2
-    t.decimal  "total",                precision: 12, scale: 2, null: false
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
+    t.decimal  "total",                precision: 12, scale: 2,             null: false
+    t.datetime "created_at",                                                null: false
+    t.datetime "updated_at",                                                null: false
+    t.integer  "shipment_status",                               default: 0, null: false
+    t.integer  "shipped_quantity",                              default: 0, null: false
     t.index ["item_id"], name: "index_sales_order_line_items_on_item_id", using: :btree
     t.index ["sales_order_id"], name: "index_sales_order_line_items_on_sales_order_id", using: :btree
   end

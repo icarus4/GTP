@@ -11,10 +11,10 @@
 #  assignee_id            :integer
 #  payment_method_id      :integer
 #  status                 :integer          default("draft"), not null
-#  invoice_status         :integer          default(0), not null
+#  invoice_status         :integer          default("uninvoiced"), not null
 #  packing_status         :integer          default(0), not null
-#  shipment_status        :integer          default(0), not null
-#  payment_status         :integer          default(0), not null
+#  shipment_status        :integer          default("unshipped"), not null
+#  payment_status         :integer          default("unpaid"), not null
 #  tax_treatment          :integer          default("exclusive"), not null
 #  line_items_count       :integer          default(0), not null
 #  total_units            :integer          default(0), not null
@@ -84,6 +84,22 @@ class SalesOrder < ActiveRecord::Base
       if line_item_commitments.exists? && !line_item_commitments.where(shipment_id: nil).exists?
         fulfilled!
       end
+    end
+  end
+
+  def update_shipment_status!
+    if line_items.shipment_status_is_partial.exists? # 有partial shipped line_items
+      # 至少有一個 line_item 為 partial => partial
+      shipment_status_is_partial!
+    elsif !line_items.shipment_status_is_shipped.exists? # 沒有shipped line_items
+      # 沒有任何partial && 沒有shipped line_items => 全部 line_items unshipped => unshipped
+      shipment_status_is_unshipped!
+    elsif !line_items.shipment_status_is_unshipped.exists? # 沒有unshipped line_items
+      # 沒有任何partial && 部分或全部 shipped && 沒有unshipped line_items => 全部 line_items shipped => shipped
+      shipment_status_is_shipped!
+    else
+      # 沒有任何partial && 有shipped && 有unshipped => partial
+      shipment_status_is_partial!
     end
   end
 

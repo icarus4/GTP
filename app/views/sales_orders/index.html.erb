@@ -13,6 +13,7 @@
         <th>出貨倉庫</th>
         <th>訂購數量</th>
         <th>預計出貨日期</th>
+        <th>出貨狀態</th>
         <th>訂單狀態</th>
       </tr>
     </thead>
@@ -26,6 +27,7 @@
         <td><%= order.ship_from_location.name %></td>
         <td><%= order.total_units %></td>
         <td><%= order.expected_delivery_date %></td>
+        <td><%= order.shipment_status %></td>
         <td><%= render_status(order.status) %></td>
       </tr>
     <% end %>
