@@ -88,14 +88,18 @@ class SalesOrder < ActiveRecord::Base
   end
 
   def update_shipment_status!
-    if line_items.shipment_status_is_partial.exists?
+    if line_items.shipment_status_is_partial.exists? # 有partial shipped line_items
+      # 至少有一個 line_item 為 partial => partial
       shipment_status_is_partial!
-    elsif !line_items.shipment_status_is_shipped.exists?
+    elsif !line_items.shipment_status_is_shipped.exists? # 沒有shipped line_items
+      # 沒有任何partial && 沒有shipped line_items => 全部 line_items unshipped => unshipped
       shipment_status_is_unshipped!
-    elsif !line_items.shipment_status_is_unshipped.exists?
+    elsif !line_items.shipment_status_is_unshipped.exists? # 沒有unshipped line_items
+      # 沒有任何partial && 部分或全部 shipped && 沒有unshipped line_items => 全部 line_items shipped => shipped
       shipment_status_is_shipped!
     else
-      raise "Should not be here"
+      # 沒有任何partial && 有shipped && 有unshipped => partial
+      shipment_status_is_partial!
     end
   end
 
