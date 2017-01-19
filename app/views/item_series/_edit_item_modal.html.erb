@@ -109,11 +109,11 @@
                     <h4 style="margin-top: 30px">管理庫存</h4>
                     <hr>
                     <ul class="unstyled" style="padding-left: 0">
-                      <li>在庫量 {{ editing_item.on_hand_count }}</li>
-                      <li>預定量 施工中...</li>
-                      <li>可售量 {{ editing_item.available_count }}</li>
-                      <li>採購量 施工中...</li>
-                      <li>警示量 {{ editing_item.low_stock_alert_level }}</li>
+                      <li class="m-t-xs">在庫量 <span class="pull-right">{{ editing_item.quantity }}</span></li>
+                      <li class="m-t-xs">預定量 <span class="pull-right">{{ editing_item.committed_quantity }}</span></li>
+                      <li class="m-t-xs">可售量 <span class="pull-right">{{ editing_item.sellable_quantity }}</span></li>
+                      <li class="m-t-xs">採購量 <span class="pull-right">施工中...</span></li>
+                      <li class="m-t-xs">警示量 <span class="pull-right">{{ editing_item.low_stock_alert_level }}</span></li>
                     </ul>
                   </div>
                 </div>

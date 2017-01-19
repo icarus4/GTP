@@ -37,8 +37,8 @@
           <th class="col-sm-1">批發價</th>
           <th class="col-sm-1">零售價</th>
           <th class="col-sm-1">單位庫存成本</th>
-          <th class="col-sm-1">可用數量</th>
-          <th class="col-sm-2">在庫數量</th>
+          <th class="col-sm-1">可售量</th>
+          <th class="col-sm-2">在庫量</th>
           <th class="col-sm-1">低庫存警示量</th>
           <th class="col-sm-1">狀態</th>
         </tr>
@@ -60,12 +60,12 @@
           <td class="col-sm-1">{{ item.wholesale_price }}</td>
           <td class="col-sm-1">{{ item.retail_price }}</td>
           <td class="col-sm-1">{{ item.cost_per_unit }}</td>
-          <td class="col-sm-1">{{ item.available_count }}</td>
+          <td class="col-sm-1">{{ item.sellable_quantity }}</td>
           <td class="col-sm-2">
-            {{ item.on_hand_count }}
+            {{ item.quantity }}
             <ul class="list-unstyled">
               <li v-for="pack in item.packs">
-                <small class="text-muted"><i class="fa fa-arrow-right"></i> {{ (item.on_hand_count / pack.size).toFixed(2) }} {{ pack.name }} (每{{pack.name + pack.size}}個)</small>
+                <small class="text-muted"><i class="fa fa-arrow-right"></i> {{ (item.quantity / pack.size).toFixed(2) }} {{ pack.name }} (每{{pack.name + pack.size}}個)</small>
               </li>
             </ul>
           </td>
