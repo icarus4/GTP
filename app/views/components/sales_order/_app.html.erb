@@ -19,8 +19,10 @@
 
         <div class="pull-right">
           <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
-          <button @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
-          <button @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
+          <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
+          <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
+          <button v-if="sales_order.status === 'finalized' || sales_order.status === 'fulfilled'" @click="voidOrder" class="btn btn-default m-l-xs">作廢此單</button>
+          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除此單</button>
           <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary m-l-xs">Finalize</button>
           <button v-if="sales_order.status === 'finalized' && sales_order.shipment_status === 'unshipped'" @click="shipAll" class="btn btn-primary m-l-xs">Ship all</button>
         </div>
@@ -298,6 +300,50 @@
         var that = this
         $.ajax({
           url: '/api/v1/sales_orders/' + that.sales_order.id + '/shipments',
+          method: 'DELETE',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        }).done(function(data) {
+          window.location.href = '/sales_orders/' + that.sales_order.id
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+          alert(err.responseJSON.errors)
+        })
+      },
+      voidOrder: function() {
+        r = confirm('作廢後商品數量將會回復，作廢後無法恢復未作廢狀態，確定作廢？')
+        if (r === false) { return }
+
+        if (this.sales_order.status !== 'fulfilled' && this.sales_order.status != 'finalized') {
+          alert('Only fulfilled or finalized sales order can be voided')
+          return
+        }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id + '/void',
+          method: 'PATCH',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        }).done(function(data) {
+          window.location.href = '/sales_orders/' + that.sales_order.id
+        }).fail(function(err) {
+          console.log(err.responseJSON)
+          alert(err.responseJSON.errors)
+        })
+      },
+      deleteOrder: function() {
+        r = confirm('確定刪除？')
+        if (r === false) { return }
+
+        if (this.sales_order.status !== 'draft' && this.sales_order.status != 'active') {
+          alert('Only draft or active sales order can be deleted')
+          return
+        }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id,
           method: 'DELETE',
           dataType: 'json',
           beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
