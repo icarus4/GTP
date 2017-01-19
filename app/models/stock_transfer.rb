@@ -19,7 +19,7 @@
 #  index_stock_transfers_on_status      (status)
 #
 
-class StockTransfer < ActiveRecord::Base
+class StockTransfer < ApplicationRecord
   after_initialize :setup_defaults
 
   belongs_to :company

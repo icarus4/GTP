@@ -18,7 +18,7 @@
 #  index_purchase_order_details_on_purchase_order_id  (purchase_order_id)
 #
 
-class PurchaseOrderDetail < ActiveRecord::Base
+class PurchaseOrderDetail < ApplicationRecord
   belongs_to :item
   belongs_to :purchase_order
 

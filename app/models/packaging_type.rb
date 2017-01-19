@@ -14,7 +14,7 @@
 #  index_packaging_types_on_company_id  (company_id)
 #
 
-class PackagingType < ActiveRecord::Base
+class PackagingType < ApplicationRecord
   belongs_to :company
 
   validates :name, presence: true, uniqueness: { scope: :company_id }

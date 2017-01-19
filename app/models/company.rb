@@ -24,7 +24,7 @@
 #  index_companies_on_type        (type)
 #
 
-class Company < ActiveRecord::Base
+class Company < ApplicationRecord
   after_create :create_default_associations!
 
   store_accessor :settings,

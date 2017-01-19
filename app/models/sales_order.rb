@@ -37,7 +37,7 @@
 #  index_sales_orders_on_order_number               (order_number)
 #
 
-class SalesOrder < ActiveRecord::Base
+class SalesOrder < ApplicationRecord
   include Taxable
 
   after_initialize :setup_defaults

@@ -23,7 +23,7 @@
 #  index_item_series_on_name        (name)
 #
 
-class ItemSeries < ActiveRecord::Base
+class ItemSeries < ApplicationRecord
   belongs_to :company
   belongs_to :brand
   belongs_to :manufacturer, class_name: 'Partner'

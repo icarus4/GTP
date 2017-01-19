@@ -20,7 +20,7 @@
 #  index_locations_on_locationable_type_and_locationable_id  (locationable_type,locationable_id)
 #
 
-class Location < ActiveRecord::Base
+class Location < ApplicationRecord
   belongs_to :city
   belongs_to :locationable, polymorphic: true
   has_many :bin_locations

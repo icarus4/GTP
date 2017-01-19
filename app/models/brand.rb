@@ -13,7 +13,7 @@
 #  index_brands_on_company_id_and_name  (company_id,name) UNIQUE
 #
 
-class Brand < ActiveRecord::Base
+class Brand < ApplicationRecord
   belongs_to :company
 
   validates :company_id, presence: true

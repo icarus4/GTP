@@ -14,6 +14,8 @@
 #  lot_number                    :string(255)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
+#  committed_quantity            :integer          default(0), not null
+#  sellable_quantity             :integer          default(0), not null
 #
 # Indexes
 #
@@ -24,9 +26,9 @@
 #  index_variants_on_procurement_id                 (procurement_id)
 #
 
-class Variant < ActiveRecord::Base
-  after_save :update_item_on_hand_count!
-  after_destroy :update_item_on_hand_count!
+class Variant < ApplicationRecord
+  after_save :update_item_cache_columns!
+  after_destroy :update_item_cache_columns!
 
   belongs_to :item
   belongs_to :procurement
@@ -58,11 +60,14 @@ class Variant < ActiveRecord::Base
                         :lot_number
 
   def update_cache_columns!
-    update!(quantity: location_variants.sum(:quantity))
+    update!(
+      quantity:           location_variants.sum(:quantity),
+      committed_quantity: location_variants.sum(:committed_quantity),
+      sellable_quantity:  location_variants.sum(:sellable_quantity),
+    )
   end
 
-  def update_item_on_hand_count!
-    item.update_on_hand_count!
-    item.update_available_count!
+  def update_item_cache_columns!
+    item.update_cache_columns!
   end
 end
