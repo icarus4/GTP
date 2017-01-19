@@ -39,6 +39,7 @@
 
 class SalesOrder < ApplicationRecord
   include Taxable
+  include AASM
 
   after_initialize :setup_defaults
   after_save :update_status!, if: :shipment_status_changed?
@@ -60,12 +61,39 @@ class SalesOrder < ApplicationRecord
             :ship_from_location_id, presence: true
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
 
-  enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3 }
+  enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3, void: 4, deleted: 5 }
   enum invoice_status:  { uninvoiced: 0, partial: 1, invoiced: 2 }, _prefix: :invoice_status_is
   enum shipment_status: { unshipped: 0,  partial: 1, shipped: 2 },  _prefix: :shipment_status_is
   enum payment_status:  { unpaid: 0,     partial: 1, paid: 2 },     _prefix: :payment_status_is
 
   auto_strip_attributes :email, :phone, :notes
+
+  aasm column: :status do
+    state :draft, initial: true
+    state :active
+    state :finalized
+    state :fulfilled
+    state :void
+    state :deleted
+
+    event :approve do
+      transitions from: :draft, to: :active
+    end
+
+    event :finalize do
+      transitions from: :active, to: :finalized
+    end
+
+    event :delete do
+      transitions from: :draft,  to: :deleted, after: :rollback_stocks!
+      transitions from: :active, to: :deleted, after: :rollback_stocks!
+    end
+
+    event :void do
+      transitions from: :finalized, to: :void, after: :rollback_stocks!
+      transitions from: :fulfilled, to: :void, after: :rollback_stocks!
+    end
+  end
 
   def self.next_number(company_id)
     where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001'
@@ -80,6 +108,7 @@ class SalesOrder < ApplicationRecord
     save!
   end
 
+  # TODO: 檢討哪些地方call到這個method，思考這個method可以透過callback自動化被執行嗎?
   def update_status!
     # TODO: Refine
     if finalized?
@@ -110,6 +139,11 @@ class SalesOrder < ApplicationRecord
   end
 
   private
+
+    def rollback_stocks!
+      line_item_commitments.each(&:destroy!)
+      shipments.destroy_all
+    end
 
     def setup_defaults
       self.order_number ||= self.class.next_number(company_id)

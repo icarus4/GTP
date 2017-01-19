@@ -32,6 +32,8 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
 
   before_validation :setup_denormalized_columns
   after_save :update_associations_quantities!, :update_line_item_shipment_status!
+  before_destroy :undo_shipping!, if: :shipped?
+  after_destroy :update_associations_quantities! # after_destroy 不執行 update_line_item_shipment_status!，因為要保留 void 前 sales order 與 line_item 的 status
 
   belongs_to :line_item
   belongs_to :location_variant
@@ -60,7 +62,7 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   # Ship item
   # 執行此 method 會讓對應的 location variant 改變數量
   def ship!(shipment)
-    raise 'Already shipped' if shipment_id.present?
+    raise 'Already shipped' if shipped?
     raise ArgumentError, 'Wrong shipment type' if !shipment.is_a?(SalesOrder::Shipment)
     raise 'Sales order not matched' if shipment.sales_order_id != line_item.sales_order_id
     raise 'Shipment should be persisted' if !shipment.persisted?
@@ -78,7 +80,8 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
     end
   end
 
-  def revert_shipping!
+  def undo_shipping!
+    return nil if unshipped?
     location_variant.increase_quantity_by_reverting_shipping_committed_line_item!(self)
     update!(shipment_id: nil)
   end
