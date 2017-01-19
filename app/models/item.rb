@@ -27,6 +27,9 @@
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  quantity              :integer          default(0), not null
+#  committed_quantity    :integer          default(0), not null
+#  sellable_quantity     :integer          default(0), not null
 #
 # Indexes
 #
@@ -92,30 +95,16 @@ class Item < ApplicationRecord
     "#{sku} #{name}"
   end
 
-  def update_available_count!
-    update!(available_count: on_hand_count + quantity_in_active_orders)
-  end
-
-  def update_on_hand_count!
-    update!(on_hand_count: variants.sum(:quantity))
+  def update_cache_columns!
+    self.quantity           = variants.sum(:quantity)
+    self.committed_quantity = variants.sum(:committed_quantity)
+    self.sellable_quantity  = variants.sum(:sellable_quantity)
+    self.on_hand_count      = quantity          # TODO: Should be removed later
+    self.available_count    = sellable_quantity # TODO: Should be removed later
+    save!
   end
 
   private
-
-    def quantity_in_active_orders
-      return 0 # FIXME: Purchase order is WIP, return 0 first
-      quantity_in_active_purchase_orders - quantity_in_unshipped_sales_orders
-    end
-
-    def quantity_in_active_purchase_orders
-      raise "Valid statuses of PurchaseOrder changed, please check the following calculation is correct or not" if PurchaseOrder::VALID_STATUSES != %w(draft active received)
-      purchase_order_details.joins(:purchase_order).where(purchase_orders: { company_id: company_id, status: 'active' }, item_id: id).sum(:quantity)
-    end
-
-    def quantity_in_unshipped_sales_orders
-      raise "Valid statuses of SalesOrder changed, please check the following calculation is correct or not" if SalesOrder::VALID_STATUSES != %w(draft active finalized fulfilled)
-      SalesOrderDetail.joins({variant: :item}, :sales_order).where(variants: { item_id: id }, sales_orders: { company_id: company_id, status: ['active', 'finalized']}).sum(:quantity)
-    end
 
     def setup_defaults
       # 用 #has_attribute? 檢查欄位是否有被select

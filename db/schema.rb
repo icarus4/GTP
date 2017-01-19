@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170117051740) do
+ActiveRecord::Schema.define(version: 20170117135756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -181,6 +181,9 @@ ActiveRecord::Schema.define(version: 20170117051740) do
     t.text     "description"
     t.datetime "created_at",                                                               null: false
     t.datetime "updated_at",                                                               null: false
+    t.integer  "quantity",                                                 default: 0,     null: false
+    t.integer  "committed_quantity",                                       default: 0,     null: false
+    t.integer  "sellable_quantity",                                        default: 0,     null: false
     t.index ["company_id"], name: "index_items_on_company_id", using: :btree
     t.index ["item_series_id"], name: "index_items_on_item_series_id", using: :btree
     t.index ["name"], name: "index_items_on_name", using: :btree
@@ -197,8 +200,8 @@ ActiveRecord::Schema.define(version: 20170117051740) do
     t.integer  "location_id"
     t.integer  "item_id"
     t.date     "expiry_date"
-    t.integer  "committed_quantity",             null: false
-    t.integer  "sellable_quantity"
+    t.integer  "committed_quantity", default: 0, null: false
+    t.integer  "sellable_quantity",  default: 0, null: false
     t.index ["bin_location_id"], name: "index_location_variants_on_bin_location_id", using: :btree
     t.index ["company_id"], name: "index_location_variants_on_company_id", using: :btree
     t.index ["quantity"], name: "index_location_variants_on_quantity", where: "(quantity > 0)", using: :btree
@@ -554,6 +557,8 @@ ActiveRecord::Schema.define(version: 20170117051740) do
     t.string   "lot_number",                    limit: 255
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
+    t.integer  "committed_quantity",                        default: 0, null: false
+    t.integer  "sellable_quantity",                         default: 0, null: false
     t.index ["expiry_date"], name: "index_variants_on_expiry_date", using: :btree
     t.index ["goods_declaration_number"], name: "index_variants_on_goods_declaration_number", using: :btree
     t.index ["import_admitted_notice_number"], name: "index_variants_on_import_admitted_notice_number", using: :btree

@@ -69,8 +69,6 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
           pack.size = input_pack[:size].to_i
           pack.save!
         end
-
-        item.update_available_count!
       end
     rescue => e
       error_message = e.to_s
