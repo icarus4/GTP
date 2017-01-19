@@ -12,8 +12,8 @@
 #  location_id        :integer
 #  item_id            :integer
 #  expiry_date        :date
-#  committed_quantity :integer          not null
-#  sellable_quantity  :integer
+#  committed_quantity :integer          default(0), not null
+#  sellable_quantity  :integer          default(0), not null
 #
 # Indexes
 #
@@ -39,7 +39,7 @@ class LocationVariant < ApplicationRecord
   before_validation :setup_denormalized_columns
   before_save :calculate_quantities, if: :quantity_changed?
   after_save :update_variant_cache_columns!
-  after_initialize :setup_defaults
+  # after_initialize :setup_defaults
 
   belongs_to :company
   belongs_to :location
@@ -84,13 +84,9 @@ class LocationVariant < ApplicationRecord
   private
 
     def update_variant_cache_columns!
+      # LocationVariant大部分的改變都是quantity相關的改變，
+      # 因此不太需要去判斷是否是quantity相關的改變再去呼叫variant.update_cache_columns!
       variant.update_cache_columns!
-    end
-
-    def setup_defaults
-      self.quantity           ||= 0
-      self.committed_quantity ||= 0
-      self.sellable_quantity  ||= 0
     end
 
     def setup_denormalized_columns

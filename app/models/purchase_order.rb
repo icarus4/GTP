@@ -42,11 +42,6 @@ class PurchaseOrder < ApplicationRecord
 
   after_initialize :setup_defaults
 
-  # TODO: 研究是否有需要把運算邏輯加入 callback
-  # before_save :update_total_amount
-  # after_save :update_item_available_count!
-
-
   belongs_to :company
   belongs_to :partner
   belongs_to :bill_to_location, class_name: 'Location', foreign_key: :bill_to_location_id
