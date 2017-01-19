@@ -72,7 +72,23 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
     render json: { errors: 'Sales order not found' }, status: :bad_request and return if sales_order.nil?
 
-    sales_order.finalized!
+    sales_order.finalize!
+    render json: { sales_order: sales_order }
+  end
+
+  def destroy
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
+    render json: { errors: 'Sales order not found' }, status: :bad_request and return if sales_order.nil?
+
+    sales_order.delete!
+    render json: { sales_order: sales_order }
+  end
+
+  def void
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
+    render json: { errors: 'Sales order not found' }, status: :bad_request and return if sales_order.nil?
+
+    sales_order.void!
     render json: { sales_order: sales_order }
   end
 

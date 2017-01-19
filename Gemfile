@@ -81,3 +81,4 @@ gem 'exception_notification', '4.2.1'
 gem 'slack-notifier', '1.5.1'
 gem "auto_strip_attributes", "~> 2.1"
 gem 'blazer', '1.7.0'
+gem 'aasm', '4.11.1'

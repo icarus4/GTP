@@ -26,7 +26,7 @@ class SalesOrder::Shipment < ApplicationRecord
   private
 
     def revert_line_item_commitments_shipping!
-      line_item_commitments.each(&:revert_shipping!)
+      line_item_commitments.each(&:undo_shipping!)
     end
 
     def setup_shipped_on

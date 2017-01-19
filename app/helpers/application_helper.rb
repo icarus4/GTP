@@ -11,6 +11,10 @@ module ApplicationHelper
       'Finalized'
     when 'fulfilled'
       '已送貨'
+    when 'void'
+      '作廢'
+    when 'deleted'
+      '已刪除'
     else
       raise ArgumentError, "Invalid status: #{status}"
     end
