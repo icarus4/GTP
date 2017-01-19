@@ -15,7 +15,7 @@
       <span v-else>{{ line_item.quantity }}</span>
     </td>
 
-    <!-- 可用量 -->
+    <!-- 可售量 -->
     <td>{{ sellable_count }}</td>
 
     <td><!-- 單價 -->
@@ -48,7 +48,7 @@
     },
     data: function() {
       return {
-        location_on_hand_count: null
+        location_sellable_quantity: null
       }
     },
     computed: {
@@ -60,7 +60,7 @@
         return item.available_count
       },
       sellable_count: function() {
-        return this.location_on_hand_count
+        return this.location_sellable_quantity
       },
       total: function() {
         var total = 0
@@ -97,7 +97,7 @@
           method: 'GET',
           dataType: 'json'
         }).done(function(data) {
-          that.location_on_hand_count = data.item.location.on_hand_count
+          that.location_sellable_quantity = data.item.location.sellable_quantity
         }).fail(function(err) {
           console.log(err)
         })
