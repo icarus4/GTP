@@ -233,8 +233,20 @@
       updateNotes: function(e) {
         this.$store.commit('updateNotes', e.target.value)
       },
-      createOrder: function(status) {
-        this.$store.dispatch('createOrder', status)
+      createOrder: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders',
+          method: 'POST',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { sales_order: that.$store.state.sales_order, sales_order_line_items: that.$store.state.sales_order_line_items }
+        }).done(function(data) {
+          window.location.href = '/sales_orders/' + data.sales_order.id
+        }).fail(function(err) {
+          console.log(err)
+          alert('Cannot create sales order')
+        })
       },
       // Fetch specific sales order
       getSalesOrder: function(id) {
