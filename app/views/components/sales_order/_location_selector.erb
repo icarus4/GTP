@@ -10,6 +10,7 @@
         v-bind:value="location.id">{{ location.name }}</option>
     </select>
     <span v-else>{{ location && location.name }}</span>
+    <span v-if="error_message" class="text-danger">{{ error_message }}</span>
   </div>
 </template>
 
@@ -21,7 +22,8 @@
       label: String,
       locations: Array,
       location: Object,
-      editable: Boolean
+      editable: Boolean,
+      error_message: String
     },
     methods: {
       updateSelectedLocation: function(e) {

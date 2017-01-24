@@ -9,6 +9,7 @@
         price_lists: [],
         stockable_locations: [],
       },
+      is_form_valid: false,
       sales_order: {
         partner_id: null,
         bill_to_location_id: null,
@@ -21,6 +22,14 @@
         tax_treatment: 'exclusive',
         notes: null,
         status: 'active',
+        errors: {
+          partner_id: null,
+          bill_to_location_id: null,
+          ship_to_location_id: null,
+          ship_from_location_id: null,
+          issue_date: null,
+          shipment_date: null
+        }
       },
       sales_order_line_items: [],
       sales_order_line_item_template: {
@@ -30,6 +39,11 @@
         unit_price: null,
         tax_rate: null,
         total: null,
+        errors: {
+          item_id: null,
+          unit_price: null,
+          tax_rate: null,
+        },
       }
     },
     getters: {
@@ -163,6 +177,22 @@
       },
       setupSalesOrderLineItems: function(state, obj) {
         state.sales_order_line_items = obj.sales_order_line_items
+      },
+      validateForm: function(state) {
+        state.is_form_valid = true
+
+        if (!state.sales_order.partner_id)            { state.is_form_valid = false; state.sales_order.errors.partner_id = "請選擇客戶" } else { state.sales_order.errors.partner_id = null }
+        if (!state.sales_order.bill_to_location_id)   { state.is_form_valid = false; state.sales_order.errors.bill_to_location_id = "請選擇單據寄送地點" } else { state.sales_order.errors.bill_to_location_id = null }
+        if (!state.sales_order.ship_to_location_id)   { state.is_form_valid = false; state.sales_order.errors.ship_to_location_id = "請選擇貨品寄送地點" } else { state.sales_order.errors.ship_to_location_id = null }
+        if (!state.sales_order.ship_from_location_id) { state.is_form_valid = false; state.sales_order.errors.ship_from_location_id = "請選擇出貨倉庫" } else { state.sales_order.errors.ship_from_location_id = null }
+        if (!state.sales_order.issue_date)            { state.is_form_valid = false; state.sales_order.errors.issue_date = "請選擇訂單日期" } else { state.sales_order.errors.issue_date = null }
+        if (!state.sales_order.shipment_date)         { state.is_form_valid = false; state.sales_order.errors.shipment_date = "請選擇送貨日期" } else { state.sales_order.errors.shipment_date = null }
+
+        state.sales_order_line_items.forEach(function(line_item) {
+          if (!line_item.item_id)    { state.is_form_valid = false; line_item.errors.item_id = '請選擇商品' }    else { line_item.errors.item_id = null }
+          if (!line_item.unit_price) { state.is_form_valid = false; line_item.errors.unit_price = '請輸入單價' } else { line_item.errors.unit_price = null }
+          if (!line_item.tax_rate)   { state.is_form_valid = false; line_item.errors.tax_rate = '請輸入稅率' }   else { line_item.errors.tax_rate = null }
+        })
       }
     },
     actions: {

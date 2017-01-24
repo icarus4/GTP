@@ -8,7 +8,8 @@
           <customer-selector
             :customers="$store.state.options.customers"
             :customer="sales_order && sales_order.partner"
-            :editable="editable">
+            :editable="editable"
+            :error_message="$store.state.sales_order.errors.partner_id">
           </customer-selector>
 
           <div>
@@ -38,7 +39,8 @@
             :location="sales_order && sales_order.bill_to_location"
             after-selected-dispatch-event="billToLocationSelected"
             label="單據寄送至"
-            :editable="editable">
+            :editable="editable"
+            :error_message="$store.state.sales_order.errors.bill_to_location_id">
           </bill-to-location-selector>
         </div>
         <div class="row">
@@ -48,7 +50,8 @@
             :location="sales_order && sales_order.ship_to_location"
             after-selected-dispatch-event="shipToLocationSelected"
             label="貨品寄送至"
-            :editable="editable">
+            :editable="editable"
+            :error_message="$store.state.sales_order.errors.ship_to_location_id">
           </ship-to-location-selector>
         </div>
         <div class="row">
@@ -58,7 +61,8 @@
             :location="sales_order && sales_order.ship_from_location"
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
-            :editable="editable">
+            :editable="editable"
+            :error_message="$store.state.sales_order.errors.ship_from_location_id">
           </ship-from-location-selector>
         </div>
       </div>
@@ -70,6 +74,7 @@
             <input v-if="editable" type="date" @change="updateIssueDate">
             <span v-else>{{ sales_order.issued_on }}</span>
           </span>
+          <span v-if="$store.state.sales_order.errors.issue_date" class="text-danger">{{ $store.state.sales_order.errors.issue_date }}</span>
         </div>
 
         <div class="form-group">
@@ -78,6 +83,7 @@
             <input v-if="editable" type="date" @change="updateShipmentDate">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
+          <span v-if="$store.state.sales_order.errors.shipment_date" class="text-danger">{{ $store.state.sales_order.errors.shipment_date }}</span>
         </div>
 
         <div class="form-group">
@@ -187,6 +193,9 @@
       sales_order_id: Number,
       sales_order: Object,
     },
+    data: function() {
+      return {}
+    },
     computed: {
       editable: function() {
         return this.mode === 'new' || this.mode === 'edit'
@@ -195,9 +204,6 @@
         if (this.sales_order.tax_treatment === 'exclusive') { return '稅外' }
         else { return '稅內' }
       }
-    },
-    data: function() {
-      return {}
     },
     created: function() {
       this.$store.commit('setupMode', this.mode)
@@ -234,6 +240,9 @@
         this.$store.commit('updateNotes', e.target.value)
       },
       createOrder: function() {
+        this.$store.commit('validateForm')
+        if (!this.$store.state.is_form_valid) { return }
+
         var that = this
         $.ajax({
           url: '/api/v1/sales_orders',
@@ -365,7 +374,7 @@
           console.log(err.responseJSON)
           alert(err.responseJSON.errors)
         })
-      }
+      },
     }
   })
 </script>
