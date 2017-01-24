@@ -8,6 +8,7 @@
         <option v-for="i in items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
       </select>
       <span v-else>{{ line_item.item.name }}</span>
+      <span v-if="line_item.errors.item_id" class="text-danger">{{ line_item.errors.item_id }}</span>
     </td>
 
     <td><!-- 出貨量 -->
@@ -21,11 +22,13 @@
     <td><!-- 單價 -->
       <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
       <span v-else>{{ line_item.unit_price }}</span>
+      <span v-if="line_item.errors.unit_price" class="text-danger">{{ line_item.errors.unit_price }}</span>
     </td>
 
     <td><!-- 稅率 -->
       <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
+      <span v-if="line_item.errors.tax_rate" class="text-danger">{{ line_item.errors.tax_rate }}</span>
     </td>
 
     <td>{{ total }}</td><!-- 金額 -->

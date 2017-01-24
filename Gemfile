@@ -50,6 +50,8 @@ group :development do
   gem 'guard-rspec', '4.7.2', require: false
   # gem 'rails_admin', '1.0.0.rc'
   gem 'meta_request'
+  gem 'bond', '0.5.1'
+  # gem 'rails_db' # https://github.com/igorkasyanchuk/rails_db
 end
 
 group :development, :production do
