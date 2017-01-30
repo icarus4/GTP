@@ -9,7 +9,7 @@
             :customers="$store.state.options.customers"
             :customer="sales_order && sales_order.partner"
             :editable="editable"
-            :error_message="$store.state.sales_order.errors.partner_id">
+            :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.partner_id) || null">
           </customer-selector>
 
           <div>
@@ -41,7 +41,7 @@
             after-selected-dispatch-event="billToLocationSelected"
             label="單據寄送至"
             :editable="editable"
-            :error_message="$store.state.sales_order.errors.bill_to_location_id">
+            :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.bill_to_location_id) || null">
           </bill-to-location-selector>
         </div>
         <div class="row">
@@ -52,7 +52,7 @@
             after-selected-dispatch-event="shipToLocationSelected"
             label="貨品寄送至"
             :editable="editable"
-            :error_message="$store.state.sales_order.errors.ship_to_location_id">
+            :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_to_location_id) || null">
           </ship-to-location-selector>
         </div>
         <div class="row">
@@ -63,7 +63,7 @@
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
             :editable="editable"
-            :error_message="$store.state.sales_order.errors.ship_from_location_id">
+            :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_from_location_id) || null">
           </ship-from-location-selector>
         </div>
       </div>
@@ -75,7 +75,7 @@
             <input v-if="editable" type="date" @change="updateIssueDate">
             <span v-else>{{ sales_order.issued_on }}</span>
           </span>
-          <span v-if="$store.state.sales_order.errors.issue_date" class="text-danger">{{ $store.state.sales_order.errors.issue_date }}</span>
+          <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.issue_date" class="text-danger">{{ $store.state.sales_order.errors.issue_date }}</span>
         </div>
 
         <div class="form-group">
@@ -84,7 +84,7 @@
             <input v-if="editable" type="date" @change="updateShipmentDate">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
-          <span v-if="$store.state.sales_order.errors.shipment_date" class="text-danger">{{ $store.state.sales_order.errors.shipment_date }}</span>
+          <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.shipment_date" class="text-danger">{{ $store.state.sales_order.errors.shipment_date }}</span>
         </div>
 
         <div class="form-group">
