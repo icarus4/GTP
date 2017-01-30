@@ -14,6 +14,7 @@
 
           <div>
             <div><label>狀態</label><span class="m-l">{{ sales_order.status }}</span></div>
+            <% if Rails.env.development? %><div><label>出貨狀態</label><span class="m-l">{{ sales_order.shipment_status }}</span></div><% end %>
             <div><label>訂單編號</label><span class="m-l">{{ sales_order.order_number }}</span></div>
           </div>
         </div>
