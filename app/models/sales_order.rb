@@ -111,14 +111,10 @@ class SalesOrder < ApplicationRecord
   # TODO: 檢討哪些地方call到這個method，思考這個method可以透過callback自動化被執行嗎?
   def update_status!
     # TODO: Refine
-    if finalized?
-      if line_item_commitments.exists? && !line_item_commitments.where(shipment_id: nil).exists?
-        fulfilled!
-      end
-    elsif fulfilled?
-      if !shipment_status_is_shipped?
-        finalized!
-      end
+    if finalized? && shipment_status_is_shipped?
+      fulfilled!
+    elsif fulfilled? && !shipment_status_is_shipped?
+      finalized!
     end
   end
 
