@@ -8,7 +8,7 @@
           <customer-selector
             :customers="$store.state.options.customers"
             :customer="sales_order && sales_order.partner"
-            :editable="editable"
+            :mode="mode"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.partner_id) || null">
           </customer-selector>
 
@@ -19,7 +19,7 @@
           </div>
         </div>
 
-        <div class="pull-right">
+        <div class="pull-right" v-if="sales_order && mode === 'show'">
           <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
@@ -27,6 +27,7 @@
           <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除此單</button>
           <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary m-l-xs">Finalize</button>
           <button v-if="sales_order.status === 'finalized' && sales_order.shipment_status === 'unshipped'" @click="shipAll" class="btn btn-primary m-l-xs">Ship all</button>
+          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除</button>
         </div>
       </div>
 
@@ -40,7 +41,7 @@
             :location="sales_order && sales_order.bill_to_location"
             after-selected-dispatch-event="billToLocationSelected"
             label="單據寄送至"
-            :editable="editable"
+            :mode="mode"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.bill_to_location_id) || null">
           </bill-to-location-selector>
         </div>
@@ -51,7 +52,7 @@
             :location="sales_order && sales_order.ship_to_location"
             after-selected-dispatch-event="shipToLocationSelected"
             label="貨品寄送至"
-            :editable="editable"
+            :mode="mode"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_to_location_id) || null">
           </ship-to-location-selector>
         </div>
@@ -62,7 +63,7 @@
             :location="sales_order && sales_order.ship_from_location"
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
-            :editable="editable"
+            :mode="mode"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_from_location_id) || null">
           </ship-from-location-selector>
         </div>
@@ -72,7 +73,7 @@
         <div class="form-group">
           <label>訂單日期</label>
           <span class="m-l">
-            <input v-if="editable" type="date" @change="updateIssueDate">
+            <input v-if="editable" type="date" @change="updateIssuedOn" v-model="sales_order.issued_on">
             <span v-else>{{ sales_order.issued_on }}</span>
           </span>
           <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.issue_date" class="text-danger">{{ $store.state.sales_order.errors.issue_date }}</span>
@@ -81,7 +82,7 @@
         <div class="form-group">
           <label>送貨日期</label>
           <span class="m-l">
-            <input v-if="editable" type="date" @change="updateShipmentDate">
+            <input v-if="editable" type="date" @change="updateShipmentDate" v-model="sales_order.expected_delivery_date">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
           <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.shipment_date" class="text-danger">{{ $store.state.sales_order.errors.shipment_date }}</span>
@@ -90,7 +91,7 @@
         <div class="form-group">
           <label>Email</label>
           <span class="m-l">
-            <input v-if="editable" type="text" @input="updateEmail">
+            <input v-if="editable" type="text" @input="updateEmail" v-model="sales_order.email">
             <span v-else>{{ sales_order.email }}</span>
           </span>
         </div>
@@ -98,7 +99,7 @@
         <div class="form-group">
           <label>電話</label>
           <span class="m-l">
-            <input v-if="editable" type="text" @input="updatePhone">
+            <input v-if="editable" type="text" @input="updatePhone" v-model="sales_order.phone">
             <span v-else>{{ sales_order.phone }}</span>
           </span>
         </div>
@@ -111,7 +112,7 @@
         </div>
         <div>
           <label>總金額</label>
-          <select v-if="editable" @change="updateTaxTreatment">
+          <select v-if="editable" @change="updateTaxTreatment" v-model="sales_order.tax_treatment">
             <option selected value="exclusive">稅外</option>
             <option value="inclusive">稅入</option>
           </select>
@@ -192,7 +193,10 @@
     props: {
       mode: String,
       sales_order_id: Number,
-      sales_order: Object,
+      sales_order: {
+        type: Object,
+        default: function() { return {} }
+      },
     },
     data: function() {
       return {}
@@ -217,13 +221,13 @@
         this.$store.dispatch('getItemList')
         this.$store.dispatch('addNewLineItem')
       }
-      if (this.mode === 'show') {
+      if (this.mode === 'show' || this.mode === 'edit') {
         this.getSalesOrder(this.sales_order_id)
       }
     },
     methods: {
-      updateIssueDate: function(e) {
-        this.$store.commit('updateIssueDate', e.target.value)
+      updateIssuedOn: function(e) {
+        this.$store.commit('updateIssuedOn', e.target.value)
       },
       updateShipmentDate: function(e) {
         this.$store.commit('updateShipmentDate', e.target.value)
@@ -376,6 +380,9 @@
           alert(err.responseJSON.errors)
         })
       },
+      editOrder: function() {
+        window.location.href = '/sales_orders/' + this.sales_order.id + '/edit'
+      }
     }
   })
 </script>

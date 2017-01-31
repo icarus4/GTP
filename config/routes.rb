@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   end
 
 
-  resources :sales_orders, only: [:index, :new, :create, :show] do
+  resources :sales_orders, only: [:index, :new, :create, :show, :edit] do
     put :ship, on: :member # FIXME: deprecated?
   end
 

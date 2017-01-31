@@ -1,6 +1,6 @@
 <template id="customer-selector">
-  <label>* 客戶</label>
-  <select v-if="editable" @change="updateSelectedCustomer" class="m-l">
+  <label>客戶</label>
+  <select v-if="editable" @change="updateSelectedCustomer" v-model="customer.id" class="m-l">
     <option selected disabled value="">-- 選取客戶 --</option>
     <option
       v-for="customer in customers"
@@ -15,9 +15,25 @@
     template: '#customer-selector',
     props: {
       customers: Array,
-      customer: Object,
-      editable: Boolean,
+      customer: {
+        type: Object,
+        default: function() { return {} }
+      },
+      mode: String,
       error_message: String,
+    },
+    computed: {
+      editable: function() {
+        return !!(this.mode === 'new' || (this.mode === 'edit' && this.customer)) // If mode is edit, editable after customer is loaded
+      }
+    },
+    watch: {
+      "customer.id": function(value, old_value) {
+        // In edit mode, When customer loaded, we need to load customer location list.
+        if (this.mode === 'edit' && !old_value && !!value) {
+          this.$store.dispatch('getCustomerLocationList', value)
+        }
+      }
     },
     methods: {
       updateSelectedCustomer: function(e) {
