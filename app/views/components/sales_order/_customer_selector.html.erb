@@ -6,7 +6,7 @@
       v-for="customer in customers"
       v-bind:value="customer.id">{{ customer.name }}</option>
   </select>
-  <span v-else class="m-l">{{ customer && customer.name }}</span>
+  <span v-else class="m-l">{{ customer.name }}</span>
   <span v-if="error_message" class="text-danger">{{ error_message }}</span>
 </template>
 
@@ -24,7 +24,7 @@
     },
     computed: {
       editable: function() {
-        return !!(this.mode === 'new' || (this.mode === 'edit' && this.customer)) // If mode is edit, editable after customer is loaded
+        return this.mode === 'new' || this.mode === 'edit'
       }
     },
     watch: {

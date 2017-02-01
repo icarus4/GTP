@@ -41,7 +41,7 @@
             :location="sales_order && sales_order.bill_to_location"
             after-selected-dispatch-event="billToLocationSelected"
             label="單據寄送至"
-            :mode="mode"
+            :editable="editable"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.bill_to_location_id) || null">
           </bill-to-location-selector>
         </div>
@@ -52,7 +52,7 @@
             :location="sales_order && sales_order.ship_to_location"
             after-selected-dispatch-event="shipToLocationSelected"
             label="貨品寄送至"
-            :mode="mode"
+            :editable="editable"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_to_location_id) || null">
           </ship-to-location-selector>
         </div>
@@ -63,7 +63,7 @@
             :location="sales_order && sales_order.ship_from_location"
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
-            :mode="mode"
+            :editable="editable"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_from_location_id) || null">
           </ship-from-location-selector>
         </div>
@@ -136,7 +136,7 @@
 
     <div class="row m-t">
       <div class="col-md-6 m-t">
-        <textarea v-if="editable" @input="updateNotes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+        <textarea v-if="editable" @input="updateNotes" v-model="sales_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
         <div v-if="!editable && sales_order.notes" class="bg-warning">
           <label>備註:</label><p>{{ sales_order.notes }}</p>
         </div>
@@ -168,8 +168,8 @@
     <div v-if="editable" class="row m-t">
       <div class="pull-right">
         <button class="btn btn-default">取消</button>
-        <button class="btn btn-default" @click="createOrder('draft')">存為草稿</button>
-        <button class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
+        <button v-if="mode === 'new'" class="btn btn-default" @click="createOrder('draft')">存為草稿</button>
+        <button v-if="mode === 'new'" class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
       </div>
     </div>
 
@@ -285,6 +285,9 @@
           dataType: 'json',
         }).done(function(data) {
           that.$store.commit('updateSalesOrderLineItems', { sales_order_line_items: data.sales_order_line_items })
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON)
         })
       },
       finalizeOrder: function() {

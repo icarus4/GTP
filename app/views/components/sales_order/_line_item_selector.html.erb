@@ -12,6 +12,7 @@
     </td>
 
     <td><!-- 出貨量 -->
+      <input v-if="editable" class="no-border no-outline" type="number" min="1" max="{{ sellable_quantity }}" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
 
@@ -19,13 +20,13 @@
     <td>{{ sellable_quantity }}</td>
 
     <td><!-- 單價 -->
-      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
+      <input v-if="editable" v-model="line_item.unit_price" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
       <span v-else>{{ line_item.unit_price }}</span>
       <span v-if="line_item.errors && line_item.errors.unit_price" class="text-danger">{{ line_item.errors.unit_price }}</span>
     </td>
 
     <td><!-- 稅率 -->
-      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
+      <input v-if="editable" v-model="line_item.tax_rate" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
       <span v-if="line_item.errors && line_item.errors.tax_rate" class="text-danger">{{ line_item.errors.tax_rate }}</span>
     </td>
@@ -42,7 +43,10 @@
   var LineItemSelector = Vue.extend({
     template: '#line-item-selector',
     props: {
-      line_item: Object,
+      line_item: {
+        type: Object,
+        default: function() { return { item_id: "" } },
+      },
       line_item_index: Number,
       items: Array,
       ship_from_location_id: {}, // {} for defining nothing
@@ -51,6 +55,11 @@
     data: function() {
       return {
         location_sellable_quantity: null
+      }
+    },
+    ready: function() {
+      if (this.editable) {
+        this.updateOnHandCount()
       }
     },
     computed: {
@@ -81,8 +90,10 @@
         }
       },
       ship_from_location_id: function(value, old_value) {
-        this.updateOnHandCount()
-      }
+        if (value) {
+          this.updateOnHandCount()
+        }
+      },
     },
     methods: {
       updateSelectedItem: function(e) {
@@ -91,8 +102,7 @@
         this.updateOnHandCount()
       },
       updateOnHandCount: function() {
-        if (_.isNil(this.ship_from_location_id) || _.isNil(this.line_item.item_id)) { return }
-
+        if (!this.ship_from_location_id || !this.line_item.item_id) { return }
         var that = this
         $.ajax({
           url: "/api/v1/locations/" + that.$store.state.sales_order.ship_from_location_id + "/items/" + that.line_item.item_id,
