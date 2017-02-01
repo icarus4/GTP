@@ -125,6 +125,10 @@ class SalesOrder < ApplicationRecord
     end
   end
 
+  def editable?
+    draft? || active?
+  end
+
   private
 
     def rollback_stocks!
