@@ -37,6 +37,11 @@ class SalesOrdersController < ApplicationController
 
   def edit
     @sales_order = SalesOrder.find_by(id: params[:id], company: current_company)
+
+    if !@sales_order.editable?
+      redirect_to sales_order_path(@sales_order)
+    end
+
     if @sales_order.nil?
       redirect_to sales_orders_path
     end
