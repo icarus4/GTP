@@ -23,11 +23,11 @@
           <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
+          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="editOrder" class="btn btn-default m-l-xs">編輯</button>
           <button v-if="sales_order.status === 'finalized' || sales_order.status === 'fulfilled'" @click="voidOrder" class="btn btn-default m-l-xs">作廢此單</button>
-          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除此單</button>
+          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除</button>
           <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary m-l-xs">Finalize</button>
           <button v-if="sales_order.status === 'finalized' && sales_order.shipment_status === 'unshipped'" @click="shipAll" class="btn btn-primary m-l-xs">Ship all</button>
-          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除</button>
         </div>
       </div>
 
@@ -82,7 +82,7 @@
         <div class="form-group">
           <label>送貨日期</label>
           <span class="m-l">
-            <input v-if="editable" type="date" @change="updateShipmentDate" v-model="sales_order.expected_delivery_date">
+            <input v-if="editable" type="date" @change="updateExpectedDeliveryDate" v-model="sales_order.expected_delivery_date">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
           <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.shipment_date" class="text-danger">{{ $store.state.sales_order.errors.shipment_date }}</span>
@@ -111,10 +111,10 @@
           <span class="m-l" v-else>{{ "WIP" }}</span>
         </div>
         <div>
-          <label>總金額</label>
+          <label>單價</label>
           <select v-if="editable" @change="updateTaxTreatment" v-model="sales_order.tax_treatment">
-            <option selected value="exclusive">稅外</option>
-            <option value="inclusive">稅入</option>
+            <option selected value="exclusive">不含稅</option>
+            <option value="inclusive">含稅</option>
           </select>
           <span class="m-l" v-else>{{ tax_treatment }}</span>
         </div>
@@ -128,6 +128,7 @@
       <line-item-selection-area
         :items="$store.state.options.items"
         :line_items="$store.state.sales_order_line_items"
+        :mode="mode"
         :editable="editable">
       </line-item-selection-area>
     </div>
@@ -144,11 +145,11 @@
       <div class="col-md-3 col-md-offset-3">
         <ul class="list-group no-padding">
           <li class="list-group-item">
-            <span>總數量</span>
+            <span>數量合計</span>
             <span class="pull-right">{{ $store.getters.total_units }}</span>
           </li>
           <li class="list-group-item">
-            <span>金額小計</span>
+            <span>金額合計</span>
             <span class="pull-right">NT$ {{ $store.getters.subtotal }}</span>
           </li>
           <li class="list-group-item">
@@ -156,7 +157,7 @@
             <span class="pull-right">NT$ {{ $store.getters.total_tax }}</span>
           </li>
           <li class="list-group-item">
-            <span>總金額</span>
+            <span>金額總計</span>
             <span class="pull-right">NT$ {{ $store.getters.total_amount }}</span>
           </li>
         </ul>
@@ -170,6 +171,8 @@
         <button class="btn btn-default">取消</button>
         <button v-if="mode === 'new'" class="btn btn-default" @click="createOrder('draft')">存為草稿</button>
         <button v-if="mode === 'new'" class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
+        <button v-if="mode === 'new'" class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
+        <button v-if="mode === 'edit'" class="btn btn-primary" @click="updateOrder">儲存</button>
       </div>
     </div>
 
@@ -206,8 +209,8 @@
         return this.mode === 'new' || this.mode === 'edit'
       },
       tax_treatment: function() {
-        if (this.sales_order.tax_treatment === 'exclusive') { return '稅外' }
-        else { return '稅內' }
+        if (this.sales_order.tax_treatment === 'exclusive') { return '不含稅' }
+        else { return '含稅' }
       }
     },
     created: function() {
@@ -229,8 +232,8 @@
       updateIssuedOn: function(e) {
         this.$store.commit('updateIssuedOn', e.target.value)
       },
-      updateShipmentDate: function(e) {
-        this.$store.commit('updateShipmentDate', e.target.value)
+      updateExpectedDeliveryDate: function(e) {
+        this.$store.commit('updateExpectedDeliveryDate', e.target.value)
       },
       updateEmail: function(e) {
         this.$store.commit('updateEmail', e.target.value)
@@ -270,7 +273,9 @@
           method: 'GET',
           dataType: 'json',
         }).done(function(data) {
-          that.$store.commit('setupSalesOrder', { sales_order: data.sales_order })
+          var sales_order = data.sales_order
+          sales_order.errors = {} // FIXME: Move errors to outside of sales_order ?
+          that.$store.commit('setupSalesOrder', { sales_order: sales_order })
           that.getSalesOrderLineItems(data.sales_order.id)
         }).fail(function(err) {
           console.log(err)
@@ -284,6 +289,11 @@
           method: 'GET',
           dataType: 'json',
         }).done(function(data) {
+          var sales_order_line_items = data.sales_order_line_items
+          // FIXME: Move errors to outside of sales_order_line_item ?
+          sales_order_line_items.forEach(function(line_item) {
+            line_item.errors = {}
+          })
           that.$store.commit('updateSalesOrderLineItems', { sales_order_line_items: data.sales_order_line_items })
         }).fail(function(err) {
           console.log(err)
@@ -385,6 +395,24 @@
       },
       editOrder: function() {
         window.location.href = '/sales_orders/' + this.sales_order.id + '/edit'
+      },
+      updateOrder: function() {
+        this.$store.commit('validateForm')
+        if (!this.$store.state.is_form_valid) { return }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id,
+          method: 'PATCH',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { sales_order: that.$store.state.sales_order, sales_order_line_items: that.$store.state.sales_order_line_items }
+        }).done(function(data) {
+          window.location.href = '/sales_orders/' + data.sales_order.id
+        }).fail(function(err) {
+          console.log(err)
+          alert('Cannot create sales order')
+        })
       }
     }
   })

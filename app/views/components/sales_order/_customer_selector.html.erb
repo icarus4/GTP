@@ -1,6 +1,6 @@
 <template id="customer-selector">
   <label>客戶</label>
-  <select v-if="editable" @change="updateSelectedCustomer" v-model="customer.id" class="m-l">
+  <select v-if="editable" @change="updateSelectedCustomer" class="m-l">
     <option selected disabled value="">-- 選取客戶 --</option>
     <option
       v-for="customer in customers"
@@ -24,7 +24,7 @@
     },
     computed: {
       editable: function() {
-        return this.mode === 'new' || this.mode === 'edit'
+        return this.mode === 'new' // Change customer is not allowed in edit mode
       }
     },
     watch: {

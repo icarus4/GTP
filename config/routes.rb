@@ -54,7 +54,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :sales_orders, only: [:create, :show, :destroy] do
+      resources :sales_orders, only: [:create, :show, :destroy, :update] do
         get :next_number, on: :collection
         patch :finalize, on: :member
         patch :void, on: :member

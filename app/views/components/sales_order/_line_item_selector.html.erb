@@ -50,6 +50,7 @@
       line_item_index: Number,
       items: Array,
       ship_from_location_id: {}, // {} for defining nothing
+      mode: String,
       editable: Boolean,
     },
     data: function() {
@@ -58,9 +59,7 @@
       }
     },
     ready: function() {
-      if (this.editable) {
-        this.updateOnHandCount()
-      }
+      this.updateOnHandCount()
     },
     computed: {
       // 此 item 不分 location 的整體 available_count

@@ -19,7 +19,7 @@
         bill_to_location: {},
         ship_to_location: {},
         ship_from_to_location: {},
-        shipment_date: null,
+        expected_delivery_date: null,
         issued_on: null,
         email: null,
         phone: null,
@@ -32,7 +32,7 @@
           ship_to_location_id: null,
           ship_from_location_id: null,
           issued_on: null,
-          shipment_date: null,
+          expected_delivery_date: null,
         }
       },
       sales_order_line_items: [],
@@ -125,8 +125,8 @@
       updateIssuedOn: function(state, date) {
         state.sales_order.issued_on = date
       },
-      updateShipmentDate: function(state, date) {
-        state.sales_order.shipment_date = date
+      updateExpectedDeliveryDate: function(state, date) {
+        state.sales_order.expected_delivery_date = date
       },
       updateEmail: function(state, email) {
         state.sales_order.email = email
@@ -185,12 +185,12 @@
       validateForm: function(state) {
         state.is_form_valid = true
 
-        if (!state.sales_order.partner_id)            { state.is_form_valid = false; state.sales_order.errors.partner_id = "請選擇客戶" } else { state.sales_order.errors.partner_id = null }
-        if (!state.sales_order.bill_to_location_id)   { state.is_form_valid = false; state.sales_order.errors.bill_to_location_id = "請選擇單據寄送地點" } else { state.sales_order.errors.bill_to_location_id = null }
-        if (!state.sales_order.ship_to_location_id)   { state.is_form_valid = false; state.sales_order.errors.ship_to_location_id = "請選擇貨品寄送地點" } else { state.sales_order.errors.ship_to_location_id = null }
-        if (!state.sales_order.ship_from_location_id) { state.is_form_valid = false; state.sales_order.errors.ship_from_location_id = "請選擇出貨倉庫" } else { state.sales_order.errors.ship_from_location_id = null }
-        if (!state.sales_order.issued_on)            { state.is_form_valid = false; state.sales_order.errors.issued_on = "請選擇訂單日期" } else { state.sales_order.errors.issued_on = null }
-        if (!state.sales_order.shipment_date)         { state.is_form_valid = false; state.sales_order.errors.shipment_date = "請選擇送貨日期" } else { state.sales_order.errors.shipment_date = null }
+        if (!state.sales_order.partner_id)             { state.is_form_valid = false; state.sales_order.errors.partner_id = "請選擇客戶" } else { state.sales_order.errors.partner_id = null }
+        if (!state.sales_order.bill_to_location_id)    { state.is_form_valid = false; state.sales_order.errors.bill_to_location_id = "請選擇單據寄送地點" } else { state.sales_order.errors.bill_to_location_id = null }
+        if (!state.sales_order.ship_to_location_id)    { state.is_form_valid = false; state.sales_order.errors.ship_to_location_id = "請選擇貨品寄送地點" } else { state.sales_order.errors.ship_to_location_id = null }
+        if (!state.sales_order.ship_from_location_id)  { state.is_form_valid = false; state.sales_order.errors.ship_from_location_id = "請選擇出貨倉庫" } else { state.sales_order.errors.ship_from_location_id = null }
+        if (!state.sales_order.issued_on)              { state.is_form_valid = false; state.sales_order.errors.issued_on = "請選擇訂單日期" } else { state.sales_order.errors.issued_on = null }
+        if (!state.sales_order.expected_delivery_date) { state.is_form_valid = false; state.sales_order.errors.expected_delivery_date = "請選擇送貨日期" } else { state.sales_order.errors.expected_delivery_date = null }
 
         state.sales_order_line_items.forEach(function(line_item) {
           if (!line_item.item_id)    { state.is_form_valid = false; line_item.errors.item_id = '請選擇商品' }    else { line_item.errors.item_id = null }
