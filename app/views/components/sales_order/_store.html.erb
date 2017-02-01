@@ -152,7 +152,7 @@
       addNewLineItem: function(state) {
         state.sales_order_line_items.push(_.cloneDeep(state.sales_order_line_item_template))
       },
-      setupSelectedItem: function(state, obj) {
+      updateSelectedItem: function(state, obj) {
         state.sales_order_line_items[obj.line_item_index].item_id = obj.item_id
       },
       removeLineItemByIndex: function(state, line_item_index) {
@@ -179,7 +179,7 @@
       setupSalesOrder: function(state, obj) {
         state.sales_order = obj.sales_order
       },
-      setupSalesOrderLineItems: function(state, obj) {
+      updateSalesOrderLineItems: function(state, obj) {
         state.sales_order_line_items = obj.sales_order_line_items
       },
       validateForm: function(state) {
@@ -213,8 +213,8 @@
         context.commit('setupSelectedCustomer', customer_id)
         context.dispatch('getCustomerLocationList', customer_id)
       },
-      itemSelected: function(context, obj) {
-        context.commit('setupSelectedItem', { line_item_index: obj.line_item_index, item_id: obj.item_id })
+      updateSelectedItem: function(context, obj) {
+        context.commit('updateSelectedItem', { line_item_index: obj.line_item_index, item_id: obj.item_id })
       },
       getCustomerList: function(context) {
         $.ajax({

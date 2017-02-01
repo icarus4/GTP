@@ -284,7 +284,7 @@
           method: 'GET',
           dataType: 'json',
         }).done(function(data) {
-          that.$store.commit('setupSalesOrderLineItems', { sales_order_line_items: data.sales_order_line_items })
+          that.$store.commit('updateSalesOrderLineItems', { sales_order_line_items: data.sales_order_line_items })
         })
       },
       finalizeOrder: function() {
