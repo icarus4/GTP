@@ -35,6 +35,13 @@ class SalesOrdersController < ApplicationController
   def new
   end
 
+  def edit
+    @sales_order = SalesOrder.find_by(id: params[:id], company: current_company)
+    if @sales_order.nil?
+      redirect_to sales_orders_path
+    end
+  end
+
   def create
     @sales_order = current_company.sales_orders.build(sales_order_params)
     status = params[:active].present? ? 'active' : 'draft'

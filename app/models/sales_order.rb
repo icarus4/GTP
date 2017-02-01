@@ -99,15 +99,6 @@ class SalesOrder < ApplicationRecord
     where(company_id: company_id).maximum(:order_number).try(:next) || 'SO0001'
   end
 
-  def calculate!
-    # See Taxable
-    calcualte_subtotal
-    calcualte_total_units
-    calculate_total_tax
-    calculate_total_amount
-    save!
-  end
-
   # TODO: 檢討哪些地方call到這個method，思考這個method可以透過callback自動化被執行嗎?
   def update_status!
     # TODO: Refine

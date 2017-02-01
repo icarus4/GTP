@@ -82,15 +82,6 @@ class PurchaseOrder < ApplicationRecord
     where(company_id: company_id).maximum(:order_number).try(:next) || 'PO0001'
   end
 
-  def calculate!
-    # See Taxable
-    calcualte_subtotal
-    calcualte_total_units
-    calculate_total_tax
-    calculate_total_amount
-    save!
-  end
-
   def all_line_items_are_procured?
     line_items.count > 0 && !line_items.where(procurement_id: nil).exists?
   end

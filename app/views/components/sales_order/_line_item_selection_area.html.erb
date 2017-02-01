@@ -20,6 +20,7 @@
         :line_item_index="$index"
         :ship_from_location_id="$store.state.sales_order.ship_from_location_id"
         :items="items"
+        :mode="mode"
         :editable="editable">
       </tr>
     </tbody>
@@ -38,6 +39,7 @@
     props: {
       items: Array,
       line_items: Array,
+      mode: String,
       editable: Boolean,
     },
     methods: {
