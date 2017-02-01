@@ -62,10 +62,26 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
         end
       end
 
-      sales_order.calculate!
+      sales_order.calculate_totals!
     end
 
     render json: { sales_order: sales_order, sales_order_line_items: sales_order.line_items }
+  end
+
+  def update
+    ship_from_location = Location.select(:id).find_by(locationable: current_company, id: params[:sales_order][:ship_from_location_id])
+    render json: { errors: 'Ship from location not found' }, status: :bad_request and return if ship_from_location.nil?
+
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:sales_order][:id])
+    render json: { errors: "Sales order not found" }, status: :not_found and return if sales_order.nil?
+
+    sales_order.attributes = sales_order_params
+    sales_order.ship_from_location = ship_from_location
+    if sales_order.save
+      render json: { sales_order: sales_order }
+    else
+      render json: { sales_order: sales_order }, status: :bad_request
+    end
   end
 
   def finalize

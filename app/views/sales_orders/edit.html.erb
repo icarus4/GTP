@@ -1,0 +1,18 @@
+<div id="edit-sales-order" class="row">
+  <app mode="edit" :sales_order_id="<%= @sales_order.id %>" :sales_order="$store.state.sales_order"> </app>
+</div>
+
+<% content_for :js do %>
+<%= render 'components/sales_order/store' %>
+<%= render 'components/sales_order/app' %>
+
+<script type="text/javascript">
+  new Vue({
+    el: '#edit-sales-order',
+    store,
+    components: {
+      'app': App
+    },
+  })
+</script>
+<% end %>

@@ -3,32 +3,32 @@
     <td></td>
 
     <td><!-- 品名 -->
-      <select v-if="editable" class="input-sm form-control" @input="itemSelected">
-        <option selected disabled value="">-- 請選取商品 --</option>
+      <select v-if="editable" class="input-sm form-control" @change="updateSelectedItem" v-model="line_item.item_id">
+        <option disabled value="">-- 請選取商品 --</option>
         <option v-for="i in items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
       </select>
       <span v-else>{{ line_item.item.name }}</span>
-      <span v-if="line_item.errors.item_id" class="text-danger">{{ line_item.errors.item_id }}</span>
+      <span v-if="line_item.errors && line_item.errors.item_id" class="text-danger">{{ line_item.errors.item_id }}</span>
     </td>
 
     <td><!-- 出貨量 -->
-      <input v-if="editable" class="no-border no-outline" type="number" min="1" max="{{ sellable_count }}" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
+      <input v-if="editable" class="no-border no-outline" type="number" min="1" max="{{ sellable_quantity }}" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
 
     <!-- 可售量 -->
-    <td>{{ sellable_count }}</td>
+    <td>{{ sellable_quantity }}</td>
 
     <td><!-- 單價 -->
-      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
+      <input v-if="editable" v-model="line_item.unit_price" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
       <span v-else>{{ line_item.unit_price }}</span>
-      <span v-if="line_item.errors.unit_price" class="text-danger">{{ line_item.errors.unit_price }}</span>
+      <span v-if="line_item.errors && line_item.errors.unit_price" class="text-danger">{{ line_item.errors.unit_price }}</span>
     </td>
 
     <td><!-- 稅率 -->
-      <input v-if="editable" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
+      <input v-if="editable" v-model="line_item.tax_rate" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
-      <span v-if="line_item.errors.tax_rate" class="text-danger">{{ line_item.errors.tax_rate }}</span>
+      <span v-if="line_item.errors && line_item.errors.tax_rate" class="text-danger">{{ line_item.errors.tax_rate }}</span>
     </td>
 
     <td>{{ total }}</td><!-- 金額 -->
@@ -43,16 +43,23 @@
   var LineItemSelector = Vue.extend({
     template: '#line-item-selector',
     props: {
-      line_item: Object,
+      line_item: {
+        type: Object,
+        default: function() { return { item_id: "" } },
+      },
       line_item_index: Number,
       items: Array,
       ship_from_location_id: {}, // {} for defining nothing
+      mode: String,
       editable: Boolean,
     },
     data: function() {
       return {
         location_sellable_quantity: null
       }
+    },
+    ready: function() {
+      this.updateOnHandCount()
     },
     computed: {
       // 此 item 不分 location 的整體 available_count
@@ -62,7 +69,7 @@
         var item = _.find(this.items, function(item) { return item.id == that.line_item.item_id })
         return item.available_count
       },
-      sellable_count: function() {
+      sellable_quantity: function() {
         return this.location_sellable_quantity
       },
       total: function() {
@@ -82,18 +89,19 @@
         }
       },
       ship_from_location_id: function(value, old_value) {
-        this.updateOnHandCount()
-      }
+        if (value) {
+          this.updateOnHandCount()
+        }
+      },
     },
     methods: {
-      itemSelected: function(e) {
+      updateSelectedItem: function(e) {
         var item_id = parseInt(e.target.value)
-        this.$store.dispatch('itemSelected', { line_item_index: this.line_item_index, item_id: item_id })
+        this.$store.dispatch('updateSelectedItem', { line_item_index: this.line_item_index, item_id: item_id })
         this.updateOnHandCount()
       },
       updateOnHandCount: function() {
-        if (_.isNil(this.ship_from_location_id) || _.isNil(this.line_item.item_id)) { return }
-
+        if (!this.ship_from_location_id || !this.line_item.item_id) { return }
         var that = this
         $.ajax({
           url: "/api/v1/locations/" + that.$store.state.sales_order.ship_from_location_id + "/items/" + that.line_item.item_id,
