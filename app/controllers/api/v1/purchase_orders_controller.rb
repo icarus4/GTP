@@ -46,7 +46,7 @@ class Api::V1::PurchaseOrdersController < Api::V1::BaseController
         raise ActiveRecord::RecordInvalid if line_items.any? { |li| li.errors.any? } # If any line item is not valid, raise exception for transaction rollback
         line_items.each(&:save!)
 
-        purchase_order.calculate!
+        purchase_order.calculate_totals!
       end
     rescue
       render json: {

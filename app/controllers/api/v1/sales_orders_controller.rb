@@ -62,7 +62,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
         end
       end
 
-      sales_order.calculate!
+      sales_order.calculate_totals!
     end
 
     render json: { sales_order: sales_order, sales_order_line_items: sales_order.line_items }
