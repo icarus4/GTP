@@ -23,12 +23,7 @@ Rails.application.routes.draw do
   # Company
   resources :companies, only: [:index]
   resources :partners, only: [:new, :index, :show, :edit]
-  resources :item_series, only: [:new, :index, :show] do
-    resources :items, shallow: true do
-      post :upload_image, on: :member
-      resources :variants, shallow: true
-    end
-  end
+  resources :item_series, only: [:new, :index, :show]
 
   resources :purchase_orders, only: [:index, :new, :create, :show] do
     put :approve, on: :member
@@ -67,7 +62,6 @@ Rails.application.routes.draw do
       end
       resources :locations, only: [:index, :update] do
         get :holds_stock, on: :collection
-        resources :bin_locations, only: [:create, :index], controller: 'locations/bin_locations'
         resources :items, only: [:show], controller: 'locations/items'
       end
       resources :item_series, only: [:create] do

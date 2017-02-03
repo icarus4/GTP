@@ -4,7 +4,6 @@
 #
 #  id                  :integer          not null, primary key
 #  line_item_id        :integer
-#  bin_location_id     :integer
 #  location_id         :integer
 #  location_variant_id :integer
 #  variant_id          :integer
@@ -16,13 +15,12 @@
 #
 # Indexes
 #
-#  index_line_item_commitments_on_location_variant_id          (location_variant_id)
-#  index_sales_order_line_item_commitments_on_bin_location_id  (bin_location_id)
-#  index_sales_order_line_item_commitments_on_item_id          (item_id)
-#  index_sales_order_line_item_commitments_on_line_item_id     (line_item_id)
-#  index_sales_order_line_item_commitments_on_location_id      (location_id)
-#  index_sales_order_line_item_commitments_on_shipment_id      (shipment_id)
-#  index_sales_order_line_item_commitments_on_variant_id       (variant_id)
+#  index_line_item_commitments_on_location_variant_id       (location_variant_id)
+#  index_sales_order_line_item_commitments_on_item_id       (item_id)
+#  index_sales_order_line_item_commitments_on_line_item_id  (line_item_id)
+#  index_sales_order_line_item_commitments_on_location_id   (location_id)
+#  index_sales_order_line_item_commitments_on_shipment_id   (shipment_id)
+#  index_sales_order_line_item_commitments_on_variant_id    (variant_id)
 #
 
 class SalesOrder::LineItemCommitment < ApplicationRecord
@@ -38,7 +36,6 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   belongs_to :line_item
   belongs_to :location_variant
   belongs_to :location
-  belongs_to :bin_location
   belongs_to :variant
   belongs_to :item
   belongs_to :shipment
@@ -47,7 +44,6 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   delegate :sku, :name, to: :item
 
   validates :line_item_id,
-            :bin_location_id,
             :location_id,
             :location_variant_id,
             :variant_id,
@@ -97,10 +93,9 @@ class SalesOrder::LineItemCommitment < ApplicationRecord
   private
 
     def setup_denormalized_columns
-      self.bin_location_id = location_variant.bin_location_id          if location_variant_id_changed?
-      self.location_id     = location_variant.bin_location.location_id if location_variant_id_changed?
-      self.variant_id      = location_variant.variant_id               if location_variant_id_changed?
-      self.item_id         = line_item.item_id                         if line_item_id_changed?
+      self.location_id     = location_variant.location_id if location_variant_id_changed?
+      self.variant_id      = location_variant.variant_id  if location_variant_id_changed?
+      self.item_id         = line_item.item_id            if line_item_id_changed?
     end
 
     def update_line_item_shipment_status!

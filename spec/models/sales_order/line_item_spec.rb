@@ -15,6 +15,7 @@
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  shipment_status      :integer          default("unshipped"), not null
+#  shipped_quantity     :integer          default(0), not null
 #
 # Indexes
 #

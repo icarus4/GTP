@@ -20,21 +20,19 @@
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th>倉位</th>
+                <th>品名</th>
                 <th>數量</th>
                 <th>SKU</th>
                 <th>有效期限</th>
-                <th>品名</th>
               </tr>
             </thead>
             <tbody>
             <% @sales_order.line_item_commitments.each do |commitment| %>
               <tr>
-                <td><%= commitment.bin_location.name %></td>
+                <td><%= commitment.item.name %></td>
                 <td><%= commitment.quantity %></td>
                 <td><%= commitment.item.sku %></td>
                 <td><%= commitment.variant.expiry_date %></td>
-                <td><%= commitment.item.name %></td>
               </tr>
             <% end %>
             </tbody>

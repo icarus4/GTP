@@ -38,8 +38,6 @@ class SalesOrder::LineItem < ApplicationRecord
 
   belongs_to :sales_order
   belongs_to :item
-  belongs_to :bin_location
-  belongs_to :location_variant
 
   has_many :line_item_commitments
 

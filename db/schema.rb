@@ -15,14 +15,6 @@ ActiveRecord::Schema.define(version: 20170203063942) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "bin_locations", force: :cascade do |t|
-    t.integer  "location_id", null: false
-    t.string   "name"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["location_id"], name: "index_bin_locations_on_location_id", using: :btree
-  end
-
   create_table "blazer_audits", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "query_id"
@@ -322,7 +314,7 @@ ActiveRecord::Schema.define(version: 20170203063942) do
     t.integer  "procurement_id"
     t.integer  "item_id",                                                  null: false
     t.integer  "variant_id"
-    t.integer  "bin_location_id"
+    t.integer  "location_id"
     t.integer  "location_variant_id"
     t.integer  "quantity",                                                 null: false
     t.decimal  "unit_price",          precision: 10, scale: 2,             null: false
@@ -332,8 +324,8 @@ ActiveRecord::Schema.define(version: 20170203063942) do
     t.datetime "created_at",                                               null: false
     t.datetime "updated_at",                                               null: false
     t.integer  "returned_quantity",                            default: 0, null: false
-    t.index ["bin_location_id"], name: "index_purchase_order_line_items_on_bin_location_id", using: :btree
     t.index ["item_id"], name: "index_purchase_order_line_items_on_item_id", using: :btree
+    t.index ["location_id"], name: "index_purchase_order_line_items_on_location_id", using: :btree
     t.index ["location_variant_id"], name: "index_purchase_order_line_items_on_location_variant_id", using: :btree
     t.index ["procurement_id"], name: "index_purchase_order_line_items_on_procurement_id", using: :btree
     t.index ["purchase_order_id"], name: "index_purchase_order_line_items_on_purchase_order_id", using: :btree
@@ -407,7 +399,6 @@ ActiveRecord::Schema.define(version: 20170203063942) do
 
   create_table "sales_order_line_item_commitments", force: :cascade do |t|
     t.integer  "line_item_id"
-    t.integer  "bin_location_id"
     t.integer  "location_id"
     t.integer  "location_variant_id"
     t.integer  "variant_id"
@@ -416,7 +407,6 @@ ActiveRecord::Schema.define(version: 20170203063942) do
     t.integer  "quantity",            default: 0, null: false
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
-    t.index ["bin_location_id"], name: "index_sales_order_line_item_commitments_on_bin_location_id", using: :btree
     t.index ["item_id"], name: "index_sales_order_line_item_commitments_on_item_id", using: :btree
     t.index ["line_item_id"], name: "index_sales_order_line_item_commitments_on_line_item_id", using: :btree
     t.index ["location_id"], name: "index_sales_order_line_item_commitments_on_location_id", using: :btree

@@ -23,9 +23,6 @@
 class Location < ApplicationRecord
   belongs_to :city
   belongs_to :locationable, polymorphic: true
-  has_many :bin_locations
-
-  after_create :create_default_bin_location
 
   validates :locationable_type, presence: true
   validates :locationable_id, presence: true
@@ -43,10 +40,4 @@ class Location < ApplicationRecord
   def full_name
     "#{name} (#{address})"
   end
-
-  private
-
-    def create_default_bin_location
-      bin_locations.create(name: '預設') if holds_stock
-    end
 end
