@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170117135756) do
+ActiveRecord::Schema.define(version: 20170203063942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -192,7 +192,6 @@ ActiveRecord::Schema.define(version: 20170117135756) do
 
   create_table "location_variants", force: :cascade do |t|
     t.integer  "company_id"
-    t.integer  "bin_location_id"
     t.integer  "variant_id"
     t.integer  "quantity",           default: 0, null: false
     t.datetime "created_at",                     null: false
@@ -202,7 +201,6 @@ ActiveRecord::Schema.define(version: 20170117135756) do
     t.date     "expiry_date"
     t.integer  "committed_quantity", default: 0, null: false
     t.integer  "sellable_quantity",  default: 0, null: false
-    t.index ["bin_location_id"], name: "index_location_variants_on_bin_location_id", using: :btree
     t.index ["company_id"], name: "index_location_variants_on_company_id", using: :btree
     t.index ["quantity"], name: "index_location_variants_on_quantity", where: "(quantity > 0)", using: :btree
     t.index ["variant_id"], name: "index_location_variants_on_variant_id", using: :btree

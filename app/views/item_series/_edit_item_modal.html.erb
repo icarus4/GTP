@@ -128,22 +128,34 @@
                   <table class="table table-condensed">
                     <thead>
                       <tr>
-                        <th>倉庫位置 - 過期日</th>
+                        <th>倉庫位置</th>
+                        <th>過期日</th>
                         <th>在庫量</th>
+                        <th>預定量</th>
+                        <th>可售量</th>
                       </tr>
                     </thead>
                     <tbody v-for="location_stock_info in editing_item_stock_info_by_location">
-                      <tr v-for="bin_location_stock_info in location_stock_info.bin_location_stocks">
-                        <td>{{ bin_location_stock_info.name }} - {{ bin_location_stock_info.expiry_date || '無' }}</td>
-                        <td>{{ bin_location_stock_info.on_hand_count }}</td>
+                      <tr v-for="variant in location_stock_info.variants">
+                        <td>{{ location_stock_info.location_name }}</td>
+                        <td>{{ variant.expiry_date || '無' }}</td>
+                        <td>{{ variant.quantity }}</td>
+                        <td>{{ variant.committed_quantity }}</td>
+                        <td>{{ variant.sellable_quantity }}</td>
                       </tr>
                       <tr>
                         <td><strong>{{ location_stock_info.location_name }}總計</strong></td>
-                        <td><strong>{{ location_stock_info.on_hand_count }}</strong></td>
+                        <td></td>
+                        <td><strong>{{ location_stock_info.quantity }}</strong></td>
+                        <td><strong>{{ location_stock_info.committed_quantity }}</strong></td>
+                        <td><strong>{{ location_stock_info.sellable_quantity }}</strong></td>
                       </tr>
                     </tbody>
                     <tbody v-if="editing_item_stock_info_by_location.length === 0">
                       <tr>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                        <td>無庫存</td>
                         <td>無庫存</td>
                         <td>無庫存</td>
                       </tr>

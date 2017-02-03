@@ -4,7 +4,6 @@
 #
 #  id                 :integer          not null, primary key
 #  company_id         :integer
-#  bin_location_id    :integer
 #  variant_id         :integer
 #  quantity           :integer          default(0), not null
 #  created_at         :datetime         not null
@@ -17,16 +16,15 @@
 #
 # Indexes
 #
-#  index_location_variants_on_bin_location_id  (bin_location_id)
-#  index_location_variants_on_company_id       (company_id)
-#  index_location_variants_on_quantity         (quantity)
-#  index_location_variants_on_variant_id       (variant_id)
+#  index_location_variants_on_company_id  (company_id)
+#  index_location_variants_on_quantity    (quantity)
+#  index_location_variants_on_variant_id  (variant_id)
 #
 
 class LocationVariant < ApplicationRecord
   # NOTICE:
   # 1.
-  # 此 model 的 foreign key 只需要 assign bin_location_id 與 variant_id
+  # 此 model 的 foreign key 只需要 assign location_id 與 variant_id
   # 其餘 foreign_key 交由 setup_denormalized_columns 設置，請勿手動設置
   #
   # 2.
@@ -39,18 +37,16 @@ class LocationVariant < ApplicationRecord
   before_validation :setup_denormalized_columns
   before_save :calculate_quantities, if: :quantity_changed?
   after_save :update_variant_cache_columns!
-  # after_initialize :setup_defaults
 
   belongs_to :company
   belongs_to :location
-  belongs_to :bin_location
   belongs_to :item
   belongs_to :variant
 
   has_many :sales_order_line_item_commitments, class_name: 'SalesOrder::LineItemCommitment'
 
   validates :company_id, :variant_id, :quantity, presence: true
-  validates :bin_location_id, presence: true, uniqueness: { scope: :variant_id }
+  validates :location_id, presence: true, uniqueness: { scope: :variant_id }
   validates :quantity, presence: true
   validates :committed_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :sellable_quantity, numericality: true
@@ -90,7 +86,6 @@ class LocationVariant < ApplicationRecord
     end
 
     def setup_denormalized_columns
-      self.location_id = bin_location.location_id if bin_location_id_changed?
       self.item_id     = variant.item_id          if variant_id_changed?
       self.expiry_date = variant.expiry_date      if variant_id_changed?
     end
