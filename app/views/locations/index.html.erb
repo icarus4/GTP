@@ -3,36 +3,32 @@
 </div>
 
 <div class="table-container" id="location-table">
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>地點名稱</th>
-        <th>城市</th>
-        <th>地址</th>
-        <th>含倉庫？</th>
-        <th>倉位</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="location in locations"
-          class="cursor-pointer"
-          data-toggle="modal"
-          data-target="#edit-location-modal"
-          @click="setupEditLocation($index)">
-        <td>{{ location.name }}</td>
-        <td>{{ location.city && location.city.name }}</td>
-        <td>{{ location.address }}</td>
-        <td>
-          <span class="glyphicon glyphicon-ok" aria-hidden="true" v-show="location.holds_stock"></span>
-        </td>
-        <td>
-          <ul class="list-unstyled">
-            <li v-for="bin_location in location.bin_locations">{{ bin_location.name }}</li>
-          </ul>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-md-8">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>地點名稱</th>
+            <th>地址</th>
+            <th>含倉庫？</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="location in locations"
+              class="cursor-pointer"
+              data-toggle="modal"
+              data-target="#edit-location-modal"
+              @click="setupEditLocation($index)">
+            <td>{{ location.name }}</td>
+            <td>{{ location.address }}</td>
+            <td>
+              <span class="glyphicon glyphicon-ok" aria-hidden="true" v-show="location.holds_stock"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <!-- Edit location modal -->
   <div class="modal inmodal" id="edit-location-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -76,37 +72,6 @@
                 <label class="control-label" v-else>無</label>
               </div>
             </div>
-
-            <!-- 新增倉位 -->
-            <div v-if="editing_location.holds_stock">
-              <div class="text-center"><h3>倉位</h3></div>
-
-              <!-- Existing bin locations -->
-              <div class="form-group" v-for="bin_location in editing_location.bin_locations">
-                <div class="col-md-7 col-md-offset-3" >
-                  <input type="text" class="form-control input-sm" v-model="bin_location.name" disabled>
-                </div>
-              </div>
-
-              <!-- New bin location form -->
-              <div class="form-group" v-if="show_new_bin_location_form" v-bind:class="{ 'has-error': errors.new_bin_location.name }">
-                <div class="col-md-7 col-md-offset-3" >
-                  <input type="text" class="form-control input-sm" v-model="new_bin_location.name">
-                  <span class="text-danger">{{ errors.new_bin_location.name }}</span>
-                </div>
-                <div class="col-md-1">
-                  <button @click="createBinLocation" class="btn btn-default btn-sm">建立</button>
-                </div>
-              </div>
-
-              <!-- Show new bin location form button -->
-              <div class="text-center" v-if="!show_new_bin_location_form">
-                <button @click="showNewBinLocationForm(editing_location.id)" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> 新增倉位</button>
-              </div>
-
-            </div>
-
-
           </div>
 
         </div> <!-- modal body -->
@@ -118,9 +83,6 @@
       </div>
     </div>
   </div>
-
-  <%= render 'common/vue_data' %>
-
 </div>
 
 <% content_for :js do %>
@@ -130,11 +92,8 @@
     data: {
       locations: [],
       editing_location: {},
-      new_bin_location: {},
-      show_new_bin_location_form: false,
       errors: {
         editing_location: {},
-        new_bin_location: {}
       }
     },
     ready: function() {
@@ -146,7 +105,6 @@
         var that = this
         $('#edit-location-modal').on('hide.bs.modal', function() {
           that.errors.editing_location = {}
-          that.errors.new_bin_location = {}
         })
       },
       getLocationList: function() {
@@ -182,27 +140,6 @@
         }).fail(function(err) {
           console.log(err)
           that.errors.editing_location = err.responseJSON.errors
-        })
-      },
-      showNewBinLocationForm: function() {
-        this.show_new_bin_location_form = true
-      },
-      createBinLocation: function() {
-        var that = this
-        $.ajax({
-          url: "/api/v1/locations/" + that.editing_location.id + "/bin_locations",
-          method: "POST",
-          dataType: "json",
-          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-          data: that.new_bin_location,
-        }).done(function(data) {
-          that.editing_location.bin_locations.push(data.bin_location)
-          that.show_new_bin_location_form = false
-          that.new_bin_location = {}
-          that.errors.new_bin_location = {}
-        }).fail(function(err) {
-          console.log(err)
-          that.errors.new_bin_location = err.responseJSON.errors
         })
       },
     }
