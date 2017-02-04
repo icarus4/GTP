@@ -56,7 +56,7 @@ class LocationVariant < ApplicationRecord
   # 2. 無 expiry_date 先出貨，其次越快過期的越早出貨
   # 2.
   # WARNING: order with "NULLS FIRST/LAST" is PostgreSQL only syntax
-  scope :default_sales_committed_sequence, -> { where("sellable_quantity > 0").order("expiry_date ASC NULLS FIRST") }
+  scope :default_sales_committed_sequence, -> { where("sellable_quantity > 0").order("expiry_date ASC NULLS FIRST, variant_id ASC") }
 
   def update_quantities!
     calculate_quantities

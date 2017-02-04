@@ -63,7 +63,7 @@
     },
     computed: {
       sellable_quantity: function() {
-        return this.location_sellable_quantity
+        return this.location_sellable_quantity + this.line_item.committed_quantity
       },
       total: function() {
         var total = 0
