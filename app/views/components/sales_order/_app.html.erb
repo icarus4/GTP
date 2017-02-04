@@ -76,7 +76,7 @@
             <input v-if="editable" type="date" @change="updateIssuedOn" v-model="sales_order.issued_on">
             <span v-else>{{ sales_order.issued_on }}</span>
           </span>
-          <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.issue_date" class="text-danger">{{ $store.state.sales_order.errors.issue_date }}</span>
+          <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.issued_on" class="text-danger">{{ $store.state.sales_order.errors.issued_on }}</span>
         </div>
 
         <div class="form-group">
@@ -85,7 +85,7 @@
             <input v-if="editable" type="date" @change="updateExpectedDeliveryDate" v-model="sales_order.expected_delivery_date">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
-          <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.shipment_date" class="text-danger">{{ $store.state.sales_order.errors.shipment_date }}</span>
+          <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.expected_delivery_date" class="text-danger">{{ $store.state.sales_order.errors.expected_delivery_date }}</span>
         </div>
 
         <div class="form-group">
@@ -170,8 +170,7 @@
       <div class="pull-right">
         <button class="btn btn-default">取消</button>
         <button v-if="mode === 'new'" class="btn btn-default" @click="createOrder('draft')">存為草稿</button>
-        <button v-if="mode === 'new'" class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
-        <button v-if="mode === 'new'" class="btn btn-primary" @click="createOrder('active')">建立進貨單</button>
+        <button v-if="mode === 'new'" class="btn btn-primary" @click="createOrder('active')">建立出貨單</button>
         <button v-if="mode === 'edit'" class="btn btn-primary" @click="updateOrder">儲存</button>
       </div>
     </div>

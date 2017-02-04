@@ -2,24 +2,24 @@ class Api::V1::LocationsController < Api::V1::BaseController
   def index
     locations = current_company.locations
                                .select(:id, :name, :address, :city_id, :holds_stock, :zip)
-                               .includes(:bin_locations, :city)
+                               .includes(:city)
                                .order(:id)
 
-    render json: { locations: locations.as_json(include: [:bin_locations, :city]) }
+    render json: { locations: locations.as_json(include: :city) }
   end
 
   def holds_stock
     locations = current_company.locations
                                .select(:id, :name, :address, :city_id, :holds_stock, :zip)
                                .holds_stock
-                               .includes(:bin_locations, :city)
+                               .includes(:city)
                                .order(:id)
 
-    render json: { locations: locations.as_json(include: [:bin_locations, :city]) }
+    render json: { locations: locations.as_json(include: :city) }
   end
 
   def update
-    location = Location.includes(:bin_locations).find_by(locationable: current_company, id: params[:id])
+    location = Location.find_by(locationable: current_company, id: params[:id])
     if location.blank?
       render json: { errors: "Location not found" }, status: :bad_request and return
     end
@@ -30,7 +30,7 @@ class Api::V1::LocationsController < Api::V1::BaseController
     location.zip     = params[:zip]
 
     if location.save
-      render json: { location: location.as_json(include: [:bin_locations, :city]) }
+      render json: { location: location.as_json(include: :city) }
     else
       render json: { errors: location.errors }, status: :bad_request
     end

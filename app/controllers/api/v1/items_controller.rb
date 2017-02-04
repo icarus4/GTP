@@ -34,20 +34,20 @@ class Api::V1::ItemsController < Api::V1::BaseController
   #     {
   #       location_id: 1,
   #       location_name: "倉庫",
-  #       bin_location_stocks: [
+  #       quantity: 500,
+  #       sellable_quantity: xxx,
+  #       committed_quantity: xxx,
+  #       variants: [
   #         {
-  #           name: "倉庫 (預設)",
   #           expiry_date: '2016-09-30',
-  #           on_hand_count: 200
+  #           quantity:    xxx,
+  #           sellable_quantity: xxx,
+  #           committed_quantity: xxx,
   #         },
-  #         {
-  #           name: "倉庫 (上層)",
-  #           expiry_date: '2016-09-15',
-  #           on_hand_count: 300
-  #         }
+  #         ...
   #       ],
-  #       on_hand_count: 500
-  #     }
+  #     },
+  #     ...
   #   ]
   # }
   def stock_info_by_location
@@ -56,39 +56,39 @@ class Api::V1::ItemsController < Api::V1::BaseController
       render json: { errors: "Item not found" }, status: :bad_request and return
     end
 
-    location_variants = LocationVariant.includes({ bin_location: :location }, :variant).where('location_variants.quantity > 0 AND variants.item_id = ?', item.id).order("locations.id")
+    location_variants = LocationVariant.includes(:location, :variant).where('location_variants.quantity > 0 AND variants.item_id = ?', item.id).order("locations.id")
 
     stock_info_by_location = {}
     # {
     #   '1' => {
-    #     location_name: 'xxx'
-    #     bin_location_stocks: [
-    #       { name: 'xxx', location_id: 123, expiry_date: 'xxxx-xx-xx', on_hand_count: 100 },
-    #       { name: 'yyy', location_id: 456, expiry_date: 'xxxx-xx-xx', on_hand_count: 200 },
+    #     name: 'xxx',
+    #     variants: [
+    #       { expiry_date: 'xxxx-xx-xx', quantity: 100, sellable_quantity: xxx, committed_quantity: xxx },
+    #       { expiry_date: 'xxxx-xx-xx', quantity: 200, sellable_quantity: xxx, committed_quantity: xxx },
     #     ]
     #   },
     #   '2' => { ... }
     # }
     location_variants.each do |lv|
       h = {
-        name: "#{lv.bin_location.location.name} (#{lv.bin_location.name})",
-        expiry_date: lv.variant.expiry_date,
-        on_hand_count: lv.quantity
+        expiry_date:        lv.variant.expiry_date,
+        procurement_id:     lv.variant.procurement_id,
+        quantity:           lv.quantity,
+        sellable_quantity:  lv.sellable_quantity,
+        committed_quantity: lv.committed_quantity,
       }
-      location_id = lv.bin_location.location_id
-      stock_info_by_location[location_id.to_s] ||= {}
-      stock_info_by_location[location_id.to_s][:location_id] = lv.bin_location.location_id
-      stock_info_by_location[location_id.to_s][:location_name] = lv.bin_location.location.name
-      stock_info_by_location[location_id.to_s][:bin_location_stocks] ||= []
-      stock_info_by_location[location_id.to_s][:bin_location_stocks] << h
+      location_id = lv.location_id
+      stock_info_by_location[location_id]                ||= {}
+      stock_info_by_location[location_id][:location_id]    = lv.location_id
+      stock_info_by_location[location_id][:location_name]  = lv.location.name
+      stock_info_by_location[location_id][:variants]     ||= []
+      stock_info_by_location[location_id][:variants] << h
     end
 
     stock_info_by_location.each do |location_id, info|
-      sum = 0
-      info[:bin_location_stocks].each do |stock|
-        sum += stock[:on_hand_count]
-      end
-      info[:on_hand_count] = sum
+      info[:quantity]           = info[:variants].reduce(0) { |sum, variant_info| sum + variant_info[:quantity] }
+      info[:sellable_quantity]  = info[:variants].reduce(0) { |sum, variant_info| sum + variant_info[:sellable_quantity] }
+      info[:committed_quantity] = info[:variants].reduce(0) { |sum, variant_info| sum + variant_info[:committed_quantity] }
     end
 
     stock_info_by_location_array = stock_info_by_location.map { |location_id, info| info }

@@ -14,6 +14,8 @@
 #  lot_number                    :string(255)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
+#  committed_quantity            :integer          default(0), not null
+#  sellable_quantity             :integer          default(0), not null
 #
 # Indexes
 #

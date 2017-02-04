@@ -120,7 +120,6 @@
             <tr>
               <th>* 數量</th>
               <th>* 倉庫</th>
-              <th>* 倉位</th>
               <th>期效</th>
               <th>輸入許可證號碼</th>
               <th>報單號碼</th>
@@ -131,17 +130,11 @@
           </thead>
           <tbody>
             <tr v-for="item_detail in new_item.item_details">
-              <td><input v-model="item_detail.on_hand_count" type="text" style="width: 70px"></td>
+              <td><input v-model="item_detail.quantity" type="text" style="width: 70px" number></td>
               <td>
-                <select v-model="item_detail.location_id" v-on:change="resetBinLocation(item_detail)">
+                <select v-model="item_detail.location_id">
                   <option selected disabled value="">選取倉庫</option>
                   <option v-for="location in options.locations" v-bind:value="location.id">{{ location.name }}</option>
-                </select>
-              </td>
-              <td>
-                <select v-model="item_detail.bin_location_id" :disabled="item_detail.location_id == ''">
-                  <option selected disabled value="">選取倉位</option>
-                  <option v-for="bin_location in findBinLocationsByLocationId(item_detail.location_id)" :value="bin_location.id">{{ bin_location.name }}</option>
                 </select>
               </td>
               <td><input v-model="item_detail.expiry_date" type="date"></td>

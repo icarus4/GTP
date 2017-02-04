@@ -7,7 +7,7 @@
 #  procurement_id      :integer
 #  item_id             :integer          not null
 #  variant_id          :integer
-#  bin_location_id     :integer
+#  location_id         :integer
 #  location_variant_id :integer
 #  quantity            :integer          not null
 #  unit_price          :decimal(10, 2)   not null
@@ -20,8 +20,8 @@
 #
 # Indexes
 #
-#  index_purchase_order_line_items_on_bin_location_id      (bin_location_id)
 #  index_purchase_order_line_items_on_item_id              (item_id)
+#  index_purchase_order_line_items_on_location_id          (location_id)
 #  index_purchase_order_line_items_on_location_variant_id  (location_variant_id)
 #  index_purchase_order_line_items_on_procurement_id       (procurement_id)
 #  index_purchase_order_line_items_on_purchase_order_id    (purchase_order_id)

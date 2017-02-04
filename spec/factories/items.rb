@@ -6,8 +6,6 @@
 #  company_id            :integer          not null
 #  item_series_id        :integer
 #  packaging_type_id     :integer
-#  available_count       :integer          default(0), not null
-#  on_hand_count         :integer          default(0), not null
 #  cost_per_unit         :decimal(10, 2)
 #  purchase_price        :decimal(10, 2)
 #  wholesale_price       :decimal(10, 2)
@@ -27,6 +25,9 @@
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  quantity              :integer          default(0), not null
+#  committed_quantity    :integer          default(0), not null
+#  sellable_quantity     :integer          default(0), not null
 #
 # Indexes
 #
@@ -43,8 +44,8 @@ FactoryGirl.define do
     item_type
     brand
     unit { ['包', '箱', '個'].sample }
-    available_count { 0 }
-    on_hand_count { 0 }
+    sellable_quantity { 0 }
+    quantity { 0 }
     name { FFaker::Product.product }
   end
 end

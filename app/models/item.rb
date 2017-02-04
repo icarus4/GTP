@@ -6,8 +6,6 @@
 #  company_id            :integer          not null
 #  item_series_id        :integer
 #  packaging_type_id     :integer
-#  available_count       :integer          default(0), not null
-#  on_hand_count         :integer          default(0), not null
 #  cost_per_unit         :decimal(10, 2)
 #  purchase_price        :decimal(10, 2)
 #  wholesale_price       :decimal(10, 2)
@@ -81,7 +79,9 @@ class Item < ApplicationRecord
   validates :name,         presence: true
   validates :company_id,   presence: true
   validates :weight_unit,  presence: true
-  validates :on_hand_count, :available_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :quantity,           presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :committed_quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :sellable_quantity,  presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :sku, uniqueness: { scope: :company_id }, allow_blank: true
   validates :packaging_type_id, presence: true
   validates :wholesale_price, :retail_price, :purchase_price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
@@ -99,8 +99,6 @@ class Item < ApplicationRecord
     self.quantity           = variants.sum(:quantity)
     self.committed_quantity = variants.sum(:committed_quantity)
     self.sellable_quantity  = variants.sum(:sellable_quantity)
-    self.on_hand_count      = quantity          # TODO: Should be removed later
-    self.available_count    = sellable_quantity # TODO: Should be removed later
     save!
   end
 
