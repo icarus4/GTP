@@ -17,15 +17,6 @@
       <div v-if="line_item.errors && line_item.errors.expiry_date"><span class="text-danger">{{ line_item.errors.expiry_date }}</span></div>
       <span v-if="procured">{{ line_item.variant.expiry_date }}</span>
     </td>
-    <!-- 倉位 -->
-    <td v-if="procured" class="td-v-align">{{ line_item.bin_location.name }}</td>
-    <td v-if="procurable" class="td-v-align">
-      <select class="input-sm form-control" v-model="line_item.bin_location_id">
-        <option selected disabled value="">-- 請選擇 --</option>
-        <option v-for="bin_location in ship_to_bin_locations" v-bind:value="bin_location.id">{{ bin_location.name }}</option>
-      </select>
-      <div v-if="line_item.errors.bin_location_id"><span class="text-danger">{{ line_item.errors.bin_location_id }}</span></div>
-    </td>
     <!-- GTP資訊 -->
     <td v-if="procurable || procured" class="td-v-align">
       <button
@@ -141,7 +132,6 @@ var LineItemSelectorComponent = Vue.extend({
     line_item: Object,
     available_items: Array,
     index: Number,
-    ship_to_bin_locations: Array,
   },
   computed: {
     total: function() {

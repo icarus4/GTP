@@ -100,7 +100,6 @@ new Vue({
       wholesale_price: null,
       retail_price: null,
       cost_per_unit: null,
-      on_hand_count: null,
       item_details: [],
       low_stock_alert_level: null,
       packaging_type_id: null,
@@ -110,10 +109,9 @@ new Vue({
       packs: [{}],
     },
     itemDetailTemplate: {
-      on_hand_count: null,
+      quantity: null,
       expiry_date: null,
       location_id: null,
-      bin_location_id: null,
     },
     options: {
       locations: [],
@@ -239,22 +237,8 @@ new Vue({
         alert(err.responseJSON.errors)
       })
     },
-    findBinLocationsByLocationId: function(location_id) {
-      if (location_id == "") {
-        return []
-      }
-      else {
-        var selected_location = _.find(this.options.locations, function(location) {
-          return location.id == location_id
-        })
-        return selected_location.bin_locations
-      }
-    },
     addNewItemDetail: function() {
       this.new_item.item_details.push(_.cloneDeep(this.itemDetailTemplate))
-    },
-    resetBinLocation: function(item_detail) {
-      item_detail.bin_location_id = ""
     },
     removeItemDetail: function(item_detail) {
       this.new_item.item_details.$remove(item_detail)

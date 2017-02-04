@@ -98,13 +98,13 @@
           </dd>
         </div>
         <div class="form-group">
-          <dt>總金額</dt>
+          <dt>單價</dt>
           <dd>
             <select v-if="editable" v-model="purchase_order.tax_treatment" class="input-sm">
-              <option selected value="exclusive">稅外</option>
-              <option value="inclusive">稅入</option>
+              <option selected value="exclusive">不含稅</option>
+              <option value="inclusive">含稅</option>
             </select>
-            <span v-else>{{ purchase_order.tax_treatment === 'exclusive' ? '稅外' : '稅內' }}</span>
+            <span v-else>{{ purchase_order.tax_treatment === 'exclusive' ? '含稅' : '不含稅' }}</span>
           </dd>
         </div>
       </dl>
@@ -126,7 +126,6 @@
           <td></td>
           <td>品名</td>
           <td v-if="procurable">保存期限</td>
-          <td v-if="procurable">入庫倉位</td>
           <td v-if="procurable">GTP資訊</td>
           <td>進貨量</td>
           <td v-if="procurable">入庫量</td>
@@ -146,7 +145,6 @@
           :line_item="line_item"
           :index="$index"
           :available_items="options.items"
-          :ship_to_bin_locations="options.ship_to_bin_locations"
           v-on:press-delete-button="removeLineItem">
         </tr>
       </tbody>
@@ -181,7 +179,6 @@
           <td></td>
           <td>品名</td>
           <td>保存期限</td>
-          <td>入庫倉位</td>
           <td>GTP資訊</td>
           <td>進貨量</td>
           <td>入庫量</td>
@@ -202,7 +199,6 @@
           :line_item="line_item"
           :index="$index"
           :available_items="options.items"
-          :ship_to_bin_locations="options.ship_to_bin_locations"
           v-on:press-delete-button="removeLineItem">
         </tr>
       </tbody>
@@ -368,7 +364,7 @@ var PurchaseOrderComponent = Vue.extend({
         total: 0,
         procurement_total: 0,
         errors: {
-          bin_location_id: null,
+          location_id: null,
           expiry_date: null,
           quantity_to_procure: null
         },
@@ -377,7 +373,7 @@ var PurchaseOrderComponent = Vue.extend({
         import_admitted_notice_number: null,
         item_number: null,
         lot_number: null,
-        bin_location_id: null,
+        location_id: null,
       },
       price_list: null,
       options: {
@@ -386,7 +382,7 @@ var PurchaseOrderComponent = Vue.extend({
         price_lists: [],
         items: [],
         stockable_locations: [],
-        ship_to_bin_locations: [],
+        ship_to_locations: [],
       },
       procurement: { // For creating a procurement
         procured_on: null
@@ -554,12 +550,6 @@ var PurchaseOrderComponent = Vue.extend({
         this.getProcurements(val)
       }
     },
-    // For initialization stage
-    'purchase_order.ship_to_location_id': function(val, old_val) {
-      if (_.isInteger(val)) {
-        this.getShipToBinLocationList(val)
-      }
-    }
   },
   methods: {
     getPurchaseOrder: function() {
@@ -577,16 +567,6 @@ var PurchaseOrderComponent = Vue.extend({
       }).fail(function(err) {
         console.log(err)
         alert('Get purchase order failed')
-      })
-    },
-    getShipToBinLocationList: function(ship_to_location_id) {
-      var that = this
-      $.ajax({
-        url: '/api/v1/locations/' + ship_to_location_id + '/bin_locations',
-        method: 'GET',
-        dataType: 'json',
-      }).done(function(data) {
-        that.options.ship_to_bin_locations = data.bin_locations
       })
     },
     getProcurements: function(input_purchase_order_id) {
@@ -705,7 +685,6 @@ var PurchaseOrderComponent = Vue.extend({
         }
 
         if (moment(line_item.expiry_date, "YYYY-MM-DD", true).isValid()) { line_item.errors.expiry_date = null } else { line_item.errors.expiry_date = "請輸入保存期限" }
-        if (_.isInteger(line_item.bin_location_id)) { line_item.errors.bin_location_id = null } else { line_item.errors.bin_location_id = "請選擇倉位" }
         if (_.isInteger(line_item.quantity_to_procure) && line_item.quantity_to_procure > 0) { line_item.errors.quantity_to_procure = null } else { line_item.errors.quantity_to_procure = "請輸入入庫量" }
       })
 
@@ -734,7 +713,6 @@ var PurchaseOrderComponent = Vue.extend({
         _line_item.import_admitted_notice_number = line_item.import_admitted_notice_number
         _line_item.item_number                   = line_item.item_number
         _line_item.lot_number                    = line_item.lot_number
-        _line_item.bin_location_id               = line_item.bin_location_id
         purchase_order_line_items.push(_.cloneDeep(_line_item))
       })
 

@@ -27,6 +27,9 @@
 #  description           :text
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  quantity              :integer          default(0), not null
+#  committed_quantity    :integer          default(0), not null
+#  sellable_quantity     :integer          default(0), not null
 #
 # Indexes
 #

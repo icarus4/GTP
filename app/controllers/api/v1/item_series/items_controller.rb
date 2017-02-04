@@ -21,7 +21,7 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
       packaging_type_id:      params[:packaging_type_id],
       weight_unit:            params[:weight_unit],
       weight_value:           params[:weight_value],
-      low_stock_alert_level:  params[:low_stock_alert_level], # Set available_count to on_hand_count at initial
+      low_stock_alert_level:  params[:low_stock_alert_level], # Set sellable_quantity to quantity at initial
     )
 
     error_message = nil
@@ -42,7 +42,7 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
 
         # Create item initial stocks
         params[:item_details]&.each do |_, item_detail|
-          next if item_detail[:on_hand_count].blank? || item_detail[:bin_location_id].blank?
+          next if item_detail[:quantity].blank? || item_detail[:location_id].blank?
 
           variant = Variant.find_or_create_by!(
             item: item,
@@ -54,10 +54,10 @@ class Api::V1::ItemSeries::ItemsController < Api::V1::BaseController
           )
 
           lv = LocationVariant.find_or_initialize_by(
-            company:         current_company,
-            variant:         variant,
-            bin_location_id: item_detail[:bin_location_id],
-            quantity:        item_detail[:on_hand_count],
+            company:     current_company,
+            variant:     variant,
+            location_id: item_detail[:location_id],
+            quantity:    item_detail[:quantity],
           )
           lv.save!
         end

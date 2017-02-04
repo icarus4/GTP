@@ -17,12 +17,12 @@ class Procurements::VoidProcurementService
         #      若相同則
         #        destroy location_variant
         #        destroy variant
-        #        line_item.bin_location_id = nil
+        #        line_item.location_id = nil
         #        line_item.variant_id = nil
         #        line_item.location_variant_id = nil
         #      若 line_item.location_variant.quantity > line_item.quantity 則
         #        location_variant.quantity - line_item.quantity
-        #        line_item.bin_location_id = nil
+        #        line_item.location_id = nil
         #        line_item.variant_id = nil
         #        line_item.location_variant_id = nil
         location_variant = line_item.location_variant
@@ -34,12 +34,12 @@ class Procurements::VoidProcurementService
         elsif location_variant.quantity > line_item.quantity
           location_variant.quantity -= line_item.quantity
         end
-        line_item.update!(procurement_id: nil, variant_id: nil, location_variant_id: nil, bin_location_id: nil)
+        line_item.update!(procurement_id: nil, variant_id: nil, location_variant_id: nil, location_id: nil)
 
         # TODO:
         # 3. 被移動的商品 又被拿去銷售：不可作廢單據，須先刪除相關商品銷貨單後，方可作廢。然後，再返回相關商品數量。
       end
-      
+
       @procurement.purchase_order.active!
       @procurement.destroy!
     end
