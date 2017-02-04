@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170203063942) do
+ActiveRecord::Schema.define(version: 20170204154023) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -152,8 +152,6 @@ ActiveRecord::Schema.define(version: 20170203063942) do
     t.integer  "company_id",                                                               null: false
     t.integer  "item_series_id"
     t.integer  "packaging_type_id"
-    t.integer  "available_count",                                          default: 0,     null: false
-    t.integer  "on_hand_count",                                            default: 0,     null: false
     t.decimal  "cost_per_unit",                   precision: 10, scale: 2
     t.decimal  "purchase_price",                  precision: 10, scale: 2
     t.decimal  "wholesale_price",                 precision: 10, scale: 2
@@ -465,11 +463,11 @@ ActiveRecord::Schema.define(version: 20170203063942) do
     t.date     "expected_delivery_date"
     t.string   "order_number"
     t.string   "email"
+    t.string   "phone"
     t.text     "notes"
     t.jsonb    "extra_info"
     t.datetime "created_at",                                                  null: false
     t.datetime "updated_at",                                                  null: false
-    t.string   "phone"
     t.index ["company_id", "partner_id"], name: "index_sales_orders_on_company_id_and_partner_id", using: :btree
     t.index ["order_number"], name: "index_sales_orders_on_order_number", using: :btree
   end

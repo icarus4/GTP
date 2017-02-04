@@ -129,7 +129,7 @@
           <td v-if="procurable">GTP資訊</td>
           <td>進貨量</td>
           <td v-if="procurable">入庫量</td>
-          <td>入庫後</td>
+          <td>入庫後總量</td>
           <td>單價</td>
           <td>稅率</td>
           <td>金額</td>
@@ -358,6 +358,7 @@ var PurchaseOrderComponent = Vue.extend({
         item_id: null,
         item: {},
         quantity: 1,
+        sellable_quantity: null,
         quantity_to_procure: null,
         unit_price: null,
         tax_rate: null,

@@ -92,7 +92,7 @@
       <div><span class="text-danger">{{ line_item.errors && line_item.errors.quantity_to_procure }}</span></div>
     </td>
     <!-- 入庫後數量 or 庫存量 -->
-    <td v-if="procured" class="td-v-align">{{ line_item.item.on_hand_count }}</td>
+    <td v-if="procured" class="td-v-align">{{ line_item.item.quantity }}</td>
     <td v-else class="td-v-align">{{ after_count }}</td>
     <!-- 單價 -->
     <td class="td-v-align">
@@ -169,9 +169,9 @@ var LineItemSelectorComponent = Vue.extend({
           return null
         }
         else {
-          var available_count = parseInt(selected_item.available_count)
+          var sellable_quantity = parseInt(selected_item.sellable_quantity)
           var quantity = this.procurable ? parseInt(this.line_item.quantity_to_procure) : parseInt(this.line_item.quantity)
-          return available_count + quantity
+          return sellable_quantity + quantity
         }
       }
     },

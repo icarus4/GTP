@@ -38,7 +38,7 @@ require 'rails_helper'
 
 RSpec.describe PurchaseOrder do
   describe '#receive!' do
-    xit 'updates available_count of items belongs to it' do
+    xit 'updates sellable_count of items belongs to it' do
     end
   end
 end

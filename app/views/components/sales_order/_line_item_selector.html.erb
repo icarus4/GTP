@@ -62,13 +62,6 @@
       this.updateOnHandCount()
     },
     computed: {
-      // 此 item 不分 location 的整體 available_count
-      available_count: function() {
-        if (_.isNil(this.line_item.item_id)) { return null }
-        var that = this
-        var item = _.find(this.items, function(item) { return item.id == that.line_item.item_id })
-        return item.available_count
-      },
       sellable_quantity: function() {
         return this.location_sellable_quantity
       },
