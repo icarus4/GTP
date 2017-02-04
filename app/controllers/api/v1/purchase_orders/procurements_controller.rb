@@ -1,15 +1,14 @@
 class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
   def index
-    purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant, :bin_location] }).find_by(company: current_company, id: params[:purchase_order_id])
+    purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant, :location] }).find_by(company: current_company, id: params[:purchase_order_id])
     if purchase_order.nil?
       render json: { errors: 'Purchase order not found' }, status: :not_found and return
     end
 
-    render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant, :bin_location] } }, methods: :purchase_order_line_item_ids) }
+    render json: { procurements: purchase_order.procurements.order(:procured_at, :id).as_json(include: { purchase_order_line_items: { include: [:item, :variant, :location] } }, methods: :purchase_order_line_item_ids) }
   end
 
   def returnable
-    # purchase_order = PurchaseOrder.includes(procurements: { purchase_order_line_items: [:item, :variant, :bin_location] }).find_by(company: current_company, id: params[:purchase_order_id])
     purchase_order = PurchaseOrder.find_by(company: current_company, id: params[:purchase_order_id])
     if purchase_order.nil?
       render json: { errors: 'Purchase order not found' }, status: :not_found and return
@@ -17,9 +16,9 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
 
     # TODO: Fix N+1 query
     # Get procurements
-    procurements = purchase_order.procurements.includes(returnable_purchase_order_line_items: [:item, :variant, :bin_location]).joins(:returnable_purchase_order_line_items).distinct
+    procurements = purchase_order.procurements.includes(returnable_purchase_order_line_items: [:item, :variant, :location]).joins(:returnable_purchase_order_line_items).distinct
 
-    render json: { procurements: procurements.order(:procured_at, :id).as_json(include: { returnable_purchase_order_line_items: { include: [:item, :variant, :bin_location] } }, methods: :returnable_purchase_order_line_item_ids) }
+    render json: { procurements: procurements.order(:procured_at, :id).as_json(include: { returnable_purchase_order_line_items: { include: [:item, :variant, :location] } }, methods: :returnable_purchase_order_line_item_ids) }
   end
 
   def create
@@ -48,8 +47,6 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         next if line_item.nil?
         quantity_to_procure = input_line_item[:quantity_to_procure]&.to_i
         next if quantity_to_procure.nil? || quantity_to_procure <= 0
-        bin_location = BinLocation.find_by(id: input_line_item[:bin_location_id])
-        next if bin_location.nil?
 
         # 1. Set procurement to the corresponding line_item.
         #
@@ -94,12 +91,12 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
         variant.save!
 
         # 3. Setup LocationVariant
-        lv = LocationVariant.find_or_initialize_by(company: current_company, bin_location: bin_location, variant: variant)
+        lv = LocationVariant.find_or_initialize_by(company: current_company, location_id: purchase_order.ship_to_location_id, variant: variant)
         lv.increment(:quantity, quantity_to_procure)
         lv.save!
 
         # 4. Update variant and location_variant info to procured line_item
-        procured_line_item.update!(variant: variant, location_variant: lv, bin_location: bin_location)
+        procured_line_item.update!(variant: variant, location_variant: lv, location_id: purchase_order.ship_to_location_id)
       end
 
       # Change status to received when all line_items are procured
@@ -108,7 +105,6 @@ class Api::V1::PurchaseOrders::ProcurementsController < Api::V1::BaseController
       # FIXME:
       # 部分情況會導致 procurement 產生，但是卻沒有任何 variant 產生，此時的 procurement 為無效，不應該被產生
       # 目前先用此笨方法 workaround
-      # 已知情況1: 使用者收貨時沒有選擇 bin_location
       procurement.destroy unless procurement.variants.exists?
 
       # 更新退貨狀態
