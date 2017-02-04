@@ -109,6 +109,7 @@ class SalesOrder < ApplicationRecord
     end
   end
 
+  # TODO: shipment status should be updated automatically.
   def update_shipment_status!
     if line_items.shipment_status_is_partial.exists? # 有partial shipped line_items
       # 至少有一個 line_item 為 partial => partial
