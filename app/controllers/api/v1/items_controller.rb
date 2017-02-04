@@ -71,16 +71,17 @@ class Api::V1::ItemsController < Api::V1::BaseController
     # }
     location_variants.each do |lv|
       h = {
-        expiry_date: lv.variant.expiry_date,
-        quantity:    lv.quantity,
+        expiry_date:        lv.variant.expiry_date,
+        procurement_id:     lv.variant.procurement_id,
+        quantity:           lv.quantity,
         sellable_quantity:  lv.sellable_quantity,
         committed_quantity: lv.committed_quantity,
       }
       location_id = lv.location_id
-      stock_info_by_location[location_id] ||= {}
-      stock_info_by_location[location_id][:location_id] = lv.location_id
-      stock_info_by_location[location_id][:location_name] = lv.location.name
-      stock_info_by_location[location_id][:variants] ||= []
+      stock_info_by_location[location_id]                ||= {}
+      stock_info_by_location[location_id][:location_id]    = lv.location_id
+      stock_info_by_location[location_id][:location_name]  = lv.location.name
+      stock_info_by_location[location_id][:variants]     ||= []
       stock_info_by_location[location_id][:variants] << h
     end
 
