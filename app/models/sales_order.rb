@@ -49,6 +49,7 @@ class SalesOrder < ApplicationRecord
   belongs_to :bill_to_location, class_name: 'Location', foreign_key: :bill_to_location_id
   belongs_to :ship_to_location, class_name: 'Location', foreign_key: :ship_to_location_id
   belongs_to :ship_from_location, class_name: 'Location', foreign_key: :ship_from_location_id
+  belongs_to :assignee, -> { select(:id, :name, :email, :phone_number) }, class_name: 'User'
 
   has_many :line_items
   has_many :line_item_commitments, through: :line_items
@@ -77,7 +78,7 @@ class SalesOrder < ApplicationRecord
     state :deleted
 
     event :approve do
-      transitions from: :draft, to: :active
+      transitions from: :draft, to: :active, after: :commit_stocks!
     end
 
     event :finalize do
@@ -140,5 +141,34 @@ class SalesOrder < ApplicationRecord
     def setup_defaults
       self.order_number ||= self.class.next_number(company_id)
       self.status ||= 'active'
+    end
+
+    def commit_stocks!
+      line_items.each do |line_item|
+        # 從庫存中尋找適當的貨品保留作為出貨用
+        # 找到的 location_variant 的數量不一定足夠，因此用迴圈逐一找尋，直到總數量符合出貨量
+        remaining_quantity = line_item.quantity
+        offset = 0
+        loop do
+          # 找出最快過期的出貨
+          chosen_lv = LocationVariant.where(company_id: company_id, location: ship_from_location, item_id: line_item.item_id)
+                                     .default_sales_committed_sequence
+                                     .offset(offset).first
+          break if chosen_lv.nil?
+          committed_quantity = chosen_lv.sellable_quantity >= remaining_quantity ? remaining_quantity : chosen_lv.sellable_quantity
+          commitment = SalesOrder::LineItemCommitment.create!(
+            line_item:        line_item,
+            location_variant: chosen_lv,
+            quantity:         committed_quantity
+          )
+          remaining_quantity -= committed_quantity
+          if remaining_quantity == 0
+            break
+          elsif remaining_quantity < 0
+            raise "Should not be here"
+          end
+          offset += 1
+        end
+      end
     end
 end

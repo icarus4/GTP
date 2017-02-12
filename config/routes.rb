@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :sales_orders, only: [:create, :show, :destroy, :update] do
         get :next_number, on: :collection
+        patch :approve, on: :member
         patch :finalize, on: :member
         patch :void, on: :member
         delete :shipments, on: :member, to: 'sales_orders#delete_shipments' # Delete specfied sales order's all shipments
@@ -99,6 +100,7 @@ Rails.application.routes.draw do
       end
       resources :procurements, only: [:update, :destroy]
       resources :purchase_order_returns, only: [:create, :destroy, :show]
+      resources :employees, only: [:index]
     end
   end
 

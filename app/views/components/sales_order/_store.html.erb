@@ -8,6 +8,7 @@
         items: [],
         price_lists: [],
         stockable_locations: [],
+        employees: [],
       },
       is_form_valid: false,
       sales_order: {
@@ -21,7 +22,7 @@
         ship_from_to_location: {},
         expected_delivery_date: null,
         issued_on: null,
-        email: null,
+        assignee_id: null,
         phone: null,
         tax_treatment: 'exclusive',
         notes: null,
@@ -132,6 +133,9 @@
       updateEmail: function(state, email) {
         state.sales_order.email = email
       },
+      updateAssignee: function(state, assignee_id) {
+        state.sales_order.assignee_id = assignee_id
+      },
       updatePhone: function(state, phone) {
         state.sales_order.phone = phone
       },
@@ -182,6 +186,9 @@
       },
       updateSalesOrderLineItems: function(state, obj) {
         state.sales_order_line_items = obj.sales_order_line_items
+      },
+      updateEmployeeList: function(state, employees) {
+        state.options.employees = employees
       },
       validateForm: function(state) {
         state.is_form_valid = true
@@ -264,6 +271,16 @@
           dataType: "json"
         }).done(function(data) {
           context.commit('updateItemList', data.items)
+        })
+      },
+      getEmployeeList: function(context) {
+        var that = this
+        $.ajax({
+          url: "/api/v1/employees",
+          method: "GET",
+          dataType: "json"
+        }).done(function(data) {
+          context.commit('updateEmployeeList', data.employees)
         })
       },
       addNewLineItem: function(context) {

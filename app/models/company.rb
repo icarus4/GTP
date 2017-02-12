@@ -49,6 +49,7 @@ class Company < ApplicationRecord
   has_many :payment_terms
   has_many :tax_types
   has_many :price_lists
+  has_many :employees, class_name: 'User'
 
   validates :name, presence: true
 

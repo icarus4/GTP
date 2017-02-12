@@ -23,11 +23,9 @@
           <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
-          <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="editOrder" class="btn btn-default m-l-xs">編輯</button>
+          <button v-if="order_editable" @click="editOrder" class="btn btn-default m-l-xs">編輯</button>
           <button v-if="sales_order.status === 'finalized' || sales_order.status === 'fulfilled'" @click="voidOrder" class="btn btn-default m-l-xs">作廢此單</button>
           <button v-if="sales_order.status === 'draft' || sales_order.status === 'active'" @click="deleteOrder" class="btn btn-default m-l-xs">刪除</button>
-          <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary m-l-xs">Finalize</button>
-          <button v-if="sales_order.status === 'finalized' && sales_order.shipment_status === 'unshipped'" @click="shipAll" class="btn btn-primary m-l-xs">Ship all</button>
         </div>
       </div>
 
@@ -41,7 +39,7 @@
             :location="sales_order && sales_order.bill_to_location"
             after-selected-dispatch-event="billToLocationSelected"
             label="單據寄送至"
-            :editable="editable"
+            :is_editing="is_editing"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.bill_to_location_id) || null">
           </bill-to-location-selector>
         </div>
@@ -52,7 +50,7 @@
             :location="sales_order && sales_order.ship_to_location"
             after-selected-dispatch-event="shipToLocationSelected"
             label="貨品寄送至"
-            :editable="editable"
+            :is_editing="is_editing"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_to_location_id) || null">
           </ship-to-location-selector>
         </div>
@@ -63,17 +61,30 @@
             :location="sales_order && sales_order.ship_from_location"
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
-            :editable="editable"
+            :is_editing="is_editing"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_from_location_id) || null">
           </ship-from-location-selector>
         </div>
+
+        <div class="row">
+          <div class="col-md-4 form-group">
+            <label class="pull-right">電話</label>
+          </div>
+          <div class="col-md-8 form-group">
+            <span>
+              <input v-if="is_editing" type="text" @input="updatePhone" v-model="sales_order.phone" class="form-control input-sm">
+              <span v-else>{{ sales_order.phone }}</span>
+            </span>
+          </div>
+        </div>
+
       </div>
 
       <div class="col-md-4">
         <div class="form-group">
           <label>訂單日期</label>
           <span class="m-l">
-            <input v-if="editable" type="date" @change="updateIssuedOn" v-model="sales_order.issued_on">
+            <input v-if="is_editing" type="date" @change="updateIssuedOn" v-model="sales_order.issued_on">
             <span v-else>{{ sales_order.issued_on }}</span>
           </span>
           <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.issued_on" class="text-danger">{{ $store.state.sales_order.errors.issued_on }}</span>
@@ -82,7 +93,7 @@
         <div class="form-group">
           <label>送貨日期</label>
           <span class="m-l">
-            <input v-if="editable" type="date" @change="updateExpectedDeliveryDate" v-model="sales_order.expected_delivery_date">
+            <input v-if="is_editing" type="date" @change="updateExpectedDeliveryDate" v-model="sales_order.expected_delivery_date">
             <span v-else>{{ sales_order.expected_delivery_date }}</span>
           </span>
           <span v-if="$store.state.sales_order.errors && $store.state.sales_order.errors.expected_delivery_date" class="text-danger">{{ $store.state.sales_order.errors.expected_delivery_date }}</span>
@@ -91,28 +102,39 @@
         <div class="form-group">
           <label>Email</label>
           <span class="m-l">
-            <input v-if="editable" type="text" @input="updateEmail" v-model="sales_order.email">
+            <input v-if="is_editing" type="text" @input="updateEmail" v-model="sales_order.email">
             <span v-else>{{ sales_order.email }}</span>
           </span>
         </div>
 
         <div class="form-group">
-          <label>電話</label>
+          <label>經辦人</label>
           <span class="m-l">
-            <input v-if="editable" type="text" @input="updatePhone" v-model="sales_order.phone">
-            <span v-else>{{ sales_order.phone }}</span>
+            <select v-if="is_editing" @change="updateAssignee" v-model="sales_order.assignee_id">
+              <option selected value="">-- 請選擇經辦人 --</option>
+              <option
+                v-for="employee in $store.state.options.employees"
+                v-bind:value="employee.id">{{ employee.name }}</option>
+            </select>
+            <span v-else>{{ sales_order.assignee && sales_order.assignee.name }}</span>
           </span>
         </div>
+
       </div>
       <div class="col-md-4">
         <div class="form-group">
+          <label>幣別</label>
+          <span class="m-l" v-else>新台幣</span>
+        </div>
+
+        <div class="form-group">
           <label>價別</label>
-          <select v-if="editable"><option disabled selected value="">-- WIP --</option></select>
+          <select v-if="is_editing"><option disabled selected value="">-- WIP --</option></select>
           <span class="m-l" v-else>{{ "WIP" }}</span>
         </div>
         <div>
           <label>單價</label>
-          <select v-if="editable" @change="updateTaxTreatment" v-model="sales_order.tax_treatment">
+          <select v-if="is_editing" @change="updateTaxTreatment" v-model="sales_order.tax_treatment">
             <option selected value="exclusive">不含稅</option>
             <option value="inclusive">含稅</option>
           </select>
@@ -129,7 +151,7 @@
         :items="$store.state.options.items"
         :line_items="$store.state.sales_order_line_items"
         :mode="mode"
-        :editable="editable">
+        :is_editing="is_editing">
       </line-item-selection-area>
     </div>
 
@@ -137,8 +159,8 @@
 
     <div class="row m-t">
       <div class="col-md-6 m-t">
-        <textarea v-if="editable" @input="updateNotes" v-model="sales_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
-        <div v-if="!editable && sales_order.notes" class="bg-warning">
+        <textarea v-if="is_editing" @input="updateNotes" v-model="sales_order.notes" placeholder="備註:" rows="4" class="form-control input-sm"></textarea>
+        <div v-if="!is_editing && sales_order.notes" class="bg-warning">
           <label>備註:</label><p>{{ sales_order.notes }}</p>
         </div>
       </div>
@@ -164,9 +186,9 @@
       </div>
     </div>
 
-    <div v-if="editable" class="row"><hr class="m-t-xs"></div>
+    <div v-if="is_editing" class="row"><hr class="m-t-xs"></div>
 
-    <div v-if="editable" class="row m-t">
+    <div v-if="is_editing" class="row m-t">
       <div class="pull-right">
         <button class="btn btn-default">取消</button>
         <button v-if="mode === 'new'" class="btn btn-default" @click="createOrder('draft')">存為草稿</button>
@@ -175,6 +197,61 @@
       </div>
     </div>
 
+  </div>
+
+  <div v-if="mode === 'show'" class="col-md-3">
+    <div class="col-md-12">
+      <!-- 單號、狀態 -->
+      <div class="row">
+        <div class="ibox border-left-right border-bottom">
+          <div class="ibox-title">
+            <h5>單號 {{ sales_order.order_number }}</h5>
+            <div class="pull-right">{{ sales_order.status }}</div>
+          </div>
+          <div v-if="sales_order.status === 'draft' || sales_order.status === 'active'" class="ibox-footer">
+            <button v-if="sales_order.status === 'draft'" @click="approveOrder" class="btn btn-primary btn-block">批准訂單</button>
+            <button v-if="sales_order.status === 'active'" @click="finalizeOrder" class="btn btn-primary btn-block">處理訂單</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 請款單 -->
+      <div class="row">
+        <div class="ibox border-left-right border-bottom">
+          <div class="ibox-title">
+            <h5>請款單</h5>
+            <div class="pull-right">WIP</div>
+          </div>
+          <div class="ibox-content">
+          </div>
+        </div>
+      </div>
+
+      <!-- 應收帳款 -->
+      <div class="row">
+        <div class="ibox border-left-right border-bottom">
+          <div class="ibox-title">
+            <h5>應收帳款</h5>
+            <div class="pull-right">WIP</div>
+          </div>
+          <div class="ibox-content">
+          </div>
+        </div>
+      </div>
+
+      <!-- 出貨單 -->
+      <div v-if="show_shipment_area" class="row">
+        <div class="ibox border-left-right border-bottom">
+          <div class="ibox-title">
+            <h5>出貨狀態</h5>
+            <div class="pull-right">{{ sales_order.shipment_status }}</div>
+          </div>
+          <div class="ibox-content">
+            <button v-if="order_shippable" @click="shipAll" class="btn btn-primary btn-block">全部出貨</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -204,12 +281,21 @@
       return {}
     },
     computed: {
-      editable: function() {
+      is_editing: function() {
         return this.mode === 'new' || this.mode === 'edit'
       },
       tax_treatment: function() {
         if (this.sales_order.tax_treatment === 'exclusive') { return '不含稅' }
         else { return '含稅' }
+      },
+      show_shipment_area: function() {
+        return this.sales_order.status === 'finalized' || this.sales_order.status === 'fulfilled'
+      },
+      order_shippable: function() {
+        return this.sales_order.status === 'finalized' && this.sales_order.shipment_status === 'unshipped'
+      },
+      order_editable: function() {
+        return this.sales_order.status === 'draft' || this.sales_order.status === 'active'
       }
     },
     created: function() {
@@ -221,6 +307,7 @@
         this.$store.dispatch('getPriceList')
         this.$store.dispatch('getStockableLocationList')
         this.$store.dispatch('getItemList')
+        this.$store.dispatch('getEmployeeList')
         this.$store.dispatch('addNewLineItem')
       }
       if (this.mode === 'show' || this.mode === 'edit') {
@@ -237,6 +324,9 @@
       updateEmail: function(e) {
         this.$store.commit('updateEmail', e.target.value)
       },
+      updateAssignee: function(e) {
+        this.$store.commit('updateAssignee', e.target.value)
+      },
       updatePhone: function(e) {
         this.$store.commit('updatePhone', e.target.value)
       },
@@ -246,7 +336,8 @@
       updateNotes: function(e) {
         this.$store.commit('updateNotes', e.target.value)
       },
-      createOrder: function() {
+      createOrder: function(status) {
+        this.$store.commit('updateStatus', status)
         this.$store.commit('validateForm')
         if (!this.$store.state.is_form_valid) { return }
 
@@ -297,6 +388,16 @@
         }).fail(function(err) {
           console.log(err)
           alert(err.responseJSON)
+        })
+      },
+      approveOrder: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id + '/approve',
+          method: 'PATCH',
+          dataType: 'json',
+        }).done(function(data) {
+          that.$store.commit('setupSalesOrder', { sales_order: data.sales_order })
         })
       },
       finalizeOrder: function() {
@@ -412,7 +513,7 @@
           console.log(err)
           alert('Cannot create sales order')
         })
-      }
+      },
     }
   })
 </script>
