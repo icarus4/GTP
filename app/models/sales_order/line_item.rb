@@ -35,6 +35,8 @@ class SalesOrder::LineItem < ApplicationRecord
   before_save :calculate_total
   before_save :calculate_quantities, if: :quantity_changed?
   after_save :update_sales_order_shipment_status!, if: :shipment_status_changed?
+  after_save :update_sales_order_totals!
+  after_destroy :update_sales_order_totals!, :update_sales_order_shipment_status!
 
   belongs_to :sales_order
   belongs_to :item
@@ -84,5 +86,9 @@ class SalesOrder::LineItem < ApplicationRecord
 
     def setup_defaults
       self.committed_quantity ||= 0 if has_attribute?(:committed_quantity)
+    end
+
+    def update_sales_order_totals!
+      sales_order.calculate_totals!
     end
 end

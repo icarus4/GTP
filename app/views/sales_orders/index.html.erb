@@ -1,5 +1,7 @@
 <div class="row">
-  <%= link_to "建立新出貨單", new_sales_order_path, class: 'btn btn-default btn-md' %>
+  <div class="pull-right m-r">
+    <%= link_to "新增銷貨單", new_sales_order_path, class: 'btn btn-default btn-md' %>
+  </div>
 </div>
 
 <div class="row table-container">
@@ -7,14 +9,12 @@
     <thead>
       <tr>
         <th>單號</th>
-        <th>客戶</th>
-        <th>寄貨至</th>
-        <th>寄發票至</th>
-        <th>出貨倉庫</th>
-        <th>訂購數量</th>
-        <th>預計出貨日期</th>
-        <th>出貨狀態</th>
-        <th>訂單狀態</th>
+        <th>公司名稱</th>
+        <th>狀態</th>
+        <th>出貨</th>
+        <th>總計</th>
+        <th>建立於</th>
+        <th>更新於</th>
       </tr>
     </thead>
     <tbody>
@@ -22,13 +22,11 @@
       <tr data-link="<%= sales_order_path(order) %>">
         <td><%= order.order_number %></td>
         <td><%= order.partner.name %></td>
-        <td><%= order.ship_to_location.name %></td>
-        <td><%= order.bill_to_location.name %></td>
-        <td><%= order.ship_from_location.name %></td>
-        <td><%= order.total_units %></td>
-        <td><%= order.expected_delivery_date %></td>
-        <td><%= order.shipment_status %></td>
         <td><%= render_status(order.status) %></td>
+        <td><%= order.shipment_status %></td>
+        <td><%= order.total_amount %></td>
+        <td><%= order.issued_on %></td>
+        <td><%= order.updated_at.to_date %></td>
       </tr>
     <% end %>
     </tbody>

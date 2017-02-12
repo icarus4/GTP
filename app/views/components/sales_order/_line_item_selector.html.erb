@@ -3,7 +3,7 @@
     <td></td>
 
     <td><!-- 品名 -->
-      <select v-if="editable" class="input-sm form-control" @change="updateSelectedItem" v-model="line_item.item_id">
+      <select v-if="is_editing" class="input-sm form-control" @change="updateSelectedItem" v-model="line_item.item_id">
         <option disabled value="">-- 請選取商品 --</option>
         <option v-for="i in items" v-bind:value="i.id">{{ i.sku + ' - ' + i.name }}</option>
       </select>
@@ -12,7 +12,7 @@
     </td>
 
     <td><!-- 出貨量 -->
-      <input v-if="editable" class="no-border no-outline" type="number" min="1" max="{{ sellable_quantity }}" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
+      <input v-if="is_editing" class="no-border no-outline" type="number" min="1" max="{{ sellable_quantity }}" v-model="line_item.quantity" placeholder="數量" @input="updateQuantity" number>
       <span v-else>{{ line_item.quantity }}</span>
     </td>
 
@@ -20,20 +20,20 @@
     <td>{{ sellable_quantity }}</td>
 
     <td><!-- 單價 -->
-      <input v-if="editable" v-model="line_item.unit_price" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
+      <input v-if="is_editing" v-model="line_item.unit_price" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="單價" @input="updateUnitPrice" number>
       <span v-else>{{ line_item.unit_price }}</span>
       <span v-if="line_item.errors && line_item.errors.unit_price" class="text-danger">{{ line_item.errors.unit_price }}</span>
     </td>
 
     <td><!-- 稅率 -->
-      <input v-if="editable" v-model="line_item.tax_rate" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
+      <input v-if="is_editing" v-model="line_item.tax_rate" class="no-border no-outline input-s-sm" type="number" min="0" placeholder="稅率" @input="updateTaxRate" number>%
       <span v-else>{{ line_item.tax_rate }}</span>
       <span v-if="line_item.errors && line_item.errors.tax_rate" class="text-danger">{{ line_item.errors.tax_rate }}</span>
     </td>
 
     <td>{{ total }}</td><!-- 金額 -->
 
-    <td v-if="editable">
+    <td v-if="is_editing">
       <div @click="pressDeleteButton" class="cursor-pointer"><i class="fa fa-trash-o"></i></div>
     </td>
   </tr>
@@ -51,7 +51,7 @@
       items: Array,
       ship_from_location_id: {}, // {} for defining nothing
       mode: String,
-      editable: Boolean,
+      is_editing: Boolean,
     },
     data: function() {
       return {

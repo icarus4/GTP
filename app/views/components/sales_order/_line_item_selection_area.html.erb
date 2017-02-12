@@ -9,7 +9,7 @@
         <td>單價</td>
         <td>稅率</td>
         <td>金額</td>
-        <td v-if="editable"></td><!-- delete button -->
+        <td v-if="is_editing"></td><!-- delete button -->
       </tr>
     </thead>
     <tbody>
@@ -21,11 +21,11 @@
         :ship_from_location_id="$store.state.sales_order.ship_from_location_id"
         :items="items"
         :mode="mode"
-        :editable="editable">
+        :is_editing="is_editing">
       </tr>
     </tbody>
   </table>
-  <div v-if="editable" class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
+  <div v-if="is_editing" class="text-center"><button class="btn btn-default" @click="addNewLineItem"><i class="fa fa-plus"></i> 新增商品</button></div>
 </template>
 
 <%= render 'components/sales_order/line_item_selector' %>
@@ -40,7 +40,7 @@
       items: Array,
       line_items: Array,
       mode: String,
-      editable: Boolean,
+      is_editing: Boolean,
     },
     methods: {
       addNewLineItem: function() {

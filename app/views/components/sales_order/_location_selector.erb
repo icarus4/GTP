@@ -3,7 +3,7 @@
     <label class="pull-right">{{ label }}</label>
   </div>
   <div class="col-md-8 form-group">
-    <select v-if="editable" @change="updateSelectedLocation" v-model="location.id" class="form-control input-sm">
+    <select v-if="is_editing" @change="updateSelectedLocation" v-model="location.id" class="form-control input-sm">
       <option selected disabled value="">-- 選取地點 --</option>
       <option
         v-for="location in locations"
@@ -25,7 +25,7 @@
         type: Object,
         default: function() { return {} }
       },
-      editable: Boolean,
+      is_editing: Boolean,
       error_message: String
     },
     methods: {

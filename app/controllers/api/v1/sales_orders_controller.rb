@@ -7,7 +7,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
     render json: { errors: "Sales order not found" }, status: :not_found and return if sales_order.nil?
 
-    render json: { sales_order: sales_order.as_json(include: [:partner, :ship_to_location, :ship_from_location, :bill_to_location]) }
+    render json: { sales_order: sales_order.as_json(include: [:partner, :ship_to_location, :ship_from_location, :bill_to_location, :assignee]) }
   end
 
   def create
@@ -20,6 +20,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     sales_order                    = current_company.sales_orders.build(sales_order_params)
     sales_order.partner            = partner
     sales_order.ship_from_location = ship_from_location
+    sales_order.status             = 'draft' # Status always start from 'draft'. Change status by methods defined in state machine of sales order
 
     ActiveRecord::Base.transaction do
       sales_order.save!
@@ -35,34 +36,9 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
           unit_price:  input_line_item[:unit_price],
           tax_rate:    input_line_item[:tax_rate],
         )
-
-        # 從庫存中尋找適當的貨品保留作為出貨用
-        # 找到的 location_variant 的數量不一定足夠，因此用迴圈逐一找尋，直到總數量符合出貨量
-        remaining_quantity = line_item.quantity
-        offset = 0
-        loop do
-          # 找出最快過期的出貨
-          chosen_lv = LocationVariant.where(company: current_company, location: ship_from_location, item: item)
-                                     .default_sales_committed_sequence
-                                     .offset(offset).first
-          break if chosen_lv.nil?
-          committed_quantity = chosen_lv.sellable_quantity >= remaining_quantity ? remaining_quantity : chosen_lv.sellable_quantity
-          commitment = SalesOrder::LineItemCommitment.create!(
-            line_item:        line_item,
-            location_variant: chosen_lv,
-            quantity:         committed_quantity
-          )
-          remaining_quantity -= committed_quantity
-          if remaining_quantity == 0
-            break
-          elsif remaining_quantity < 0
-            raise "Should not be here"
-          end
-          offset += 1
-        end
       end
 
-      sales_order.calculate_totals!
+      sales_order.approve! if params[:sales_order][:status] == 'active'
     end
 
     render json: { sales_order: sales_order, sales_order_line_items: sales_order.line_items }
@@ -82,6 +58,14 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     else
       render json: { sales_order: sales_order }, status: :bad_request
     end
+  end
+
+  def approve
+    sales_order = SalesOrder.find_by(company: current_company, id: params[:id])
+    render json: { errors: 'Sales order not found' }, status: :bad_request and return if sales_order.nil?
+
+    sales_order.approve!
+    render json: { sales_order: sales_order }
   end
 
   def finalize
@@ -130,7 +114,6 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
         :bill_to_location_id,
         :ship_to_location_id,
         :assignee_id,
-        :status,
         :tax_treatment,
         :issued_on,
         :expected_delivery_date,
