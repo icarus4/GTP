@@ -27,6 +27,9 @@
         tax_treatment: 'exclusive',
         notes: null,
         status: 'active',
+        invoice_status: null,
+        uninvoiced_total_amount: null,
+        invoiced_total_amount: null,
         errors: {
           partner_id: null,
           bill_to_location_id: null,
@@ -36,6 +39,16 @@
           expected_delivery_date: null,
         }
       },
+      invoice: {
+        id: null,
+        sales_order_id: null,
+        payment_term_id: null,
+        invoiced_on: null,
+        due_on: null,
+        payment_status: null,
+        notes: null,
+      },
+      invoices: [],
       sales_order_line_items: [],
       sales_order_line_item_template: {
         id: null,
@@ -189,6 +202,9 @@
       },
       updateEmployeeList: function(state, employees) {
         state.options.employees = employees
+      },
+      updateInvoices: function(state, invoices) {
+        state.invoices = invoices
       },
       validateForm: function(state) {
         state.is_form_valid = true

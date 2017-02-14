@@ -21,7 +21,6 @@
 
         <div class="pull-right" v-if="sales_order && mode === 'show'">
           <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
-          <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
           <button v-if="order_editable" @click="editOrder" class="btn btn-default m-l-xs">編輯</button>
           <button v-if="sales_order.status === 'finalized' || sales_order.status === 'fulfilled'" @click="voidOrder" class="btn btn-default m-l-xs">作廢此單</button>
@@ -216,13 +215,46 @@
       </div>
 
       <!-- 請款單 -->
-      <div class="row">
+      <div v-if="show_invoice_area" class="row">
         <div class="ibox border-left-right border-bottom">
           <div class="ibox-title">
             <h5>請款單</h5>
-            <div class="pull-right">WIP</div>
+            <div class="pull-right">
+              <span v-if="!invoiced" class="text-danger">${{ sales_order.uninvoiced_total_amount }} 待請款</span>
+              <span v-else class='text-info'>${{ sales_order.uninvoiced_total_amount }} 待請款</span>
+            </div>
           </div>
           <div class="ibox-content">
+            <!-- Invoiced -->
+            <div v-if="invoiced">
+              <div v-for="iv in invoices">
+                <span><a @click="openInvoicePage">請款單 ID: {{ iv.id }}</a></span>
+                <span class="pull-right"><span class="label label-default">${{ iv.total_amount }}</span><a @click="deleteInvoice(iv.id)"><i class="fa fa-trash m-l"></i></a></span>
+              </div>
+            </div>
+            <!-- Uninvoiced -->
+            <div v-if="!invoiced">
+              <div class="form-group">
+                <label>請款日期</label>
+                <input type="date" v-model="invoice.invoiced_on" class="m-l">
+              </div>
+              <div class="form-group">
+                <label>收款條件</label>
+                <select v-model="invoice.payment_term_id" class="m-l">
+                  <option selected value="">-- 請選擇收款條件 --</option>
+                  <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>應收款日</label><input type="date" v-model="invoice.due_on" class="m-l">
+              </div>
+              <div class="form-group">
+                <label>請款備註</label><input type="text" v-model="invoice.notes" class="m-l">
+              </div>
+              <div>
+                <button class="btn btn-primary btn-block" @click="invoiceAll">請款</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -276,9 +308,21 @@
         type: Object,
         default: function() { return {} }
       },
+      invoice: {
+        type: Object,
+        default: function() { return {} }
+      },
+      invoices: {
+        type: Array,
+        default: function() { return {} }
+      },
     },
     data: function() {
-      return {}
+      return {
+        options: {
+          payment_terms: []
+        }
+      }
     },
     computed: {
       is_editing: function() {
@@ -296,6 +340,13 @@
       },
       order_editable: function() {
         return this.sales_order.status === 'draft' || this.sales_order.status === 'active'
+      },
+      show_invoice_area: function() {
+        this.getPaymentTermList()
+        return this.sales_order.status === 'finalized' || this.sales_order.status === 'fulfilled'
+      },
+      invoiced: function() {
+        return this.sales_order.invoice_status === 'invoiced'
       }
     },
     created: function() {
@@ -312,6 +363,9 @@
       }
       if (this.mode === 'show' || this.mode === 'edit') {
         this.getSalesOrder(this.sales_order_id)
+      }
+      if (this.mode === 'show') {
+        this.getInvoices()
       }
     },
     methods: {
@@ -367,6 +421,9 @@
           sales_order.errors = {} // FIXME: Move errors to outside of sales_order ?
           that.$store.commit('setupSalesOrder', { sales_order: sales_order })
           that.getSalesOrderLineItems(data.sales_order.id)
+          if (data.sales_order.invoice_status === 'uninvoiced') {
+            that.invoice.invoiced_on = moment().format("YYYY-MM-DD")
+          }
         }).fail(function(err) {
           console.log(err)
           alert('Cannot get sales order')
@@ -420,7 +477,7 @@
           method: 'POST',
           dataType: 'json'
         }).done(function(data) {
-          location.reload(true)
+          window.location.reload(true)
         }).fail(function(err) {
           console.log(err.responseJSON)
           alert(err.responseJSON.errors)
@@ -514,6 +571,75 @@
           alert('Cannot create sales order')
         })
       },
+      getPaymentTermList: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/payment_terms',
+          method: 'GET',
+          dataType: 'json',
+        }).done(function(data) {
+          that.options.payment_terms = data.payment_terms
+          // 自動選取收款條件為預設收款條件
+          that.options.payment_terms.forEach(function(payment_term) {
+            if (payment_term.default) {
+              that.invoice.payment_term_id = payment_term.id
+              that.invoice.invoiced_on = moment().format('YYYY-MM-DD')
+              if (payment_term.start_from === 'invoice_date') {
+                that.invoice.due_on = moment(that.invoice.invoiced_on, 'YYYY-MM-DD').add(payment_term.due_in_days, 'days').format('YYYY-MM-DD')
+              }
+              else if (payment_term.start_from === 'end_of_month') {
+                // 若根據 payment_term 算出來的付款時間超過下個月底 (可能發生在一月時使用NET30，因為2月只有28天，所以計算起來會超過 2/28)
+                var end_of_next_month = moment().add(1, 'month').endOf('month')
+                var expected_delivery_date = moment().endOf('month').add(payment_term.due_in_days, 'days')
+                var due_on = expected_delivery_date.isAfter(end_of_next_month) ? end_of_next_month : expected_delivery_date
+                that.invoice.due_on = due_on.format('YYYY-MM-DD')
+              }
+            }
+          })
+        })
+      },
+      invoiceAll: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id + '/invoices',
+          method: 'POST',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { invoice: that.invoice }
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON)
+        })
+      },
+      getInvoices: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order_id + '/invoices',
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          that.$store.commit('updateInvoices', data.invoices)
+        })
+      },
+      deleteInvoice: function(invoice_id) {
+        r = confirm('確定刪除?')
+        if (r === false) { return }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/invoices/' + invoice_id,
+          method: 'DELETE',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          dataType: 'json'
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err)
+          alert('無法刪除')
+        })
+      }
     }
   })
 </script>

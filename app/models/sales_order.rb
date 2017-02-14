@@ -2,34 +2,40 @@
 #
 # Table name: sales_orders
 #
-#  id                     :integer          not null, primary key
-#  company_id             :integer
-#  partner_id             :integer
-#  bill_to_location_id    :integer
-#  ship_to_location_id    :integer
-#  ship_from_location_id  :integer
-#  assignee_id            :integer
-#  payment_method_id      :integer
-#  status                 :integer          default("draft"), not null
-#  invoice_status         :integer          default("uninvoiced"), not null
-#  packing_status         :integer          default(0), not null
-#  shipment_status        :integer          default("unshipped"), not null
-#  payment_status         :integer          default("unpaid"), not null
-#  tax_treatment          :integer          default("exclusive"), not null
-#  line_items_count       :integer          default(0), not null
-#  total_units            :integer          default(0), not null
-#  subtotal               :decimal(12, 2)
-#  total_tax              :decimal(12, 2)
-#  total_amount           :decimal(12, 2)
-#  issued_on              :date
-#  expected_delivery_date :date
-#  order_number           :string
-#  email                  :string
-#  notes                  :text
-#  extra_info             :jsonb
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  phone                  :string
+#  id                      :integer          not null, primary key
+#  company_id              :integer
+#  partner_id              :integer
+#  bill_to_location_id     :integer
+#  ship_to_location_id     :integer
+#  ship_from_location_id   :integer
+#  assignee_id             :integer
+#  payment_method_id       :integer
+#  status                  :integer          default("draft"), not null
+#  invoice_status          :integer          default("uninvoiced"), not null
+#  packing_status          :integer          default(0), not null
+#  shipment_status         :integer          default("unshipped"), not null
+#  payment_status          :integer          default("unpaid"), not null
+#  tax_treatment           :integer          default("exclusive"), not null
+#  line_items_count        :integer          default(0), not null
+#  total_units             :integer          default(0), not null
+#  subtotal                :decimal(12, 2)
+#  total_tax               :decimal(12, 2)
+#  total_amount            :decimal(12, 2)
+#  issued_on               :date
+#  expected_delivery_date  :date
+#  order_number            :string
+#  email                   :string
+#  phone                   :string
+#  notes                   :text
+#  extra_info              :jsonb
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  invoiced_quantity       :integer
+#  uninvoiced_quantity     :integer
+#  invoiced_total_amount   :decimal(12, 2)
+#  uninvoiced_total_amount :decimal(12, 2)
+#  paid_total_amount       :decimal(12, 2)
+#  unpaid_total_amount     :decimal(12, 2)
 #
 # Indexes
 #
@@ -54,6 +60,8 @@ class SalesOrder < ApplicationRecord
   has_many :line_items
   has_many :line_item_commitments, through: :line_items
   has_many :shipments
+  has_many :invoices
+  has_many :invoice_line_items, through: :invoices
 
   validates :status,
             :company_id,
@@ -61,6 +69,10 @@ class SalesOrder < ApplicationRecord
             :ship_to_location_id,
             :ship_from_location_id, presence: true
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
+  validates :invoiced_quantity,       presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :uninvoiced_quantity,     presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :invoiced_total_amount,   presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :uninvoiced_total_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3, void: 4, deleted: 5 }
   enum invoice_status:  { uninvoiced: 0, partial: 1, invoiced: 2 }, _prefix: :invoice_status_is
@@ -111,6 +123,7 @@ class SalesOrder < ApplicationRecord
   end
 
   # TODO: shipment status should be updated automatically.
+  # TODO: 判斷 shipment_status 的方式可修改為: 在 sales order 加入shipped_quantity，只要shipped_quantity == total_units就是shipped
   def update_shipment_status!
     if line_items.shipment_status_is_partial.exists? # 有partial shipped line_items
       # 至少有一個 line_item 為 partial => partial
@@ -127,6 +140,11 @@ class SalesOrder < ApplicationRecord
     end
   end
 
+  def update_invoice_related_columns!
+    update_invoice_related_columns
+    save!
+  end
+
   def editable?
     draft? || active?
   end
@@ -139,8 +157,13 @@ class SalesOrder < ApplicationRecord
     end
 
     def setup_defaults
-      self.order_number ||= self.class.next_number(company_id)
-      self.status ||= 'active'
+      self.order_number            ||= self.class.next_number(company_id)
+      self.status                  ||= 'active'
+      self.invoiced_quantity       ||= 0
+      self.uninvoiced_quantity     ||= total_units
+      self.invoiced_total_amount   ||= 0
+      self.uninvoiced_total_amount ||= total_amount
+      self.invoice_status          ||= 'uninvoiced'
     end
 
     def commit_stocks!
@@ -169,6 +192,20 @@ class SalesOrder < ApplicationRecord
           end
           offset += 1
         end
+      end
+    end
+
+    def update_invoice_related_columns
+      self.invoiced_total_amount   = invoices.sum(:total_amount)
+      self.uninvoiced_total_amount = total_amount - invoiced_total_amount
+      self.invoiced_quantity       = invoices.sum(:total_units)
+      self.uninvoiced_quantity     = total_units - invoiced_quantity
+      if invoiced_quantity == total_units
+        self.invoice_status = 'invoiced'
+      elsif invoiced_quantity == 0
+        self.invoice_status = 'uninvoiced'
+      else
+        self.invoice_status = 'partial'
       end
     end
 end

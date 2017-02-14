@@ -57,7 +57,9 @@ Rails.application.routes.draw do
         delete :shipments, on: :member, to: 'sales_orders#delete_shipments' # Delete specfied sales order's all shipments
         resources :line_items, only: [:index], controller: 'sales_orders/line_items'
         resources :shipments, only: [:create], controller: 'sales_orders/shipments'
+        resources :invoices, only: [:index, :create], controller: 'sales_orders/invoices'
       end
+      resources :invoices, only: [:destroy]
       resources :customers, only: [:index] do
         get :locations, on: :member
       end

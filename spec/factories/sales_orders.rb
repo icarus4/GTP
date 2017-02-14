@@ -2,34 +2,40 @@
 #
 # Table name: sales_orders
 #
-#  id                     :integer          not null, primary key
-#  company_id             :integer
-#  partner_id             :integer
-#  bill_to_location_id    :integer
-#  ship_to_location_id    :integer
-#  ship_from_location_id  :integer
-#  assignee_id            :integer
-#  payment_method_id      :integer
-#  status                 :integer          default("draft"), not null
-#  invoice_status         :integer          default("uninvoiced"), not null
-#  packing_status         :integer          default(0), not null
-#  shipment_status        :integer          default("unshipped"), not null
-#  payment_status         :integer          default("unpaid"), not null
-#  tax_treatment          :integer          default("exclusive"), not null
-#  line_items_count       :integer          default(0), not null
-#  total_units            :integer          default(0), not null
-#  subtotal               :decimal(12, 2)
-#  total_tax              :decimal(12, 2)
-#  total_amount           :decimal(12, 2)
-#  issued_on              :date
-#  expected_delivery_date :date
-#  order_number           :string
-#  email                  :string
-#  notes                  :text
-#  extra_info             :jsonb
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  phone                  :string
+#  id                      :integer          not null, primary key
+#  company_id              :integer
+#  partner_id              :integer
+#  bill_to_location_id     :integer
+#  ship_to_location_id     :integer
+#  ship_from_location_id   :integer
+#  assignee_id             :integer
+#  payment_method_id       :integer
+#  status                  :integer          default("draft"), not null
+#  invoice_status          :integer          default("uninvoiced"), not null
+#  packing_status          :integer          default(0), not null
+#  shipment_status         :integer          default("unshipped"), not null
+#  payment_status          :integer          default("unpaid"), not null
+#  tax_treatment           :integer          default("exclusive"), not null
+#  line_items_count        :integer          default(0), not null
+#  total_units             :integer          default(0), not null
+#  subtotal                :decimal(12, 2)
+#  total_tax               :decimal(12, 2)
+#  total_amount            :decimal(12, 2)
+#  issued_on               :date
+#  expected_delivery_date  :date
+#  order_number            :string
+#  email                   :string
+#  phone                   :string
+#  notes                   :text
+#  extra_info              :jsonb
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  invoiced_quantity       :integer
+#  uninvoiced_quantity     :integer
+#  invoiced_total_amount   :decimal(12, 2)
+#  uninvoiced_total_amount :decimal(12, 2)
+#  paid_total_amount       :decimal(12, 2)
+#  unpaid_total_amount     :decimal(12, 2)
 #
 # Indexes
 #
