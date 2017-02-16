@@ -14,14 +14,12 @@
 
           <div>
             <div><label>狀態</label><span class="m-l">{{ sales_order.status }}</span></div>
-            <% if Rails.env.development? %><div><label>出貨狀態</label><span class="m-l">{{ sales_order.shipment_status }}</span></div><% end %>
             <div><label>訂單編號</label><span class="m-l">{{ sales_order.order_number }}</span></div>
           </div>
         </div>
 
         <div class="pull-right" v-if="sales_order && mode === 'show'">
           <button v-if="sales_order.shipment_status === 'shipped'" @click="deleteShipment" class="btn btn-default m-l-xs">刪除出貨</button>
-          <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openInvoicePage" class="btn btn-default m-l-xs">顯示 Invoice</button>
           <button v-if="sales_order.status !== 'void' && sales_order.status !== 'deleted'" @click="openPickListPage" class="btn btn-default m-l-xs">顯示撿貨單</button>
           <button v-if="order_editable" @click="editOrder" class="btn btn-default m-l-xs">編輯</button>
           <button v-if="sales_order.status === 'finalized' || sales_order.status === 'fulfilled'" @click="voidOrder" class="btn btn-default m-l-xs">作廢此單</button>
@@ -216,25 +214,107 @@
       </div>
 
       <!-- 請款單 -->
-      <div class="row">
+      <div v-if="show_invoice_area" class="row">
         <div class="ibox border-left-right border-bottom">
           <div class="ibox-title">
-            <h5>請款單</h5>
-            <div class="pull-right">WIP</div>
+            <h5>請款狀態</h5>
+            <div class="pull-right">
+              <span v-if="!is_invoiced" class="text-danger">${{ sales_order.uninvoiced_total_amount }} 待請款</span>
+              <span v-else class='text-info'>已請款</span>
+            </div>
           </div>
           <div class="ibox-content">
+            <!-- Invoiced -->
+            <div v-if="is_invoiced">
+              <div v-for="iv in invoices">
+                <span><a @click="openInvoicePage">請款單 ID: {{ iv.id }}</a></span>
+                <span class="pull-right"><span class="label label-default">${{ iv.total_amount }}</span><a @click="deleteInvoice(iv.id)"><i class="fa fa-trash m-l"></i></a></span>
+              </div>
+            </div>
+            <!-- Uninvoiced -->
+            <div v-if="!is_invoiced">
+              <div class="form-group">
+                <label>請款日期</label>
+                <input type="date" v-model="invoice.invoiced_on" class="m-l">
+              </div>
+              <div class="form-group">
+                <label>收款條件</label>
+                <select v-model="invoice.payment_term_id" class="m-l">
+                  <option selected value="">-- 請選擇收款條件 --</option>
+                  <option v-for="payment_term in options.payment_terms" v-bind:value="payment_term.id">{{ payment_term.name }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>應收款日</label><input type="date" v-model="invoice.due_on" class="m-l">
+              </div>
+              <div class="form-group">
+                <label>請款備註</label><input type="text" maxlength="256" v-model="invoice.notes" class="m-l">
+              </div>
+              <div>
+                <button class="btn btn-primary btn-block" @click="invoiceAll">請款</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 應收帳款 -->
-      <div class="row">
+      <div v-if="show_payment_area" class="row">
         <div class="ibox border-left-right border-bottom">
           <div class="ibox-title">
-            <h5>應收帳款</h5>
-            <div class="pull-right">WIP</div>
+            <h5>應收帳款狀態</h5>
+            <div class="pull-right">
+              <span v-if="!is_paid" class="text-danger">${{ sales_order.unpaid_total_amount }} 待收款</span>
+              <span v-else class="text-info">已收款</span>
+            </div>
           </div>
           <div class="ibox-content">
+
+            <div v-if="!is_payable">
+              <p>請先請款</p>
+            </div>
+
+            <div v-if="is_payable">
+              <div>
+                <div v-for="p in payments">
+                  <div v-if="$index > 0" class="m-t-xs"></div><!-- 留間距 -->
+                  <span><a>收款單 ID: {{ p.id }}</a></span>
+                  <span class="pull-right"><span class="label label-default">${{ p.amount }}</span><a @click="deletePayment(p.id)"><i class="fa fa-trash m-l"></i></a></span>
+                </div>
+              </div>
+
+              <hr v-if="any_payment_exists && !is_paid">
+
+              <div v-if="!is_paid">
+                <div class="form-group">
+                  <label>收款方式</label>
+                  <select v-model="payment.payment_method_id" class="m-l">
+                    <option selected value="">-- 請選擇收款方式 --</option>
+                    <option v-for="payment_method in options.payment_methods" v-bind:value="payment_method.id">{{ payment_method.name }}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>收款金額</label>
+                  <input v-model="payment.amount" min="0" max="{{ sales_order.unpaid_total_amount }}" type="number" style="width: 153px" class="m-l">
+                </div>
+                <div class="form-group">
+                  <label>收款日期</label>
+                  <input v-model="payment.receipt_date" type="date" class="m-l">
+                </div>
+                <div class="form-group">
+                  <label>轉入帳號</label>
+                  <input v-model="payment.transfer_in_account" maxlength="32" type="text" class="m-l">
+                </div>
+                <div class="form-group">
+                  <label>對方帳號</label>
+                  <input v-model="payment.transfer_out_account" maxlength="32" type="text" class="m-l">
+                </div>
+                <div>
+                  <button class="btn btn-primary btn-block" @click="createPayment">收款</button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -244,7 +324,7 @@
         <div class="ibox border-left-right border-bottom">
           <div class="ibox-title">
             <h5>出貨狀態</h5>
-            <div class="pull-right">{{ sales_order.shipment_status }}</div>
+            <div class="pull-right"><span class="{{ is_shipped ? 'text-info' : 'text-danger' }}">{{ shipment_status }}</span></div>
           </div>
           <div class="ibox-content">
             <button v-if="order_shippable" @click="shipAll" class="btn btn-primary btn-block">全部出貨</button>
@@ -276,9 +356,36 @@
         type: Object,
         default: function() { return {} }
       },
+      invoices: {
+        type: Array,
+        default: function() { return {} }
+      },
     },
     data: function() {
-      return {}
+      return {
+        options: {
+          payment_terms: [],
+          payment_methods: []
+        },
+        invoice: {
+          id: null,
+          sales_order_id: null,
+          payment_term_id: null,
+          invoiced_on: null,
+          due_on: null,
+          payment_status: null,
+          notes: null,
+        },
+        payment: {
+          id: null,
+          invoice_id: null,
+          payment_method_id: null,
+          receipt_date: null,
+          transfer_in_account: null,
+          transfer_out_account: null
+        },
+        payments: []
+      }
     },
     computed: {
       is_editing: function() {
@@ -296,6 +403,44 @@
       },
       order_editable: function() {
         return this.sales_order.status === 'draft' || this.sales_order.status === 'active'
+      },
+      show_invoice_area: function() {
+        this.getPaymentTermList()
+        return this.sales_order.status === 'finalized' || this.sales_order.status === 'fulfilled'
+      },
+      is_invoiced: function() {
+        return this.sales_order.invoice_status === 'invoiced'
+      },
+      show_payment_area: function() {
+        this.getPaymentMethodList()
+        this.getPayments()
+        this.payment.receipt_date = moment().format('YYYY-MM-DD')
+        this.payment.amount = this.sales_order.unpaid_total_amount
+        return this.sales_order.status === 'finalized' || this.sales_order.status === 'fulfilled'
+      },
+      is_payable: function() {
+        return this.sales_order.invoice_status === 'partial' || this.sales_order.invoice_status === 'invoiced'
+      },
+      any_payment_exists: function() {
+        return this.payments.length > 0
+      },
+      is_paid: function() {
+        return this.sales_order.payment_status === 'paid'
+      },
+      is_shipped: function() {
+        return this.sales_order.shipment_status === 'shipped'
+      },
+      shipment_status: function() {
+        var status = this.sales_order.shipment_status
+        if (status === 'unshipped') {
+          return '待出貨'
+        }
+        else if (status === 'shipped') {
+          return '已出貨'
+        }
+        else {
+          return '尚有部分未出貨'
+        }
       }
     },
     created: function() {
@@ -312,6 +457,9 @@
       }
       if (this.mode === 'show' || this.mode === 'edit') {
         this.getSalesOrder(this.sales_order_id)
+      }
+      if (this.mode === 'show') {
+        this.getInvoices()
       }
     },
     methods: {
@@ -367,6 +515,9 @@
           sales_order.errors = {} // FIXME: Move errors to outside of sales_order ?
           that.$store.commit('setupSalesOrder', { sales_order: sales_order })
           that.getSalesOrderLineItems(data.sales_order.id)
+          if (data.sales_order.invoice_status === 'uninvoiced') {
+            that.invoice.invoiced_on = moment().format("YYYY-MM-DD")
+          }
         }).fail(function(err) {
           console.log(err)
           alert('Cannot get sales order')
@@ -420,7 +571,7 @@
           method: 'POST',
           dataType: 'json'
         }).done(function(data) {
-          location.reload(true)
+          window.location.reload(true)
         }).fail(function(err) {
           console.log(err.responseJSON)
           alert(err.responseJSON.errors)
@@ -514,6 +665,142 @@
           alert('Cannot create sales order')
         })
       },
+      getPaymentTermList: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/payment_terms',
+          method: 'GET',
+          dataType: 'json',
+        }).done(function(data) {
+          that.options.payment_terms = data.payment_terms
+          // 自動選取收款條件為預設收款條件
+          that.options.payment_terms.forEach(function(payment_term) {
+            if (payment_term.default) {
+              that.invoice.payment_term_id = payment_term.id
+              that.invoice.invoiced_on = moment().format('YYYY-MM-DD')
+              if (payment_term.start_from === 'invoice_date') {
+                that.invoice.due_on = moment(that.invoice.invoiced_on, 'YYYY-MM-DD').add(payment_term.due_in_days, 'days').format('YYYY-MM-DD')
+              }
+              else if (payment_term.start_from === 'end_of_month') {
+                // 若根據 payment_term 算出來的付款時間超過下個月底 (可能發生在一月時使用NET30，因為2月只有28天，所以計算起來會超過 2/28)
+                var end_of_next_month = moment().add(1, 'month').endOf('month')
+                var expected_delivery_date = moment().endOf('month').add(payment_term.due_in_days, 'days')
+                var due_on = expected_delivery_date.isAfter(end_of_next_month) ? end_of_next_month : expected_delivery_date
+                that.invoice.due_on = due_on.format('YYYY-MM-DD')
+              }
+            }
+          })
+        })
+      },
+      invoiceAll: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id + '/invoices',
+          method: 'POST',
+          dataType: 'json',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          data: { invoice: that.invoice }
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON)
+        })
+      },
+      getInvoices: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order_id + '/invoices',
+          method: 'GET',
+          dataType: 'json'
+        }).done(function(data) {
+          that.$store.commit('updateInvoices', data.invoices)
+        })
+      },
+      deleteInvoice: function(invoice_id) {
+        if (this.any_payment_exists) {
+          r = confirm('收款單將會一併刪除，確定要刪除請款單？')
+          if (r === false) { return }
+        }
+        else {
+          r = confirm('確定刪除?')
+          if (r === false) { return }
+        }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/invoices/' + invoice_id,
+          method: 'DELETE',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          dataType: 'json'
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON.errors)
+        })
+      },
+      getPaymentMethodList: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/payment_methods',
+          method: 'GET'
+        }).done(function(data) {
+          that.options.payment_methods = data.payment_methods
+          that.options.payment_methods.forEach(function(payment_method) {
+            if (payment_method.default) {
+              that.payment.payment_method_id = payment_method.id
+            }
+          })
+        })
+      },
+      getPayments: function() {
+        if (!this.sales_order.id) { return }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/sales_orders/' + that.sales_order.id + '/payments',
+          method: 'GET'
+        }).done(function(data) {
+          that.payments = data.payments
+        }).fail(function(err) {
+          console.log(err)
+        })
+      },
+      createPayment: function() {
+        var that = this
+        $.ajax({
+          url: '/api/v1/invoices/' + that.invoices[0].id + '/payments',
+          method: 'POST',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          dataType: 'json',
+          data: { payment: that.payment }
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON)
+        })
+      },
+      deletePayment: function(payment_id) {
+        r = confirm('確認刪除？')
+        if (r === false) {
+          return
+        }
+
+        var that = this
+        $.ajax({
+          url: '/api/v1/payments/' + payment_id,
+          method: 'DELETE',
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          dataType: 'json'
+        }).done(function(data) {
+          window.location.reload(true)
+        }).fail(function(err) {
+          console.log(err)
+          alert(err.responseJSON.errors)
+        })
+      }
     }
   })
 </script>

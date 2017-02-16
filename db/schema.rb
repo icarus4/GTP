@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170204154023) do
+ActiveRecord::Schema.define(version: 20170212042554) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -395,6 +395,34 @@ ActiveRecord::Schema.define(version: 20170204154023) do
     t.index ["variant_id"], name: "index_sales_order_details_on_variant_id", using: :btree
   end
 
+  create_table "sales_order_invoice_line_items", force: :cascade do |t|
+    t.integer  "invoice_id",   null: false
+    t.integer  "line_item_id", null: false
+    t.integer  "quantity",     null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["invoice_id"], name: "index_sales_order_invoice_line_items_on_invoice_id", using: :btree
+    t.index ["line_item_id"], name: "index_sales_order_invoice_line_items_on_line_item_id", using: :btree
+  end
+
+  create_table "sales_order_invoices", force: :cascade do |t|
+    t.integer  "sales_order_id",                           null: false
+    t.integer  "payment_term_id"
+    t.date     "invoiced_on"
+    t.date     "due_on"
+    t.integer  "payment_status",                           null: false
+    t.integer  "total_units"
+    t.decimal  "total_amount",    precision: 12, scale: 2
+    t.decimal  "paid_amount",     precision: 12, scale: 2
+    t.decimal  "unpaid_amount",   precision: 12, scale: 2
+    t.text     "notes"
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.index ["due_on"], name: "index_sales_order_invoices_on_due_on", using: :btree
+    t.index ["payment_term_id"], name: "index_sales_order_invoices_on_payment_term_id", using: :btree
+    t.index ["sales_order_id"], name: "index_sales_order_invoices_on_sales_order_id", using: :btree
+  end
+
   create_table "sales_order_line_item_commitments", force: :cascade do |t|
     t.integer  "line_item_id"
     t.integer  "location_id"
@@ -427,8 +455,26 @@ ActiveRecord::Schema.define(version: 20170204154023) do
     t.datetime "updated_at",                                                null: false
     t.integer  "shipment_status",                               default: 0, null: false
     t.integer  "shipped_quantity",                              default: 0, null: false
+    t.integer  "invoiced_quantity"
+    t.integer  "uninvoiced_quantity"
+    t.integer  "invoice_status"
     t.index ["item_id"], name: "index_sales_order_line_items_on_item_id", using: :btree
     t.index ["sales_order_id"], name: "index_sales_order_line_items_on_sales_order_id", using: :btree
+  end
+
+  create_table "sales_order_payments", force: :cascade do |t|
+    t.integer  "sales_order_id",                                null: false
+    t.integer  "invoice_id",                                    null: false
+    t.integer  "payment_method_id"
+    t.decimal  "amount",               precision: 12, scale: 2
+    t.date     "receipt_date"
+    t.string   "transfer_out_account"
+    t.string   "transfer_in_account"
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.index ["invoice_id"], name: "index_sales_order_payments_on_invoice_id", using: :btree
+    t.index ["payment_method_id"], name: "index_sales_order_payments_on_payment_method_id", using: :btree
+    t.index ["sales_order_id"], name: "index_sales_order_payments_on_sales_order_id", using: :btree
   end
 
   create_table "sales_order_shipments", force: :cascade do |t|
@@ -448,17 +494,17 @@ ActiveRecord::Schema.define(version: 20170204154023) do
     t.integer  "ship_from_location_id"
     t.integer  "assignee_id"
     t.integer  "payment_method_id"
-    t.integer  "status",                                          default: 0, null: false
-    t.integer  "invoice_status",                                  default: 0, null: false
-    t.integer  "packing_status",                                  default: 0, null: false
-    t.integer  "shipment_status",                                 default: 0, null: false
-    t.integer  "payment_status",                                  default: 0, null: false
-    t.integer  "tax_treatment",                                   default: 0, null: false
-    t.integer  "line_items_count",                                default: 0, null: false
-    t.integer  "total_units",                                     default: 0, null: false
-    t.decimal  "subtotal",               precision: 12, scale: 2
-    t.decimal  "total_tax",              precision: 12, scale: 2
-    t.decimal  "total_amount",           precision: 12, scale: 2
+    t.integer  "status",                                           default: 0, null: false
+    t.integer  "invoice_status",                                   default: 0, null: false
+    t.integer  "packing_status",                                   default: 0, null: false
+    t.integer  "shipment_status",                                  default: 0, null: false
+    t.integer  "payment_status",                                   default: 0, null: false
+    t.integer  "tax_treatment",                                    default: 0, null: false
+    t.integer  "line_items_count",                                 default: 0, null: false
+    t.integer  "total_units",                                      default: 0, null: false
+    t.decimal  "subtotal",                precision: 12, scale: 2
+    t.decimal  "total_tax",               precision: 12, scale: 2
+    t.decimal  "total_amount",            precision: 12, scale: 2
     t.date     "issued_on"
     t.date     "expected_delivery_date"
     t.string   "order_number"
@@ -466,8 +512,14 @@ ActiveRecord::Schema.define(version: 20170204154023) do
     t.string   "phone"
     t.text     "notes"
     t.jsonb    "extra_info"
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.datetime "created_at",                                                   null: false
+    t.datetime "updated_at",                                                   null: false
+    t.integer  "invoiced_quantity"
+    t.integer  "uninvoiced_quantity"
+    t.decimal  "invoiced_total_amount",   precision: 12, scale: 2
+    t.decimal  "uninvoiced_total_amount", precision: 12, scale: 2
+    t.decimal  "paid_total_amount",       precision: 12, scale: 2
+    t.decimal  "unpaid_total_amount",     precision: 12, scale: 2
     t.index ["company_id", "partner_id"], name: "index_sales_orders_on_company_id_and_partner_id", using: :btree
     t.index ["order_number"], name: "index_sales_orders_on_order_number", using: :btree
   end

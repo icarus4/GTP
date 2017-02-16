@@ -1,5 +1,11 @@
 <div id="show-sales-order" class="row">
-  <app mode="show" :sales_order_id="<%= @sales_order.id %>" :sales_order="$store.state.sales_order"> </app>
+  <app
+    mode="show"
+    :sales_order_id="<%= @sales_order.id %>"
+    :sales_order="$store.state.sales_order"
+    :invoices="$store.state.invoices"
+    >
+  </app>
 </div>
 
 <% content_for :js do %>
