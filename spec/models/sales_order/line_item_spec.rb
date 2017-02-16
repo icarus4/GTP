@@ -16,6 +16,9 @@
 #  updated_at           :datetime         not null
 #  shipment_status      :integer          default("unshipped"), not null
 #  shipped_quantity     :integer          default(0), not null
+#  invoiced_quantity    :integer
+#  uninvoiced_quantity  :integer
+#  invoice_status       :integer
 #
 # Indexes
 #

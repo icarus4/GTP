@@ -16,6 +16,9 @@
 #  updated_at           :datetime         not null
 #  shipment_status      :integer          default("unshipped"), not null
 #  shipped_quantity     :integer          default(0), not null
+#  invoiced_quantity    :integer
+#  uninvoiced_quantity  :integer
+#  invoice_status       :integer
 #
 # Indexes
 #
@@ -31,25 +34,32 @@ class SalesOrder::LineItem < ApplicationRecord
   # shipped_quantity:     已出貨的數量
   # quantity = shipped_quantity + committed_quantity + uncommitted_quantity
 
-  after_initialize :setup_defaults
+  before_validation :setup_defaults
   before_save :calculate_total
   before_save :calculate_quantities, if: :quantity_changed?
   after_save :update_sales_order_shipment_status!, if: :shipment_status_changed?
   after_save :update_sales_order_totals!
   after_destroy :update_sales_order_totals!, :update_sales_order_shipment_status!
 
-  belongs_to :sales_order
+  belongs_to :sales_order, counter_cache: true
   belongs_to :item
 
-  has_many :line_item_commitments
+  has_many :line_item_commitments, dependent: :destroy
+  has_many :invoice_line_items
 
   validates :sales_order_id, presence: true
   validates :item_id,        presence: true
   validates :quantity,       presence: true, numericality: { greater_than_or_equal_to: 1 }
   validates :committed_quantity,   numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :uncommitted_quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :shipped_quantity,     numericality: { greater_than_or_equal_to: 0 } # Always starts at 0, therefore allow_nil is not necessary
+  validates :invoiced_quantity,    numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :uninvoiced_quantity,  numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  delegate :sku, :name, to: :item
 
   enum shipment_status: { unshipped: 0,  partial: 1, shipped: 2 },  _prefix: :shipment_status_is
+  enum invoice_status: { uninvoiced: 0,  partial: 1, invoiced: 2 },  _prefix: :invoice_status_is
 
   def update_quantities!
     calculate_quantities
@@ -68,8 +78,14 @@ class SalesOrder::LineItem < ApplicationRecord
     sales_order.update_status!
   end
 
-  def update_sales_order_shipment_status!
-    sales_order.update_shipment_status!
+  def update_invoice_related_columns!
+    self.invoiced_quantity   = invoice_line_items.sum(:quantity)
+    self.uninvoiced_quantity = quantity - invoiced_quantity
+    update_invoice_status
+    # changed is a built-in method
+    _changed = invoiced_quantity_changed? || uninvoiced_quantity_changed? || invoice_status_changed?
+    save!
+    sales_order.update_invoice_related_columns! if _changed
   end
 
   private
@@ -79,16 +95,35 @@ class SalesOrder::LineItem < ApplicationRecord
     end
 
     def calculate_quantities
-      self.shipped_quantity = line_item_commitments.shipped.sum(:quantity)
-      self.committed_quantity = line_item_commitments.unshipped.sum(:quantity)
+      self.shipped_quantity     = line_item_commitments.shipped.sum(:quantity)
+      self.committed_quantity   = line_item_commitments.unshipped.sum(:quantity)
       self.uncommitted_quantity = quantity - shipped_quantity - committed_quantity
+      self.invoiced_quantity    = invoice_line_items.sum(:quantity)
+      self.uninvoiced_quantity  = quantity - invoiced_quantity
     end
 
     def setup_defaults
       self.committed_quantity ||= 0 if has_attribute?(:committed_quantity)
+      self.invoice_status     ||= 'uninvoiced'
     end
 
     def update_sales_order_totals!
       sales_order.calculate_totals!
+    end
+
+    def update_sales_order_shipment_status!
+      sales_order.update_shipment_status!
+    end
+
+    def update_invoice_status
+      if invoiced_quantity == quantity
+        self.invoice_status = 'invoiced'
+      elsif invoiced_quantity == 0
+        self.invoice_status = 'uninvoiced'
+      elsif invoiced_quantity > 0 && invoiced_quantity < quantity
+        self.invoice_status = 'partial'
+      else
+        raise "Shouldn't be here"
+      end
     end
 end
