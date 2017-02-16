@@ -47,7 +47,7 @@ class SalesOrder < ApplicationRecord
   include Taxable
   include AASM
 
-  after_initialize :setup_defaults
+  before_validation :setup_defaults
   after_save :update_status!, if: :shipment_status_changed?
 
   belongs_to :company
@@ -62,6 +62,7 @@ class SalesOrder < ApplicationRecord
   has_many :shipments
   has_many :invoices
   has_many :invoice_line_items, through: :invoices
+  has_many :payments
 
   validates :status,
             :company_id,
@@ -69,10 +70,10 @@ class SalesOrder < ApplicationRecord
             :ship_to_location_id,
             :ship_from_location_id, presence: true
   validates :order_number, presence: true, uniqueness: { scope: :company_id }
-  validates :invoiced_quantity,       presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :uninvoiced_quantity,     presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :invoiced_total_amount,   presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :uninvoiced_total_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :invoiced_quantity,       presence: true, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :invoiced_total_amount,   presence: true, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :uninvoiced_quantity,     presence: true, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :uninvoiced_total_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   enum status: { draft: 0, active: 1, finalized: 2, fulfilled: 3, void: 4, deleted: 5 }
   enum invoice_status:  { uninvoiced: 0, partial: 1, invoiced: 2 }, _prefix: :invoice_status_is
@@ -158,12 +159,14 @@ class SalesOrder < ApplicationRecord
 
     def setup_defaults
       self.order_number            ||= self.class.next_number(company_id)
-      self.status                  ||= 'active'
       self.invoiced_quantity       ||= 0
-      self.uninvoiced_quantity     ||= total_units
       self.invoiced_total_amount   ||= 0
+      self.uninvoiced_quantity     ||= total_units
       self.uninvoiced_total_amount ||= total_amount
+      self.paid_total_amount       ||= 0
+      self.unpaid_total_amount     ||= total_amount
       self.invoice_status          ||= 'uninvoiced'
+      self.payment_status          ||= 'unpaid'
     end
 
     def commit_stocks!
@@ -198,14 +201,31 @@ class SalesOrder < ApplicationRecord
     def update_invoice_related_columns
       self.invoiced_total_amount   = invoices.sum(:total_amount)
       self.uninvoiced_total_amount = total_amount - invoiced_total_amount
+
       self.invoiced_quantity       = invoices.sum(:total_units)
       self.uninvoiced_quantity     = total_units - invoiced_quantity
-      if invoiced_quantity == total_units
-        self.invoice_status = 'invoiced'
-      elsif invoiced_quantity == 0
-        self.invoice_status = 'uninvoiced'
-      else
-        self.invoice_status = 'partial'
-      end
+
+      self.unpaid_total_amount = invoices.sum(:unpaid_amount)
+      self.paid_total_amount   = invoices.sum(:paid_amount)
+
+      self.invoice_status = if !invoices.exists?
+                              'uninvoiced'
+                            elsif invoiced_quantity == total_units
+                              'invoiced'
+                            elsif invoiced_quantity == 0
+                              'uninvoiced'
+                            else
+                              'partial'
+                            end
+
+      self.payment_status = if !payments.exists?
+                              'unpaid'
+                            elsif unpaid_total_amount == 0
+                              'paid'
+                            elsif paid_total_amount == 0
+                              'unpaid'
+                            else
+                              'partial'
+                            end
     end
 end

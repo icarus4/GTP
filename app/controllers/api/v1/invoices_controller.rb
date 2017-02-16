@@ -5,7 +5,10 @@ class Api::V1::InvoicesController < Api::V1::BaseController
       render json: { errors: 'Invoice not found' }, status: :bad_request and return
     end
 
-    invoice.destroy
-    render json: { invoice: invoice }
+    if invoice.destroy
+      render json: { invoice: invoice }
+    else
+      render json: { errors: invoice.errors }, status: :bad_request
+    end
   end
 end

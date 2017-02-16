@@ -463,15 +463,18 @@ ActiveRecord::Schema.define(version: 20170212042554) do
   end
 
   create_table "sales_order_payments", force: :cascade do |t|
+    t.integer  "sales_order_id",                                null: false
     t.integer  "invoice_id",                                    null: false
     t.integer  "payment_method_id"
     t.decimal  "amount",               precision: 12, scale: 2
+    t.date     "receipt_date"
     t.string   "transfer_out_account"
     t.string   "transfer_in_account"
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.index ["invoice_id"], name: "index_sales_order_payments_on_invoice_id", using: :btree
     t.index ["payment_method_id"], name: "index_sales_order_payments_on_payment_method_id", using: :btree
+    t.index ["sales_order_id"], name: "index_sales_order_payments_on_sales_order_id", using: :btree
   end
 
   create_table "sales_order_shipments", force: :cascade do |t|

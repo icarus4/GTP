@@ -25,9 +25,11 @@ class AddInvoicesAndPaymentsRelatedTablesAndModifications < ActiveRecord::Migrat
     end
 
     create_table :sales_order_payments do |t|
+      t.integer :sales_order_id,    null: false, index: true
       t.integer :invoice_id,        null: false, index: true
       t.integer :payment_method_id,              index: true
       t.decimal :amount,            precision: 12, scale: 2
+      t.date    :receipt_date
       t.string  :transfer_out_account
       t.string  :transfer_in_account
 

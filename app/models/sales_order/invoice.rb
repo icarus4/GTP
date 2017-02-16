@@ -59,6 +59,12 @@ class SalesOrder::Invoice < ApplicationRecord
     end
   end
 
+  # payment 有變動時執行此 method
+  def update_payment_related_columns!
+    update_payment_related_columns
+    save!
+  end
+
   private
 
     def update_sales_order!
@@ -66,8 +72,8 @@ class SalesOrder::Invoice < ApplicationRecord
     end
 
     def update_payment_related_columns
-      self.paid_amount = payments.sum(:amount)
-      self.unpaid_amount = total_amount - paid_amount
+      self.paid_amount    = payments.sum(:amount)
+      self.unpaid_amount  = total_amount - paid_amount
       self.payment_status = if paid_amount == 0
                               'unpaid'
                             elsif unpaid_amount == 0
@@ -78,6 +84,6 @@ class SalesOrder::Invoice < ApplicationRecord
     end
 
     def setup_defaults
-      self.payment_status = 'unpaid'
+      self.payment_status ||= 'unpaid'
     end
 end

@@ -24,6 +24,11 @@ class Api::V1::SalesOrders::InvoicesController < Api::V1::BaseController
     invoice = sales_order.invoices.build(invoice_params)
     invoice.invoiced_on = Time.zone.today if invoice.invoiced_on.blank?
 
+    # 檢查輸入的 payment term 是否為此公司所有
+    if invoice.payment_term && invoice.payment_term.company_id != current_company.id
+      render json: { errors: 'Invalid payment term' }, status: :bad_request and return
+    end
+
     ActiveRecord::Base.transaction do
       unless invoice.save
         render json: { errors: invoice.errors }, status: :bad_request and return

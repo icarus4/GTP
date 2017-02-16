@@ -34,14 +34,14 @@ class SalesOrder::LineItem < ApplicationRecord
   # shipped_quantity:     已出貨的數量
   # quantity = shipped_quantity + committed_quantity + uncommitted_quantity
 
-  after_initialize :setup_defaults
+  before_validation :setup_defaults
   before_save :calculate_total
   before_save :calculate_quantities, if: :quantity_changed?
   after_save :update_sales_order_shipment_status!, if: :shipment_status_changed?
   after_save :update_sales_order_totals!
   after_destroy :update_sales_order_totals!, :update_sales_order_shipment_status!
 
-  belongs_to :sales_order
+  belongs_to :sales_order, counter_cache: true
   belongs_to :item
 
   has_many :line_item_commitments, dependent: :destroy
@@ -104,6 +104,7 @@ class SalesOrder::LineItem < ApplicationRecord
 
     def setup_defaults
       self.committed_quantity ||= 0 if has_attribute?(:committed_quantity)
+      self.invoice_status     ||= 'uninvoiced'
     end
 
     def update_sales_order_totals!

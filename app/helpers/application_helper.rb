@@ -10,7 +10,7 @@ module ApplicationHelper
     when 'finalized'
       'Finalized'
     when 'fulfilled'
-      '已送貨'
+      '已出貨'
     when 'void'
       '作廢'
     when 'deleted'
