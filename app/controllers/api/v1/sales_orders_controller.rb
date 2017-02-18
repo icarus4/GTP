@@ -22,23 +22,27 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     sales_order.ship_from_location = ship_from_location
     sales_order.status             = 'draft' # Status always start from 'draft'. Change status by methods defined in state machine of sales order
 
-    ActiveRecord::Base.transaction do
-      sales_order.save!
+    begin
+      ActiveRecord::Base.transaction do
+        sales_order.save!
 
-      params[:sales_order_line_items].each do |_, input_line_item|
-        item = Item.select(:id).find_by(company: current_company, id: input_line_item[:item_id])
-        next if item.nil?
+        params[:sales_order_line_items].each do |_, input_line_item|
+          item = Item.select(:id).find_by(company: current_company, id: input_line_item[:item_id])
+          next if item.nil?
 
-        line_item = SalesOrder::LineItem.create!(
-          sales_order: sales_order,
-          item_id:     input_line_item[:item_id],
-          quantity:    input_line_item[:quantity],
-          unit_price:  input_line_item[:unit_price],
-          tax_rate:    input_line_item[:tax_rate],
-        )
+          line_item = SalesOrder::LineItem.create!(
+            sales_order: sales_order,
+            item_id:     input_line_item[:item_id],
+            quantity:    input_line_item[:quantity],
+            unit_price:  input_line_item[:unit_price],
+            tax_rate:    input_line_item[:tax_rate],
+          )
+        end
+
+        sales_order.approve! if params[:sales_order][:status] == 'active'
       end
-
-      sales_order.approve! if params[:sales_order][:status] == 'active'
+    rescue => e
+      render json: { errors: e.message }, status: :bad_request and return
     end
 
     render json: { sales_order: sales_order, sales_order_line_items: sales_order.line_items }

@@ -455,6 +455,10 @@
         this.$store.dispatch('getEmployeeList')
         this.$store.dispatch('addNewLineItem')
       }
+      if (this.mode === 'new') {
+        this.$store.commit('updateIssuedOn', moment().format('YYYY-MM-DD'))
+        this.$store.commit('updateExpectedDeliveryDate', moment().format('YYYY-MM-DD'))
+      }
       if (this.mode === 'show' || this.mode === 'edit') {
         this.getSalesOrder(this.sales_order_id)
       }
@@ -500,7 +504,8 @@
           window.location.href = '/sales_orders/' + data.sales_order.id
         }).fail(function(err) {
           console.log(err)
-          alert('Cannot create sales order')
+          alert(err.responseJSON.errors)
+          that.$broadcast('update-sellable-quantity') // 更新 line_item 的 sellable_quantity
         })
       },
       // Fetch specific sales order

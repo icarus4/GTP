@@ -59,7 +59,7 @@
       }
     },
     ready: function() {
-      this.updateOnHandCount()
+      this.updateSellableQuantity()
     },
     computed: {
       sellable_quantity: function() {
@@ -83,17 +83,22 @@
       },
       ship_from_location_id: function(value, old_value) {
         if (value) {
-          this.updateOnHandCount()
+          this.updateSellableQuantity()
         }
       },
+    },
+    events: {
+      'update-sellable-quantity': function() {
+        this.updateSellableQuantity()
+      }
     },
     methods: {
       updateSelectedItem: function(e) {
         var item_id = parseInt(e.target.value)
         this.$store.dispatch('updateSelectedItem', { line_item_index: this.line_item_index, item_id: item_id })
-        this.updateOnHandCount()
+        this.updateSellableQuantity()
       },
-      updateOnHandCount: function() {
+      updateSellableQuantity: function() {
         if (!this.ship_from_location_id || !this.line_item.item_id) { return }
         var that = this
         $.ajax({
