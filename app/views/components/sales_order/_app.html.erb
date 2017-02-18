@@ -59,7 +59,7 @@
             :location="sales_order && sales_order.ship_from_location"
             after-selected-dispatch-event="shipFromLocationSelected"
             label="出貨倉庫"
-            :is_editing="is_editing"
+            :is_editing="ship_from_location_can_edit"
             :error_message="($store.state.sales_order.errors && $store.state.sales_order.errors.ship_from_location_id) || null">
           </ship-from-location-selector>
         </div>
@@ -391,6 +391,9 @@
       is_editing: function() {
         return this.mode === 'new' || this.mode === 'edit'
       },
+      ship_from_location_can_edit: function() {
+        return this.mode === 'new'
+      },
       tax_treatment: function() {
         if (this.sales_order.tax_treatment === 'exclusive') { return '不含稅' }
         else { return '含稅' }
@@ -455,6 +458,10 @@
         this.$store.dispatch('getEmployeeList')
         this.$store.dispatch('addNewLineItem')
       }
+      if (this.mode === 'new') {
+        this.$store.commit('updateIssuedOn', moment().format('YYYY-MM-DD'))
+        this.$store.commit('updateExpectedDeliveryDate', moment().format('YYYY-MM-DD'))
+      }
       if (this.mode === 'show' || this.mode === 'edit') {
         this.getSalesOrder(this.sales_order_id)
       }
@@ -500,7 +507,8 @@
           window.location.href = '/sales_orders/' + data.sales_order.id
         }).fail(function(err) {
           console.log(err)
-          alert('Cannot create sales order')
+          alert(err.responseJSON.errors)
+          that.$broadcast('update-sellable-quantity') // 更新 line_item 的 sellable_quantity
         })
       },
       // Fetch specific sales order
@@ -662,7 +670,7 @@
           window.location.href = '/sales_orders/' + data.sales_order.id
         }).fail(function(err) {
           console.log(err)
-          alert('Cannot create sales order')
+          alert('Cannot edit sales order')
         })
       },
       getPaymentTermList: function() {

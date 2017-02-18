@@ -1,5 +1,8 @@
 <div id="new-sales-order" class="row">
-  <app mode="new"></app>
+  <app
+    mode="new"
+    :sales_order="$store.state.sales_order"
+    ></app>
 </div>
 
 <% content_for :js do %>
