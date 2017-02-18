@@ -45,7 +45,7 @@ class SalesOrder::LineItem < ApplicationRecord
   belongs_to :item
 
   has_many :line_item_commitments, dependent: :destroy
-  has_many :invoice_line_items
+  has_many :invoice_line_items,    dependent: :destroy
 
   validates :sales_order_id, presence: true
   validates :item_id,        presence: true

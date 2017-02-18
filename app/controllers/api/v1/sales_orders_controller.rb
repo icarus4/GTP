@@ -32,7 +32,7 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
 
           line_item = SalesOrder::LineItem.create!(
             sales_order: sales_order,
-            item_id:     input_line_item[:item_id],
+            item_id:     item.id,
             quantity:    input_line_item[:quantity],
             unit_price:  input_line_item[:unit_price],
             tax_rate:    input_line_item[:tax_rate],
@@ -53,15 +53,78 @@ class Api::V1::SalesOrdersController < Api::V1::BaseController
     render json: { errors: 'Ship from location not found' }, status: :bad_request and return if ship_from_location.nil?
 
     sales_order = SalesOrder.find_by(company: current_company, id: params[:sales_order][:id])
-    render json: { errors: "Sales order not found" }, status: :not_found and return if sales_order.nil?
+    render json: { errors: 'Sales order not found' }, status: :not_found and return if sales_order.nil?
+    render json: { errors: 'This sales order is not editable' }, status: :bad_request and return unless sales_order.editable?
 
     sales_order.attributes = sales_order_params
     sales_order.ship_from_location = ship_from_location
-    if sales_order.save
-      render json: { sales_order: sales_order }
-    else
-      render json: { sales_order: sales_order }, status: :bad_request
+
+    # 用來與更新 line item 後的所有 line item 做比對，找出被刪除的 line item
+    line_item_ids_before = sales_order.line_items.pluck(:id)
+    line_item_ids_after  = []
+
+    begin
+      ActiveRecord::Base.transaction do
+        sales_order.save!
+
+        # params[:sales_order_line_items]&.each 使用 "&".each 是因為若 user 將 line item 刪光光，則 params[:sales_order_line_items] 會是 nil
+        params[:sales_order_line_items]&.each do |_, input_line_item|
+          if input_line_item[:id].present?
+            line_item = SalesOrder::LineItem.find_by(id: input_line_item[:id], sales_order_id: sales_order.id)
+            next if line_item.nil?
+
+            line_item.attributes = {
+              item_id:     input_line_item[:item_id],
+              quantity:    input_line_item[:quantity],
+              unit_price:  input_line_item[:unit_price],
+              tax_rate:    input_line_item[:tax_rate],
+            }
+
+            # item_id 或 quantity 變動會影響 committed line item，故重新建立 line_item
+            if line_item.item_id_changed? || line_item.quantity_changed?
+              created_at = line_item.created_at
+              line_item.destroy!
+              line_item = SalesOrder::LineItem.create!(
+                sales_order: sales_order,
+                item_id:     input_line_item[:item_id],
+                quantity:    input_line_item[:quantity],
+                unit_price:  input_line_item[:unit_price],
+                tax_rate:    input_line_item[:tax_rate],
+                created_at:  created_at, # Use original line item's created_at for keeping the sequence of line items
+              )
+              line_item_ids_after << line_item.id
+            else
+              # unit_price 與 tax_rate 的變動與 committed line item 無關，可以直接修改
+              line_item.save!
+              line_item_ids_after << line_item.id
+            end
+          else
+            item = Item.select(:id).find_by(company: current_company, id: input_line_item[:item_id])
+            next if item.nil?
+
+            line_item = SalesOrder::LineItem.create!(
+              sales_order: sales_order,
+              item_id:     item.id,
+              quantity:    input_line_item[:quantity],
+              unit_price:  input_line_item[:unit_price],
+              tax_rate:    input_line_item[:tax_rate],
+            )
+          end
+        end # End of params[:sales_order_line_items].each do |_, input_line_item|
+
+        # Destroy line_items not in params[:sales_order_line_items]
+        # Those line_items are removed from edit sales order page by user
+        (line_item_ids_before - line_item_ids_after).each do |line_item_id|
+          SalesOrder::LineItem.find_by(id: line_item_id)&.destroy!
+        end
+
+        sales_order.commit_stocks! if sales_order.active?
+      end # End of transaction
+    rescue => e
+      render json: { errors: e.message }, status: :bad_request and return
     end
+
+    render json: { sales_order: sales_order }
   end
 
   def approve

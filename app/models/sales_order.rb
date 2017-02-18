@@ -150,6 +150,42 @@ class SalesOrder < ApplicationRecord
     draft? || active?
   end
 
+  def commit_stocks!
+    line_items.each do |line_item|
+      # 從庫存中尋找適當的貨品保留作為出貨用
+      # 找到的 location_variant 的數量不一定足夠，因此用迴圈逐一找尋，直到總數量符合出貨量
+      remaining_quantity = line_item.uncommitted_quantity
+      next if remaining_quantity == 0
+      raise 'Should not be here' if remaining_quantity < 0
+
+      offset = 0
+      loop do
+        # 找出最快過期的出貨
+        chosen_lv = LocationVariant.where(company_id: company_id, location: ship_from_location, item_id: line_item.item_id)
+                                   .default_sales_committed_sequence
+                                   .offset(offset).first
+        # 此商品無庫存
+        if chosen_lv.nil?
+          raise "#{line_item.item.name} 庫存不足"
+        end
+
+        committed_quantity = chosen_lv.sellable_quantity >= remaining_quantity ? remaining_quantity : chosen_lv.sellable_quantity
+        commitment = SalesOrder::LineItemCommitment.create!(
+          line_item:        line_item,
+          location_variant: chosen_lv,
+          quantity:         committed_quantity
+        )
+        remaining_quantity -= committed_quantity
+        if remaining_quantity == 0
+          break
+        elsif remaining_quantity < 0
+          raise "Should not be here"
+        end
+        offset += 1
+      end
+    end
+  end
+
   private
 
     def rollback_stocks!
@@ -167,39 +203,6 @@ class SalesOrder < ApplicationRecord
       self.unpaid_total_amount     ||= total_amount
       self.invoice_status          ||= 'uninvoiced'
       self.payment_status          ||= 'unpaid'
-    end
-
-    def commit_stocks!
-      line_items.each do |line_item|
-        # 從庫存中尋找適當的貨品保留作為出貨用
-        # 找到的 location_variant 的數量不一定足夠，因此用迴圈逐一找尋，直到總數量符合出貨量
-        remaining_quantity = line_item.uncommitted_quantity
-        offset = 0
-        loop do
-          # 找出最快過期的出貨
-          chosen_lv = LocationVariant.where(company_id: company_id, location: ship_from_location, item_id: line_item.item_id)
-                                     .default_sales_committed_sequence
-                                     .offset(offset).first
-          # 此商品無庫存
-          if chosen_lv.nil?
-            raise "#{line_item.item.name} 庫存不足"
-          end
-
-          committed_quantity = chosen_lv.sellable_quantity >= remaining_quantity ? remaining_quantity : chosen_lv.sellable_quantity
-          commitment = SalesOrder::LineItemCommitment.create!(
-            line_item:        line_item,
-            location_variant: chosen_lv,
-            quantity:         committed_quantity
-          )
-          remaining_quantity -= committed_quantity
-          if remaining_quantity == 0
-            break
-          elsif remaining_quantity < 0
-            raise "Should not be here"
-          end
-          offset += 1
-        end
-      end
     end
 
     def update_invoice_related_columns
